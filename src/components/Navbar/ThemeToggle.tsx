@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import { MoonIcon as MoonIconSolid } from "@heroicons/react/24/solid";
-import { SunIcon as SunIconSolid } from "@heroicons/react/24/solid";
+import {
+  MoonIcon as MoonIconSolid,
+  SunIcon as SunIconSolid,
+} from "@heroicons/react/24/solid";
+import { useEffect, useState } from "react";
 
 const ThemeToggle = () => {
   const [theme, setTheme] = useState(() => {
@@ -25,12 +27,9 @@ const ThemeToggle = () => {
   };
 
   return (
-    <div>
-      <div className="hidden md:block">
-        <button
-          className="group rounded-full transition duration-300 ease-in-out"
-          onClick={toggleTheme}
-        >
+    <>
+      <div className="hidden size-6 md:block">
+        <button className="group rounded-full" onClick={toggleTheme}>
           {theme === "dark" ? (
             <MoonIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
           ) : (
@@ -46,7 +45,7 @@ const ThemeToggle = () => {
           {theme === "dark" ? <p>Lightmode</p> : <p>Darkmode</p>}
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
