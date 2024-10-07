@@ -3,12 +3,11 @@ import { mockData } from "./lib/mockupData";
 
 const HomePage = () => {
   return (
-    <div>
-      <h1>App</h1>
+    <main className="flex w-full flex-col items-center">
       {mockData.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-    </div>
+    </main>
   );
 };
 
