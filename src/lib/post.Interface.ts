@@ -2,7 +2,7 @@ export interface Post {
     id: number;
     body: string;
     user: string;
-    liked?: {
+    likedBy?: {
       users: string[];
     };
   }

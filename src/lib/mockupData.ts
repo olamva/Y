@@ -6,7 +6,7 @@ export const mockData: Post[] = [
     id: 1,
     body: "mock body1",
     user: "mock user1",
-    liked: {
+    likedBy: {
       users: ["mock user1", "mock user2"],
     },
   },
@@ -14,7 +14,7 @@ export const mockData: Post[] = [
     id: 2,
     body: "mock body2",
     user: "mock user2",
-    liked: {
+    likedBy: {
       users: ["mock user1"],
     },
   },
@@ -22,7 +22,7 @@ export const mockData: Post[] = [
     id: 3,
     body: "mock body3",
     user: "mock user",
-    liked: {
+    likedBy: {
       users: ["mock user1", "mock user2"],
     },
   },
@@ -33,7 +33,7 @@ export const commentsMock: Comment[] = [
     id: 1,
     body: "mock comment",
     user: "mock user",
-    liked: {
+    likedBy: {
       users: ["mock user1", "mock user2"],
     },
     parentID: "1",
@@ -42,7 +42,7 @@ export const commentsMock: Comment[] = [
     id: 2,
     body: "mock comment",
     user: "mock user",
-    liked: {
+    likedBy: {
       users: ["mock user1", "mock user2"],
     },
     parentID: "1",
