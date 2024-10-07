@@ -28,19 +28,19 @@ const ThemeToggle = () => {
     <div>
       <div className="hidden md:block">
         <button
-          className="p-2 transition duration-300 ease-in-out rounded-full group"
+          className="group rounded-full transition duration-300 ease-in-out"
           onClick={toggleTheme}
         >
           {theme === "dark" ? (
-            <MoonIconSolid className="w-8 h-8 transition-transform duration-300 ease-in-out text-online-orange group-hover:scale-110" />
+            <MoonIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
           ) : (
-            <SunIconSolid className="w-8 h-8 transition-transform duration-300 ease-in-out text-online-orange group-hover:scale-110" />
+            <SunIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
           )}
         </button>
       </div>
       <div className="md:hidden">
         <button
-          className="w-full text-left block px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+          className="block w-full px-4 py-2 text-left text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           onClick={toggleTheme}
         >
           {theme === "dark" ? <p>Lightmode</p> : <p>Darkmode</p>}
