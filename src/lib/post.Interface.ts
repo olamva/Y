@@ -1,12 +1,11 @@
-export interface Post {
-    id: number;
-    body: string;
-    user: string;
-    likedBy?: {
-      users: string[];
-    };
-  }
+export type PostType = {
+  id: string;
+  body: string;
+  author: string;
+  amtLikes: number;
+  amtComments: number;
+};
 
-export interface Comment extends Post {
+export type CommentType = PostType & {
   parentID: string;
-}
+};
