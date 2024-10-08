@@ -1,4 +1,4 @@
-import { CommentType, PostType } from "./post.Interface";
+import { CommentType, PostType } from "@/lib/post.Interface";
 
 export const mockData: PostType[] = [
   {

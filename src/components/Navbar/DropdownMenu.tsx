@@ -1,6 +1,6 @@
+import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
-import ThemeToggle from "./ThemeToggle";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);

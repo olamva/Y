@@ -1,6 +1,6 @@
+import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { DropdownMenu } from "./DropdownMenu";
-import ThemeToggle from "./ThemeToggle";
+import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 
 export const Navbar = () => {
   return (

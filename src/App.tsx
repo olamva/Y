@@ -1,5 +1,5 @@
-import Post from "./components/Post";
-import { mockData } from "./lib/mockupData";
+import Post from "@/components/Post";
+import { mockData } from "@/lib/mockupData";
 
 const HomePage = () => {
   return (
