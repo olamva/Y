@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import ThemeToggle from "./ThemeToggle";
+import { useEffect, useRef, useState } from "react";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,24 +45,24 @@ export const DropdownMenu = () => {
           }`}
         >
           {isOpen ? (
-            <XMarkIcon className="text-white h-8 w-8" />
+            <XMarkIcon className="h-8 w-8 text-white" />
           ) : (
-            <Bars3Icon className="text-white h-8 w-8" />
+            <Bars3Icon className="h-8 w-8 text-white" />
           )}
         </div>
       </div>
 
       <div
-        className={`absolute right-0 mt-2 top-12 w-48 z-50 bg-gray-300 dark:bg-gray-800 border border-gray-500 text-gray-900 dark:text-white  rounded-md shadow-lg transition-all duration-300 ${
+        className={`absolute right-0 top-12 z-50 mt-2 w-48 rounded-md border border-gray-500 bg-gray-300 text-gray-900 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:text-white ${
           isOpen
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
+            ? "scale-100 opacity-100"
+            : "pointer-events-none scale-95 opacity-0"
         }`}
       >
-        {routes.map((route) => (
+        {routes.map((route, i: number) => (
           <a
             href={route.href}
-            key={route.href}
+            key={i}
             onClick={closeMenu}
             className="block px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           >

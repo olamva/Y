@@ -2,8 +2,15 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      colors: {},
+    },
   },
-  plugins: [],
-  darkMode: "selector",
+  plugins: [require("tailwindcss-animate")],
+  darkMode: ["selector"],
 };

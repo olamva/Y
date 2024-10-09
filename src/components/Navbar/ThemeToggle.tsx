@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import { MoonIcon as MoonIconSolid } from "@heroicons/react/24/solid";
-import { SunIcon as SunIconSolid } from "@heroicons/react/24/solid";
+import {
+  MoonIcon as MoonIconSolid,
+  SunIcon as SunIconSolid,
+} from "@heroicons/react/24/solid";
+import { useEffect, useState } from "react";
 
 const ThemeToggle = () => {
   const [theme, setTheme] = useState(() => {
@@ -25,28 +27,25 @@ const ThemeToggle = () => {
   };
 
   return (
-    <div>
-      <div className="hidden md:block">
-        <button
-          className="p-2 transition duration-300 ease-in-out rounded-full group"
-          onClick={toggleTheme}
-        >
+    <>
+      <div className="hidden size-6 md:block">
+        <button className="group rounded-full" onClick={toggleTheme}>
           {theme === "dark" ? (
-            <MoonIconSolid className="w-8 h-8 transition-transform duration-300 ease-in-out text-online-orange group-hover:scale-110" />
+            <MoonIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
           ) : (
-            <SunIconSolid className="w-8 h-8 transition-transform duration-300 ease-in-out text-online-orange group-hover:scale-110" />
+            <SunIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
           )}
         </button>
       </div>
       <div className="md:hidden">
         <button
-          className="w-full text-left block px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+          className="block w-full px-4 py-2 text-left text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           onClick={toggleTheme}
         >
           {theme === "dark" ? <p>Lightmode</p> : <p>Darkmode</p>}
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
