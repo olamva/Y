@@ -1,7 +1,7 @@
+import Avatar from "@/components/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { useState } from "react";
-import Avatar from "../Avatar";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");

@@ -1,11 +1,11 @@
 import HomePage from "@/App.tsx";
-import "@/index.css";
+import "@/globals.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar.tsx";
-import Profile from "./pages/Profile.tsx";
-import SearchPage from "./pages/Search.tsx";
+import Navbar from "@/components/Navbar/Navbar.tsx";
+import Profile from "@/pages/Profile.tsx";
+import SearchPage from "@/pages/Search.tsx";
 
 const router = createBrowserRouter([
   {

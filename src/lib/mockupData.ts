@@ -1,4 +1,4 @@
-import { CommentType, PostType, UserType } from "./types";
+import { CommentType, PostType, UserType } from "@/lib/types";
 
 export const mockData: PostType[] = [
   {

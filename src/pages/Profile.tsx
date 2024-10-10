@@ -1,10 +1,13 @@
 import Avatar from "@/components/Avatar";
+import Post from "@/components/Post";
+import { commentsMock, mockData, usersMock } from "@/lib/mockupData";
+import { CommentType, PostType, UserType } from "@/lib/types";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import Post from "../components/Post";
-import { commentsMock, mockData, usersMock } from "../lib/mockupData";
-import { CommentType, PostType, UserType } from "../lib/types";
+
+type ViewState = "posts" | "likes" | "comments";
 
 const Profile = () => {
   const { username } = useParams<{ username: string }>();
@@ -14,6 +17,7 @@ const Profile = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [likedPosts, setLikedPosts] = useState<PostType[]>([]);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [currentView, setCurrentView] = useState<ViewState>("posts");
 
   useEffect(() => {
     setUser(
@@ -22,6 +26,7 @@ const Profile = () => {
   }, [username]);
 
   const prevUserRef = useRef<UserType>();
+
   useEffect(() => {
     if (prevUserRef.current === user) return;
     prevUserRef.current = user;
@@ -34,10 +39,17 @@ const Profile = () => {
     );
   }, [user]);
 
+  useEffect(() => {
+    console.log(currentView);
+  }, [currentView]);
+
   return (
     <div>
       <header>
-        <button className="flex gap-2 text-xl m-2" onClick={() => window.history.back()}>
+        <button
+          className="m-2 flex gap-2 text-xl"
+          onClick={() => window.history.back()}
+        >
           <ArrowUturnLeftIcon className="size-6" />
           <p>Back</p>
         </button>
@@ -49,24 +61,45 @@ const Profile = () => {
         </div>
       </div>
       <section>
-        <div>
-          <h3 className="text-lg">Posts:</h3>
-          {posts.map((post) => (
-            <Post post={post} key={post.id}></Post>
-          ))}
-        </div>
-        <div>
-          <h3 className="text-lg">Liked Posts:</h3>
-          {likedPosts.map((post) => (
-            <Post post={post} key={post.id}></Post>
-          ))}
-        </div>
-        <div>
-          <h3 className="text-lg">Comments:</h3>
-          {comments.map((comment) => (
-            <Post post={comment} key={comment.id}></Post>
-          ))}
-        </div>
+        <ToggleGroup
+          value={currentView}
+          onValueChange={(value: ViewState) => {
+            if (value) setCurrentView(value);
+          }}
+          type="single"
+          className="flex justify-around gap-1"
+        >
+          <ToggleGroupItem value="posts" aria-label="View Posts">
+            <p>Posts</p>
+          </ToggleGroupItem>
+          <ToggleGroupItem value="likes" aria-label="View Likes">
+            <p>Likes</p>
+          </ToggleGroupItem>
+          <ToggleGroupItem value="comments" aria-label="View Comments">
+            <p>Comments</p>
+          </ToggleGroupItem>
+        </ToggleGroup>
+        {currentView === "posts" && (
+          <>
+            {posts.map((post) => (
+              <Post post={post} key={post.id}></Post>
+            ))}
+          </>
+        )}
+        {currentView === "likes" && (
+          <>
+            {likedPosts.map((post) => (
+              <Post post={post} key={post.id}></Post>
+            ))}
+          </>
+        )}
+        {currentView === "comments" && (
+          <>
+            {comments.map((comment) => (
+              <Post post={comment} key={comment.id}></Post>
+            ))}
+          </>
+        )}
       </section>
     </div>
   );
