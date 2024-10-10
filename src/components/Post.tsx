@@ -1,5 +1,5 @@
 import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
-import { PostType } from "@/lib/post.Interface";
+import { PostType } from "@/lib/types";
 import Avatar from "@/components/Avatar";
 
 const Post = ({ post }: { post: PostType }) => (

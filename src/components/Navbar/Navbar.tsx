@@ -22,7 +22,7 @@ export const Navbar = () => {
               placeholder="Search here..."
               className="rounded-md bg-gray-800 p-2 text-white"
             />
-            <a className="p-2 hover:scale-110" href="/">
+            <a className="p-2 hover:scale-110" href="/project2/user/:id">
               <UserCircleIcon className="size-8" />
             </a>
           </div>
