@@ -11,9 +11,15 @@ export const Userpage = () => {
 
   useEffect(() => {
     const thisUser = usersMock[0];
-    const thisUserPosts = mockData.filter((post) => thisUser.postIds.includes(post.id));
-    const thisUserLikedPosts = mockData.filter((post) => thisUser.likedPostIds.includes(post.id));
-    const thisUserComments = commentsMock.filter((comment) => thisUser.commentIds.includes(comment.id));
+    const thisUserPosts = mockData.filter((post) =>
+      thisUser.postIds.includes(post.id),
+    );
+    const thisUserLikedPosts = mockData.filter((post) =>
+      thisUser.likedPostIds.includes(post.id),
+    );
+    const thisUserComments = commentsMock.filter((comment) =>
+      thisUser.commentIds.includes(comment.id),
+    );
     setUser(thisUser);
     setPosts(thisUserPosts);
     setLikedPosts(thisUserLikedPosts);
@@ -27,9 +33,7 @@ export const Userpage = () => {
       </div>
       <div>
         {posts.map((post) => {
-          return (
-            <Post post={post}></Post>
-          );
+          return <Post post={post}></Post>;
         })}
       </div>
     </div>
