@@ -1,6 +1,6 @@
-import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
-import { PostType } from "@/lib/types";
 import Avatar from "@/components/Avatar";
+import { PostType } from "@/lib/types";
+import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
 
 const Post = ({ post }: { post: PostType }) => (
   <article className="m-2 w-full max-w-md rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white">

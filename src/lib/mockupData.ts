@@ -4,21 +4,21 @@ export const mockData: PostType[] = [
   {
     id: "1",
     body: "jeg er veldig glad i tailwind",
-    author: "Ola",
-    amtComments: 2,
-    amtLikes: 1,
+    author: "John",
+    amtComments: 3,
+    amtLikes: 3,
   },
   {
     id: "2",
     body: "jeg hater alle",
-    author: "Jørgen",
+    author: "Robert",
     amtComments: 3,
     amtLikes: 2,
   },
   {
     id: "3",
-    body: "jeg heter fredrik",
-    author: "Fredrik",
+    body: "jeg heter Harold",
+    author: "Harold",
     amtComments: 4,
     amtLikes: 3,
   },
@@ -28,7 +28,7 @@ export const commentsMock: CommentType[] = [
   {
     id: "1",
     body: "mock comment",
-    author: "2",
+    author: "Robert",
     amtComments: 0,
     amtLikes: 1,
     parentID: "1",
@@ -36,8 +36,8 @@ export const commentsMock: CommentType[] = [
   {
     id: "2",
     body: "mock comment",
-    author: "1",
-    amtComments: 1,
+    author: "John",
+    amtComments: 0,
     amtLikes: 1,
     parentID: "1",
   },
@@ -45,21 +45,21 @@ export const commentsMock: CommentType[] = [
 
 export const usersMock: UserType[] = [
   {
-    username: "mock user1",
+    username: "John",
     postIds: ["1"],
     likedPostIds: ["1", "2"],
-    commentIds: ["1", "2"],
+    commentIds: ["2"],
   },
   {
-    username: "mock user2",
+    username: "Robert",
     postIds: ["2"],
     likedPostIds: ["1"],
-    commentIds: ["1", "2"],
+    commentIds: ["1"],
   },
   {
-    username: "mock user",
+    username: "Harold",
     postIds: ["3"],
     likedPostIds: ["1", "2"],
-    commentIds: ["1", "2"],
+    commentIds: [],
   },
 ];
