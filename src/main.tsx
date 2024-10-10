@@ -6,6 +6,7 @@ import "@/index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Navbar } from "./components/Navbar/Navbar.tsx";
 import { Userpage } from "./components/Userpage/userpage.tsx";
+import SearchPage from "./pages/Search.tsx";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,9 @@ const router = createBrowserRouter([
   {
     path: "/project2/user/:id",
     element: <Userpage />,
+  },
+    path: "/project2/search/",
+    element: <SearchPage />,
   }
 ]);
 
@@ -24,5 +28,5 @@ createRoot(document.getElementById("root")!).render(
     <div className="min-h-screen">
       <RouterProvider router={router} />
     </div>
-  </StrictMode>
+  </StrictMode>,
 );
