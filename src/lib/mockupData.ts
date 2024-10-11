@@ -27,7 +27,7 @@ export const mockData: PostType[] = [
 export const commentsMock: CommentType[] = [
   {
     id: "1",
-    body: "mock comment",
+    body: "Jeg heter Robert",
     author: "Robert",
     amtComments: 0,
     amtLikes: 1,
@@ -35,9 +35,9 @@ export const commentsMock: CommentType[] = [
   },
   {
     id: "2",
-    body: "mock comment",
+    body: "Pass på hva du skriver.",
     author: "John",
-    amtComments: 0,
+    amtComments: 1,
     amtLikes: 1,
     parentID: "1",
   },
