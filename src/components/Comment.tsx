@@ -8,7 +8,7 @@ const Comment = ({ comment }: { comment: CommentType }) => {
         <Avatar username={comment.author} />
         <p className="font-mono">{comment.author}</p>
       </header>
-      <p className="text-gray-600 dark:text-gray-200">{comment.body}</p>
+      <p className="text-gray-900 dark:text-gray-200">{comment.body}</p>
     </div>
   );
 };
