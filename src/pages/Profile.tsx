@@ -1,9 +1,10 @@
 import Avatar from "@/components/Avatar";
 import Post from "@/components/Post";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import { Button } from "@/components/ui/button";
 import { commentsMock, mockData, usersMock } from "@/lib/mockupData";
 import { CommentType, PostType, UserType } from "@/lib/types";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -46,13 +47,14 @@ const Profile = () => {
   return (
     <div>
       <header>
-        <button
+        <Button
           className="m-2 flex gap-2 text-xl"
           onClick={() => window.history.back()}
+          variant="ghost"
         >
           <ArrowUturnLeftIcon className="size-6" />
           <p>Back</p>
-        </button>
+        </Button>
       </header>
       <div className="p-4">
         <div className="flex items-center gap-2">
@@ -67,6 +69,7 @@ const Profile = () => {
             if (value) setCurrentView(value);
           }}
           type="single"
+          variant="outline"
           className="flex justify-around gap-1"
         >
           <ToggleGroupItem value="posts" aria-label="View Posts">
@@ -79,27 +82,29 @@ const Profile = () => {
             <p>Comments</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        {currentView === "posts" && (
-          <>
-            {posts.map((post) => (
-              <Post post={post} key={post.id}></Post>
-            ))}
-          </>
-        )}
-        {currentView === "likes" && (
-          <>
-            {likedPosts.map((post) => (
-              <Post post={post} key={post.id}></Post>
-            ))}
-          </>
-        )}
-        {currentView === "comments" && (
-          <>
-            {comments.map((comment) => (
-              <Post post={comment} key={comment.id}></Post>
-            ))}
-          </>
-        )}
+        <div className="flex flex-col items-center w-full mt-2">
+          {currentView === "posts" && (
+            <>
+              {posts.map((post) => (
+                <Post post={post} key={post.id}></Post>
+              ))}
+            </>
+          )}
+          {currentView === "likes" && (
+            <>
+              {likedPosts.map((post) => (
+                <Post post={post} key={post.id}></Post>
+              ))}
+            </>
+          )}
+          {currentView === "comments" && (
+            <>
+              {comments.map((comment) => (
+                <Post post={comment} key={comment.id}></Post>
+              ))}
+            </>
+          )}
+        </div>
       </section>
     </div>
   );
