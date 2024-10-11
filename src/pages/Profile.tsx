@@ -82,7 +82,7 @@ const Profile = () => {
             <p>Comments</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className="flex flex-col items-center w-full mt-2">
+        <div className="mt-2 flex w-full flex-col items-center">
           {currentView === "posts" && (
             <>
               {posts.map((post) => (
