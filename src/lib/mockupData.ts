@@ -1,24 +1,24 @@
-import { CommentType, PostType } from "./types";
+import { CommentType, PostType, UserType } from "@/lib/types";
 
 export const mockData: PostType[] = [
   {
     id: "1",
     body: "jeg er veldig glad i tailwind",
-    author: "Ola",
-    amtComments: 2,
-    amtLikes: 1,
+    author: "John",
+    amtComments: 3,
+    amtLikes: 3,
   },
   {
     id: "2",
     body: "jeg hater alle",
-    author: "Jørgen",
+    author: "Robert",
     amtComments: 3,
     amtLikes: 2,
   },
   {
     id: "3",
-    body: "jeg heter fredrik",
-    author: "Fredrik",
+    body: "jeg heter Harold",
+    author: "Harold",
     amtComments: 4,
     amtLikes: 3,
   },
@@ -27,8 +27,8 @@ export const mockData: PostType[] = [
 export const commentsMock: CommentType[] = [
   {
     id: "1",
-    body: "Jeg heter Ola",
-    author: "Ola WaterBottom",
+    body: "Jeg heter Robert",
+    author: "Robert",
     amtComments: 0,
     amtLikes: 1,
     parentID: "1",
@@ -36,9 +36,30 @@ export const commentsMock: CommentType[] = [
   {
     id: "2",
     body: "Pass på hva du skriver.",
-    author: "Pelle Politi",
+    author: "John",
     amtComments: 1,
     amtLikes: 1,
     parentID: "1",
+  },
+];
+
+export const usersMock: UserType[] = [
+  {
+    username: "John",
+    postIds: ["1"],
+    likedPostIds: ["1", "2"],
+    commentIds: ["2"],
+  },
+  {
+    username: "Robert",
+    postIds: ["2"],
+    likedPostIds: ["1"],
+    commentIds: ["1"],
+  },
+  {
+    username: "Harold",
+    postIds: ["3"],
+    likedPostIds: ["1", "2"],
+    commentIds: [],
   },
 ];

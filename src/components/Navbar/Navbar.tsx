@@ -1,9 +1,9 @@
-import { useState } from "react";
-import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
+import Avatar from "@/components/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
+import ThemeToggle from "@/components/Navbar/ThemeToggle";
+import { useState } from "react";
 
-export const Navbar = () => {
+const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const navigateSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,9 +34,9 @@ export const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <a className="p-2 hover:scale-110" href="/">
-              <UserCircleIcon className="size-8" />
-            </a>
+            <div className="p-2 hover:scale-110">
+              <Avatar username="John" />
+            </div>
           </div>
           <DropdownMenu />
         </nav>
@@ -44,3 +44,5 @@ export const Navbar = () => {
     </div>
   );
 };
+
+export default Navbar;
