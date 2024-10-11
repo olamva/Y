@@ -6,6 +6,7 @@ import "@/index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Navbar } from "./components/Navbar/Navbar.tsx";
 import SearchPage from "./pages/Search.tsx";
+import PostPage from "./pages/PostPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
   {
     path: "/project2/search/",
     element: <SearchPage />,
+  },
+  {
+    path: "/project2/post/:id",
+    element: <PostPage />,
   },
 ]);
 
