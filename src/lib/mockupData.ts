@@ -1,4 +1,4 @@
-import { CommentType, PostType } from "@/lib/post.Interface";
+import { CommentType, PostType } from "./types";
 
 export const mockData: PostType[] = [
   {
@@ -27,16 +27,16 @@ export const mockData: PostType[] = [
 export const commentsMock: CommentType[] = [
   {
     id: "1",
-    body: "mock comment",
-    author: "2",
+    body: "Jeg heter Ola",
+    author: "Ola WaterBottom",
     amtComments: 0,
     amtLikes: 1,
     parentID: "1",
   },
   {
     id: "2",
-    body: "mock comment",
-    author: "1",
+    body: "Pass på hva du skriver.",
+    author: "Pelle Politi",
     amtComments: 1,
     amtLikes: 1,
     parentID: "1",

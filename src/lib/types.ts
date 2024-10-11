@@ -8,5 +8,4 @@ export type PostType = {
 
 export type CommentType = PostType & {
   parentID: string;
-  commentID: string;
 };
