@@ -11,3 +11,14 @@ export const GET_COMMENTS = gql`
     }
   }
 `;
+
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($body: String!, $parentID: ID!) {
+    createComment(body: $body, parentID: $parentID) {
+      id
+      body
+      author
+      createdAt
+    }
+  }
+`;

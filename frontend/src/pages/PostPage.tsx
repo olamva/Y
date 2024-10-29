@@ -1,47 +1,73 @@
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery, useMutation } from "@apollo/client";
 import Comment from "@/components/Comment";
 import Post from "@/components/Post";
 import { Button } from "@/components/ui/button";
 import TextInput from "@/form/TextInput";
 import { CommentType, PostType } from "@/lib/types";
-import { GET_COMMENTS } from "@/queries/comments";
-import { GET_POST } from "@/queries/posts";
-import { useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { GET_POST } from "@/queries/posts";
+import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
+import toast from "react-hot-toast";
 
 const PostPage = () => {
   const { id } = useParams<{ id: string }>();
   const [comment, setComment] = useState("");
 
   const {
-    data: post,
+    data: postData,
     loading: postLoading,
     error: postError,
-  } = useQuery<{
-    getPost: PostType;
-  }>(GET_POST, {
+  } = useQuery<{ getPost: PostType }>(GET_POST, {
     variables: { id },
     notifyOnNetworkStatusChange: true,
   });
 
   const {
-    data: comments,
+    data: commentsData,
     loading: commentsLoading,
     error: commentsError,
-  } = useQuery<{
-    getComments: CommentType[];
-  }>(GET_COMMENTS, {
+    refetch: refetchComments,
+  } = useQuery<{ getComments: CommentType[] }>(GET_COMMENTS, {
     variables: { postID: id },
     notifyOnNetworkStatusChange: true,
   });
 
-  const handleAddComment = (e: React.FormEvent) => {
+  const [createComment, { loading: createLoading, error: createError }] =
+    useMutation<
+      { createComment: CommentType },
+      { body: string; parentID: string }
+    >(CREATE_COMMENT, {
+      onCompleted: () => {
+        setComment("");
+        refetchComments();
+      },
+      onError: (err) => {
+        console.error("Error creating comment:", err);
+      },
+    });
+
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim() === "") return;
 
-    // TODO: Add comment handling logic here
+    try {
+      await createComment({
+        variables: {
+          body: comment,
+          parentID: id!,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(`Error adding comment ${error.message}`);
+      } else {
+        toast.error("Error adding comment");
+      }
+    } finally {
+      toast.success("Comment added");
+    }
   };
 
   if (postLoading) {
@@ -51,7 +77,7 @@ const PostPage = () => {
     return <p>Error loading post: {postError.message}</p>;
   }
 
-  if (!post || !post.getPost) {
+  if (!postData || !postData.getPost) {
     return <h1>Post not found</h1>;
   }
 
@@ -68,26 +94,35 @@ const PostPage = () => {
         </Button>
       </header>
       <main className="flex flex-col items-center pt-5">
-        <Post post={post?.getPost} />
+        <Post post={postData.getPost} />
         <form
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
         >
           <div className="w-full max-w-md">
             <TextInput
-              id={"commentText"}
-              label={"Write a comment"}
+              id="commentText"
+              label="Write a comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
+              required
             />
           </div>
-          {comment && (
-            <button
-              type="submit"
-              className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Add comment
-            </button>
+          <button
+            type="submit"
+            disabled={createLoading}
+            className={`rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              comment
+                ? "bg-indigo-600 hover:bg-indigo-700"
+                : "cursor-not-allowed bg-gray-400"
+            }`}
+          >
+            {createLoading ? "Adding..." : "Add Comment"}
+          </button>
+          {createError && (
+            <p className="text-red-500">
+              Error adding comment: {createError.message}
+            </p>
           )}
         </form>
 
@@ -97,8 +132,9 @@ const PostPage = () => {
           <p>Error loading comments: {commentsError.message}</p>
         ) : (
           <div className="mt-4 flex w-full max-w-md flex-col gap-2">
-            {comments?.getComments && comments.getComments.length > 0 ? (
-              comments.getComments.map((comment) => (
+            {commentsData?.getComments &&
+            commentsData.getComments.length > 0 ? (
+              commentsData.getComments.map((comment) => (
                 <Comment key={comment.id} comment={comment} />
               ))
             ) : (

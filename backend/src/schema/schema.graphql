@@ -37,7 +37,7 @@ type User {
 
 type Mutation {
   createPost(body: String!, author: String!): Post!
-  createComment(body: String!, author: String!, parentID: ID!): Comment!
+  createComment(body: String!, parentID: ID!): Comment!
   deletePost(id: ID!): Post!
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!

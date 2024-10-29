@@ -34,7 +34,7 @@ export const resolvers: IResolvers = {
     },
     getComments: async (_, { postID }) => {
       try {
-        return await Comment.find({ parentId: postID });
+        return await Comment.find({ parentID: postID }).sort({ createdAt: -1 });
       } catch (err) {
         throw new Error('Error fetching comments');
       }
@@ -94,9 +94,19 @@ export const resolvers: IResolvers = {
       return token;
     },
 
-    createComment: async (_, { body, author, parentID }) => {
+    createComment: async (_, { body, parentID }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to create a comment');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
       try {
-        const newComment = new Comment({ body, author, parentID: parentID });
+        const newComment = new Comment({ body, author: user.username, parentID: parentID });
         return await newComment.save();
       } catch (err) {
         throw new Error('Error creating comment');
