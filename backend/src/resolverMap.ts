@@ -1,6 +1,7 @@
 import { IResolvers } from 'graphql-tools';
 import { Post } from './models/post';
 import { User } from './models/user';
+import { Comment } from './models/comment';
 
 export const resolvers: IResolvers = {
   Query: {
@@ -20,12 +21,20 @@ export const resolvers: IResolvers = {
     },
     getUser: async (_, { username }) => {
       try {
-        return await User.findOne({ username });
+        return await User.findOne({ username: username });
       } catch (err) {
         throw new Error('Error fetching user');
       }
     },
+    getComments: async (_, { postID }) => {
+      try {
+        return await Comment.find({ parentId: postID });
+      } catch (err) {
+        throw new Error('Error fetching comments');
+      }
+    },
   },
+
   Mutation: {
     createPost: async (_, { body, author }) => {
       try {
@@ -41,6 +50,14 @@ export const resolvers: IResolvers = {
         return await newUser.save();
       } catch (err) {
         throw new Error('Error creating user');
+      }
+    },
+    createComment: async (_, { body, author, parentID }) => {
+      try {
+        const newComment = new Comment({ body, author, parentId: parentID });
+        return await newComment.save();
+      } catch (err) {
+        throw new Error('Error creating comment');
       }
     },
   },
