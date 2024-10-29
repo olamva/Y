@@ -5,9 +5,12 @@ import { Comment } from './models/comment';
 
 export const resolvers: IResolvers = {
   Query: {
-    getPosts: async () => {
+    getPosts: async (_, { page }) => {
+      const POSTS_PER_PAGE = 10;
+      const skip = (page - 1) * POSTS_PER_PAGE;
+
       try {
-        return await Post.find();
+        return await Post.find().sort({ createdAt: -1 }).skip(skip).limit(POSTS_PER_PAGE);
       } catch (err) {
         throw new Error('Error fetching posts');
       }
