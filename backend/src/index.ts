@@ -30,8 +30,8 @@ async function startServer() {
     .connect(MONGODB_URI)
     .then(() => {
       console.log('Connected to MongoDB');
-      app.listen({ port: 4000 }, () =>
-        console.log(`Server ready at http://localhost:4000${server.graphqlPath}`)
+      app.listen({ port: 3001 }, () =>
+        console.log(`Server ready at http://localhost:3001${server.graphqlPath}`)
       );
     })
     .catch((err) => {
