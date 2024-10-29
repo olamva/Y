@@ -8,16 +8,20 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useAuth } from "./components/AuthContext";
 
+const PAGE_SIZE = 10;
+
 const HomePage = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [postBody, setPostBody] = useState("");
+  const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, error, fetchMore } = useQuery<{
     getPosts: PostType[];
   }>(GET_POSTS, {
-    variables: { page },
+    variables: { page, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
   });
 
   const [createPost, { loading: createLoading, error: createError }] =
@@ -28,13 +32,13 @@ const HomePage = () => {
 
         const existingPosts = cache.readQuery<{ getPosts: PostType[] }>({
           query: GET_POSTS,
-          variables: { page: 1 },
+          variables: { page: 1, limit: PAGE_SIZE },
         });
 
         if (existingPosts) {
           cache.writeQuery({
             query: GET_POSTS,
-            variables: { page: 1 },
+            variables: { page: 1, limit: PAGE_SIZE },
             data: {
               getPosts: [data.createPost, ...existingPosts.getPosts],
             },
@@ -77,17 +81,25 @@ const HomePage = () => {
   };
 
   // Infinite scroll to load more posts
-  const loadMorePosts = () => {
-    fetchMore({
-      variables: { page: page + 1 },
-      updateQuery: (prevResult, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prevResult;
-        return {
-          getPosts: [...prevResult.getPosts, ...fetchMoreResult.getPosts],
-        };
-      },
-    });
-    setPage((prev) => prev + 1);
+  const loadMorePosts = async () => {
+    if (!hasMore || loading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMore({
+        variables: { page: page + 1, limit: PAGE_SIZE },
+      });
+
+      if (fetchMoreData?.getPosts) {
+        if (fetchMoreData.getPosts.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+        setPage((prev) => prev + 1);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts ${(error as Error).message}`);
+    }
   };
 
   useEffect(() => {
@@ -95,14 +107,15 @@ const HomePage = () => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 200 &&
-        !loading
+        !loading &&
+        hasMore
       ) {
         loadMorePosts();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, page]);
+  }, [loading, page, hasMore]);
 
   if (loading && page === 1)
     return <p className="mt-4 text-center">Loading...</p>;
@@ -146,6 +159,11 @@ const HomePage = () => {
       </form>
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
       {loading && page > 1 && <p className="mt-4">Loading more posts...</p>}
+      {!hasMore && (
+        <p className="mt-4 text-gray-500">
+          You've reached the end of the posts.
+        </p>
+      )}
       {!loading && data?.getPosts.length === 0 && (
         <p className="mt-4">No posts available.</p>
       )}
