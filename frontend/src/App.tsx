@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, NetworkStatus } from "@apollo/client";
 import Post from "@/components/Post";
 import TextInput from "@/form/TextInput";
 import { PostType } from "@/lib/types";
@@ -16,7 +16,7 @@ const HomePage = () => {
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, loading, error, fetchMore } = useQuery<{
+  const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getPosts: PostType[];
   }>(GET_POSTS, {
     variables: { page, limit: PAGE_SIZE },
@@ -98,7 +98,7 @@ const HomePage = () => {
         setHasMore(false);
       }
     } catch (error) {
-      toast.error(`Failed to load more posts ${(error as Error).message}`);
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
   };
 
@@ -107,7 +107,7 @@ const HomePage = () => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 200 &&
-        !loading &&
+        networkStatus !== NetworkStatus.fetchMore &&
         hasMore
       ) {
         loadMorePosts();
@@ -115,10 +115,11 @@ const HomePage = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, page, hasMore]);
+  }, [loading, page, hasMore, networkStatus]);
 
-  if (loading && page === 1)
+  if (networkStatus === NetworkStatus.loading)
     return <p className="mt-4 text-center">Loading...</p>;
+
   if (error)
     return (
       <p className="mt-4 text-center text-red-500">
@@ -158,7 +159,6 @@ const HomePage = () => {
         )}
       </form>
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
-      {loading && page > 1 && <p className="mt-4">Loading more posts...</p>}
       {!hasMore && (
         <p className="mt-4 text-gray-500">
           You've reached the end of the posts.
