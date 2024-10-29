@@ -14,7 +14,7 @@ Make sure you are connected to NTNU's network
 
 ## Query
 
-getPosts() -> Returns all posts
+getPosts(page) -> Takes in a page and returns the 10 latest posts
 
 getPost(id) -> Takes in ID as a param, and returns the matching post
 
