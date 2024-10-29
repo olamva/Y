@@ -1,14 +1,14 @@
+import { useAuth } from "@/components/AuthContext";
 import LoginForm from "@/components/LoginForm";
 import { useState, useEffect } from "react";
 
 const UserPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, logout } = useAuth();
   const [user, setUser] = useState<{ username: string } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setIsLoggedIn(true);
       fetchUserProfile(token);
     }
   }, []);
@@ -37,24 +37,15 @@ const UserPage = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setUser(null);
-  };
-
   return (
     <main className="flex flex-col justify-center">
       {isLoggedIn ? (
         <div>
           <h2>Welcome, {user?.username}</h2>
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={logout}>Logout</button>
         </div>
       ) : (
-        <LoginForm
-          setIsLoggedIn={setIsLoggedIn}
-          fetchUserProfile={fetchUserProfile}
-        />
+        <LoginForm />
       )}
     </main>
   );

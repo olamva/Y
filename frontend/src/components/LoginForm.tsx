@@ -1,13 +1,9 @@
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
+import { useAuth } from "./AuthContext";
 
-interface Props {
-  setIsLoggedIn: (value: boolean) => void;
-  fetchUserProfile: (token: string) => void;
-}
-
-const LoginForm = ({ setIsLoggedIn, fetchUserProfile }: Props) => {
+const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     username: "",
@@ -15,9 +11,10 @@ const LoginForm = ({ setIsLoggedIn, fetchUserProfile }: Props) => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<{ confirmPassword?: string }>({});
+  const { login } = useAuth();
 
-  const [login] = useMutation(LOGIN_MUTATION);
-  const [register] = useMutation(REGISTER_MUTATION);
+  const [loginMutation] = useMutation(LOGIN_MUTATION);
+  const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,15 +24,13 @@ const LoginForm = ({ setIsLoggedIn, fetchUserProfile }: Props) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data } = await login({
+      const { data } = await loginMutation({
         variables: {
           username: formData.username,
           password: formData.password,
         },
       });
-      localStorage.setItem("token", data.login);
-      setIsLoggedIn(true);
-      fetchUserProfile(data.login);
+      login(data.login);
     } catch (error) {
       console.error("Error logging in", error);
     }
@@ -49,15 +44,13 @@ const LoginForm = ({ setIsLoggedIn, fetchUserProfile }: Props) => {
     }
 
     try {
-      const { data } = await register({
+      const { data } = await registerMutation({
         variables: {
           username: formData.username,
           password: formData.password,
         },
       });
-      localStorage.setItem("token", data.register);
-      setIsLoggedIn(true);
-      fetchUserProfile(data.register);
+      login(data.register);
     } catch (error) {
       console.error("Error registering", error);
     }
