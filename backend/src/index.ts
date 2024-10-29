@@ -6,13 +6,20 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import compression from 'compression';
 import cors from 'cors';
+import { authMiddleware } from './auth';
+import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
 
 async function startServer() {
   const app = express();
+  app.use(authMiddleware);
 
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context: ({ req }: ExpressContext) => {
+      const userId = (req as express.Request).userId;
+      return { userId };
+    },
   });
 
   app.use('*', cors());

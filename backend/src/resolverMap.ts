@@ -123,59 +123,47 @@ export const resolvers: IResolvers = {
         throw new Error(`Error deleting comment: ${(err as Error).message}`);
       }
     },
-    likePost: async (_, { postID }, { username }) => {
-      try {
-        const user = await User.findOne({ username });
-        if (!user) throw new Error('User not found');
+    likePost: async (_, { postID }, { userId }) => {
+      if (!userId) throw new Error('Authentication required');
 
-        if (user.likedPostIds.includes(postID)) {
-          throw new Error('Post already liked by this user');
-        }
+      const user = await User.findById(userId);
+      if (!user) throw new Error('User not found');
 
-        const post = await Post.findById(postID);
-        if (!post) throw new Error('Post not found');
+      const post = await Post.findById(postID);
+      if (!post) throw new Error('Post not found');
 
-        post.amtLikes += 1;
-        user.likedPostIds.push(postID);
-
-        await post.save();
-        await user.save();
-
-        return post;
-      } catch (err) {
-        if (err instanceof Error) {
-          throw new Error(`Error liking post: ${err.message}`);
-        } else {
-          throw new Error('Error liking post');
-        }
+      if (user.likedPostIds.includes(postID)) {
+        throw new Error('Post already liked by this user');
       }
+
+      post.amtLikes += 1;
+      user.likedPostIds.push(postID);
+
+      await post.save();
+      await user.save();
+
+      return post;
     },
-    unlikePost: async (_, { postID }, { username }) => {
-      try {
-        const user = await User.findOne({ username });
-        if (!user) throw new Error('User not found');
+    unlikePost: async (_, { postID }, { userId }) => {
+      if (!userId) throw new Error('Authentication required');
 
-        if (!user.likedPostIds.includes(postID)) {
-          throw new Error('Post not liked by this user');
-        }
+      const user = await User.findById(userId);
+      if (!user) throw new Error('User not found');
 
-        const post = await Post.findById(postID);
-        if (!post) throw new Error('Post not found');
+      const post = await Post.findById(postID);
+      if (!post) throw new Error('Post not found');
 
-        post.amtLikes -= 1;
-        user.likedPostIds.push(postID);
-
-        await post.save();
-        await user.save();
-
-        return post;
-      } catch (err) {
-        if (err instanceof Error) {
-          throw new Error(`Error liking post: ${err.message}`);
-        } else {
-          throw new Error('Error liking post');
-        }
+      if (!user.likedPostIds.includes(postID)) {
+        throw new Error('Post not liked by this user');
       }
+
+      post.amtLikes -= 1;
+      user.likedPostIds = user.likedPostIds.filter((id) => id !== postID);
+
+      await post.save();
+      await user.save();
+
+      return post;
     },
   },
   SearchResult: {
