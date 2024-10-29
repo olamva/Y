@@ -1,5 +1,6 @@
 import { IResolvers } from 'graphql-tools';
 import { Post } from './models/post';
+import { User } from './models/user';
 
 export const resolvers: IResolvers = {
   Query: {
@@ -17,6 +18,13 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching post');
       }
     },
+    getUser: async (_, { username }) => {
+      try {
+        return await User.findOne({ username });
+      } catch (err) {
+        throw new Error('Error fetching user');
+      }
+    },
   },
   Mutation: {
     createPost: async (_, { body, author }) => {
@@ -25,6 +33,14 @@ export const resolvers: IResolvers = {
         return await newPost.save();
       } catch (err) {
         throw new Error('Error creating post');
+      }
+    },
+    createUser: async (_, { username }) => {
+      try {
+        const newUser = new User({ username });
+        return await newUser.save();
+      } catch (err) {
+        throw new Error('Error creating user');
       }
     },
   },
