@@ -56,12 +56,17 @@ export const resolvers: IResolvers = {
     },
     createUser: async (_, { username }) => {
       try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+          throw new Error('Username already taken');
+        }
         const newUser = new User({ username });
         return await newUser.save();
       } catch (err) {
-        throw new Error('Error creating user');
+        throw new Error(`Error creating user: ${(err as Error).message}`);
       }
     },
+
     createComment: async (_, { body, author, parentID }) => {
       try {
         const newComment = new Comment({ body, author, parentID: parentID });
