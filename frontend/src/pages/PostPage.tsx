@@ -3,21 +3,22 @@ import Post from "@/components/Post";
 import { Button } from "@/components/ui/button";
 import TextInput from "@/form/TextInput";
 import { CommentType, PostType } from "@/lib/types";
+import { GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
 import { useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 const PostPage = () => {
   const { id } = useParams<{ id: string }>();
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState<CommentType[]>([]);
 
   const {
     data: post,
-    loading,
-    error,
+    loading: postLoading,
+    error: postError,
   } = useQuery<{
     getPost: PostType;
   }>(GET_POST, {
@@ -25,18 +26,29 @@ const PostPage = () => {
     notifyOnNetworkStatusChange: true,
   });
 
+  const {
+    data: comments,
+    loading: commentsLoading,
+    error: commentsError,
+  } = useQuery<{
+    getComments: CommentType[];
+  }>(GET_COMMENTS, {
+    variables: { postID: id },
+    notifyOnNetworkStatusChange: true,
+  });
+
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim() === "") return;
 
-    //TODO
+    // TODO: Add comment handling logic here
   };
 
-  if (loading) {
+  if (postLoading) {
     return <p>Loading...</p>;
   }
-  if (error) {
-    return <p>Error loading post: {error.message}</p>;
+  if (postError) {
+    return <p>Error loading post: {postError.message}</p>;
   }
 
   if (!post || !post.getPost) {
@@ -78,15 +90,22 @@ const PostPage = () => {
             </button>
           )}
         </form>
-        <div className="mt-4 flex w-full max-w-md flex-col gap-2">
-          {comments.length > 0 ? (
-            comments.map((comment) => (
-              <Comment key={comment.id} comment={comment} />
-            ))
-          ) : (
-            <h1>No comments</h1>
-          )}
-        </div>
+
+        {commentsLoading ? (
+          <p>Loading comments...</p>
+        ) : commentsError ? (
+          <p>Error loading comments: {commentsError.message}</p>
+        ) : (
+          <div className="mt-4 flex w-full max-w-md flex-col gap-2">
+            {comments?.getComments && comments.getComments.length > 0 ? (
+              comments.getComments.map((comment) => (
+                <Comment key={comment.id} comment={comment} />
+              ))
+            ) : (
+              <h1>No comments</h1>
+            )}
+          </div>
+        )}
       </main>
     </>
   );
