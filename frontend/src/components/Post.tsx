@@ -3,16 +3,17 @@ import { PostType } from "@/lib/types";
 import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
-
 import { useMutation } from "@apollo/client";
-import { LIKE_POST, UNLIKE_POST } from "@/queries/posts";
-
+import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 import { useAuth } from "./AuthContext";
+import { TrashIcon } from "@heroicons/react/24/solid";
+import toast from "react-hot-toast";
 
 const Post = ({ post }: { post: PostType }) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [amtLikes, setAmtLikes] = useState(post.amtLikes);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
     setIsLiked(user?.likedPostIds.includes(post.id) ?? false);
@@ -24,6 +25,9 @@ const Post = ({ post }: { post: PostType }) => {
       setAmtLikes(data.likePost.amtLikes);
       setIsLiked(true);
     },
+    onError: (error) => {
+      toast.error(`Error liking post: ${error.message}`);
+    },
   });
 
   const [unlikePost] = useMutation(UNLIKE_POST, {
@@ -32,7 +36,36 @@ const Post = ({ post }: { post: PostType }) => {
       setAmtLikes(data.unlikePost.amtLikes);
       setIsLiked(false);
     },
+    onError: (error) => {
+      toast.error(`Error unliking post: ${error.message}`);
+    },
   });
+
+  const [deletePostMutation, { loading: deleteLoading, error: deleteError }] =
+    useMutation(DELETE_POST, {
+      variables: { id: post.id },
+      update: (cache, { data }) => {
+        if (!data) return;
+        const deletedPostId = data.deletePost.id;
+        cache.modify({
+          fields: {
+            getPosts(existingPosts = []) {
+              return existingPosts.filter(
+                (postRef: { __ref: string }) =>
+                  postRef.__ref !== `Post:${deletedPostId}`,
+              );
+            },
+          },
+        });
+      },
+      onCompleted: () => {
+        setIsDeleted(true);
+        toast.success("Post deleted successfully");
+      },
+      onError: (err) => {
+        toast.error(`Error deleting post: ${err.message}`);
+      },
+    });
 
   const toggleLike = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -45,6 +78,24 @@ const Post = ({ post }: { post: PostType }) => {
     }
   };
 
+  const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this post?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deletePostMutation();
+    } catch (error) {
+      toast.error(`Error deleting post: ${(error as Error).message}`);
+    }
+  };
+
+  if (isDeleted) return null;
+
   return (
     <article
       className="m-2 w-full max-w-md cursor-pointer rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
@@ -53,9 +104,21 @@ const Post = ({ post }: { post: PostType }) => {
         document.location.href = `/project2/post/${post.id}`;
       }}
     >
-      <header className="flex items-center gap-2">
-        <Avatar username={post.author} />
-        <p className="font-mono">{post.author}</p>
+      <header className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Avatar username={post.author} />
+          <p className="font-mono">{post.author}</p>
+        </div>
+        {user && user.username === post.author && (
+          <button
+            onClick={handleDelete}
+            className="text-gray-500 hover:text-red-500 focus:outline-none"
+            aria-label="Delete post"
+            disabled={deleteLoading}
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        )}
       </header>
 
       <p className="my-2">{post.body}</p>
@@ -74,6 +137,12 @@ const Post = ({ post }: { post: PostType }) => {
           <span>{post.amtComments}</span>
         </div>
       </footer>
+
+      {deleteError && (
+        <p className="mt-2 text-sm text-red-500">
+          Error deleting post: {deleteError.message}
+        </p>
+      )}
     </article>
   );
 };

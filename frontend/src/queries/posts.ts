@@ -40,6 +40,15 @@ export const CREATE_POST = gql`
   }
 `;
 
+export const DELETE_POST = gql`
+  mutation DeletePost($id: ID!) {
+    deletePost(id: $id) {
+      id
+      __typename
+    }
+  }
+`;
+
 export const LIKE_POST = gql`
   mutation LikePost($postID: ID!) {
     likePost(postID: $postID) {

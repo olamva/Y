@@ -76,7 +76,12 @@ export const resolvers: IResolvers = {
 
       try {
         const newPost = new Post({ body, author: user.username });
-        return await newPost.save();
+        const savedComment = await newPost.save();
+
+        user.postIds.push(savedComment.id);
+        await user.save();
+
+        return savedComment;
       } catch (err) {
         throw new Error('Error creating post');
       }
@@ -120,6 +125,9 @@ export const resolvers: IResolvers = {
         const savedComment = await newComment.save();
         await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
 
+        user.commentIds.push(savedComment.id);
+        await user.save();
+
         return savedComment;
       } catch (err) {
         throw new Error('Error creating comment');
@@ -152,7 +160,6 @@ export const resolvers: IResolvers = {
         throw new Error(`Error deleting post and its comments: ${(err as Error).message}`);
       }
     },
-
     deleteComment: async (_, { id }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to delete a comment');
@@ -165,7 +172,7 @@ export const resolvers: IResolvers = {
       }
 
       if (!user.commentIds.includes(id)) {
-        throw new AuthenticationError('You are not authorized to delete this post');
+        throw new AuthenticationError('You are not authorized to delete this comment');
       }
 
       try {
@@ -180,6 +187,7 @@ export const resolvers: IResolvers = {
         throw new Error(`Error deleting comment: ${(err as Error).message}`);
       }
     },
+
     likePost: async (_, { postID }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to like a post');
