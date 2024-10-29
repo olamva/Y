@@ -1,3 +1,9 @@
-# nodejs-typescript-express-apollo-graphql-starter
+# Getting started
 
-[See tutorial on Medium](https://medium.com/@th.guibert/basic-apollo-express-graphql-api-with-typescript-2ee021dea2c)
+1. Install dependencies
+
+npm install
+
+2. Run the server
+
+npx ts-node src/index.ts

@@ -1,13 +1,31 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { Context } from './models';
 import { IResolvers } from 'graphql-tools';
+import { Post } from './models/post';
 
-const resolverMap: IResolvers = {
+export const resolvers: IResolvers = {
   Query: {
-    helloWorld(_: void, args: void, ctx: Context, info: GraphQLResolveInfo): string {
-      return `👋 Hello world! 👋`;
+    getPosts: async () => {
+      try {
+        return await Post.find();
+      } catch (err) {
+        throw new Error('Error fetching posts');
+      }
+    },
+    getPost: async (_, { id }) => {
+      try {
+        return await Post.findById(id);
+      } catch (err) {
+        throw new Error('Error fetching post');
+      }
+    },
+  },
+  Mutation: {
+    createPost: async (_, { body, author }) => {
+      try {
+        const newPost = new Post({ body, author });
+        return await newPost.save();
+      } catch (err) {
+        throw new Error('Error creating post');
+      }
     },
   },
 };
-
-export default resolverMap;
