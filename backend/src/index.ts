@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request } from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
 import { resolvers } from './resolverMap';
@@ -6,17 +6,37 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import compression from 'compression';
 import cors from 'cors';
+import { User, UserType } from './models/user';
+import { verifyToken } from './auth';
+
+interface Context {
+  user?: UserType;
+}
 
 async function startServer() {
   const app = express();
 
+  app.use('*', cors());
+  app.use(compression());
+
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context: async ({ req }: { req: Request }): Promise<Context> => {
+      const authHeader = req.headers.authorization || '';
+      const token = authHeader.replace('Bearer ', '');
+      if (token) {
+        const decoded = verifyToken(token);
+        if (decoded && typeof decoded === 'object') {
+          const user = await User.findById((decoded as any).id);
+          if (user) {
+            return { user };
+          }
+        }
+      }
+      return {};
+    },
   });
-
-  app.use('*', cors());
-  app.use(compression());
 
   await server.start();
   server.applyMiddleware({ app });

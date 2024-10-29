@@ -1,15 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from './jwt';
+// src/utils/auth.ts
+import jwt from 'jsonwebtoken';
+import { UserType } from './models/user';
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).send('Authorization required');
+const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
 
+export const signToken = (user: UserType) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      username: user.username,
+    },
+    JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+};
+
+export const verifyToken = (token: string) => {
   try {
-    const payload = verifyToken(token);
-    req.userId = payload.userId;
-    next();
-  } catch (error) {
-    return res.status(401).send('Invalid token');
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    return null;
   }
 };

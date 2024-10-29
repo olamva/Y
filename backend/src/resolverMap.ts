@@ -3,7 +3,8 @@ import { Post } from './models/post';
 import { User } from './models/user';
 import { Comment } from './models/comment';
 import bcrypt from 'bcryptjs';
-import { generateToken } from './jwt';
+import { signToken } from './auth';
+import { AuthenticationError, UserInputError } from 'apollo-server-express';
 
 export const resolvers: IResolvers = {
   Query: {
@@ -72,22 +73,25 @@ export const resolvers: IResolvers = {
     },
     register: async (_, { username, password }) => {
       const existingUser = await User.findOne({ username });
-      if (existingUser) throw new Error('Username already taken');
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({ username, password: hashedPassword });
-      await newUser.save();
-
-      return generateToken(newUser.id);
+      if (existingUser) {
+        throw new Error('Username already exists');
+      }
+      const user = new User({ username, password });
+      await user.save();
+      const token = signToken(user);
+      return token;
     },
     login: async (_, { username, password }) => {
       const user = await User.findOne({ username });
-      if (!user) throw new Error('User not found');
-
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) throw new Error('Invalid credentials');
-
-      return generateToken(user.id);
+      if (!user) {
+        throw new Error('Invalid credentials');
+      }
+      const valid = await user.comparePassword(password);
+      if (!valid) {
+        throw new Error('Invalid credentials');
+      }
+      const token = signToken(user);
+      return token;
     },
 
     createComment: async (_, { body, author, parentID }) => {
@@ -123,59 +127,55 @@ export const resolvers: IResolvers = {
         throw new Error(`Error deleting comment: ${(err as Error).message}`);
       }
     },
-    likePost: async (_, { postID }, { username }) => {
-      try {
-        const user = await User.findOne({ username });
-        if (!user) throw new Error('User not found');
+    likePost: async (_, { postID }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to like a post');
+      }
+      const post = await Post.findById(postID);
+      if (!post) {
+        throw new UserInputError('Post not found');
+      }
 
-        if (user.likedPostIds.includes(postID)) {
-          throw new Error('Post already liked by this user');
-        }
+      const user = await User.findById(context.user.id);
 
-        const post = await Post.findById(postID);
-        if (!post) throw new Error('Post not found');
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
 
+      if (!user.likedPostIds.includes(postID)) {
         post.amtLikes += 1;
-        user.likedPostIds.push(postID);
-
+        user.likedPostIds.push(context.user.id);
         await post.save();
-        await user.save();
 
-        return post;
-      } catch (err) {
-        if (err instanceof Error) {
-          throw new Error(`Error liking post: ${err.message}`);
-        } else {
-          throw new Error('Error liking post');
-        }
+        context.user.likedPostIds.push(postID);
+        await context.user.save();
       }
+      return post;
     },
-    unlikePost: async (_, { postID }, { username }) => {
-      try {
-        const user = await User.findOne({ username });
-        if (!user) throw new Error('User not found');
+    unlikePost: async (_, { postID }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unlike a post');
+      }
 
-        if (!user.likedPostIds.includes(postID)) {
-          throw new Error('Post not liked by this user');
-        }
+      const post = await Post.findById(postID);
+      if (!post) {
+        throw new UserInputError('Post not found');
+      }
 
-        const post = await Post.findById(postID);
-        if (!post) throw new Error('Post not found');
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
 
-        post.amtLikes -= 1;
-        user.likedPostIds.push(postID);
-
+      const likedIndex = user.likedPostIds.indexOf(postID);
+      if (likedIndex > -1) {
+        post.amtLikes = Math.max(post.amtLikes - 1, 0);
+        user.likedPostIds.splice(likedIndex, 1);
         await post.save();
         await user.save();
-
-        return post;
-      } catch (err) {
-        if (err instanceof Error) {
-          throw new Error(`Error liking post: ${err.message}`);
-        } else {
-          throw new Error('Error liking post');
-        }
       }
+
+      return post;
     },
   },
   SearchResult: {
