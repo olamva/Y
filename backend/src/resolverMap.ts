@@ -54,7 +54,7 @@ export const resolvers: IResolvers = {
     },
     createComment: async (_, { body, author, parentID }) => {
       try {
-        const newComment = new Comment({ body, author, parentId: parentID });
+        const newComment = new Comment({ body, author, parentID: parentID });
         return await newComment.save();
       } catch (err) {
         throw new Error('Error creating comment');
