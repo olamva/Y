@@ -1,7 +1,13 @@
 type Query {
-  getPosts: [Post!]!
+  getPosts(page: Int!): [Post!]!
   getPost(id: ID!): Post
+  getComments(postID: ID!): [Comment!]!
+  getUser(username: String!): User
+  searchAll(query: String!): [SearchResult!]!
+  searchUsers(query: String!): [User!]!
 }
+
+union SearchResult = User | Post
 
 type Post {
   id: ID!
@@ -9,8 +15,32 @@ type Post {
   author: String!
   amtLikes: Int!
   amtComments: Int!
+  createdAt: String!
+}
+
+type Comment {
+  id: ID!
+  body: String!
+  author: String!
+  parentID: ID!
+  amtLikes: Int!
+  createdAt: String!
+}
+
+type User {
+  id: ID!
+  username: String!
+  postIds: [ID!]!
+  likedPostIds: [ID!]!
+  commentIds: [ID!]!
 }
 
 type Mutation {
   createPost(body: String!, author: String!): Post!
+  createComment(body: String!, author: String!, parentID: ID!): Comment!
+  deletePost(id: ID!): Post!
+  deleteComment(id: ID!): Comment!
+  likePost(postID: ID!): Post!
+  unlikePost(postID: ID!): Post!
+  createUser(username: String!): User!
 }
