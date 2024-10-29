@@ -2,8 +2,9 @@ import Comment from "@/components/Comment";
 import Post from "@/components/Post";
 import { Button } from "@/components/ui/button";
 import TextInput from "@/form/TextInput";
-import { commentsMock, mockData } from "@/lib/mockupData";
 import { CommentType, PostType } from "@/lib/types";
+import { GET_POST } from "@/queries/posts";
+import { useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -13,55 +14,32 @@ const PostPage = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<CommentType[]>([]);
 
-  const post: PostType | undefined = mockData.find((post) => id === post.id);
-
-  useEffect(() => {
-    if (comments.length !== 0) return;
-
-    const storedComments = localStorage.getItem(`comments_${id}`);
-    if (storedComments) {
-      setComments(JSON.parse(storedComments));
-    }
-
-    const mockComments = commentsMock.filter(
-      (comment) => comment.parentID === id,
-    );
-
-    setComments((prevComments) => {
-      const newComments = mockComments.filter(
-        (mockComment) => !prevComments.some((c) => c.id === mockComment.id),
-      );
-      return [...prevComments, ...newComments];
-    });
-  }, [id]);
+  const {
+    data: post,
+    loading,
+    error,
+  } = useQuery<{
+    getPost: PostType;
+  }>(GET_POST, {
+    variables: { id },
+    notifyOnNetworkStatusChange: true,
+  });
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim() === "") return;
 
-    const newComment: CommentType = {
-      id: `${Date.now()}`,
-      body: comment,
-      author: "Anonymous", // TODO: change to user
-      amtLikes: 0,
-      amtComments: 0,
-      parentID: id as string,
-    };
-
-    setComments((prevComments) => {
-      const updatedComments = [...prevComments, newComment];
-      return updatedComments;
-    });
-
-    localStorage.setItem(
-      `comments_${id}`,
-      JSON.stringify([...comments, newComment]),
-    );
-
-    setComment("");
+    //TODO
   };
 
-  if (!post) {
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (error) {
+    return <p>Error loading post: {error.message}</p>;
+  }
+
+  if (!post || !post.getPost) {
     return <h1>Post not found</h1>;
   }
 
@@ -78,7 +56,7 @@ const PostPage = () => {
         </Button>
       </header>
       <main className="flex flex-col items-center pt-5">
-        <Post post={post} />
+        <Post post={post?.getPost} />
         <form
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}

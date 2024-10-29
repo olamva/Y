@@ -4,6 +4,7 @@ export type PostType = {
   author: string;
   amtLikes: number;
   amtComments: number;
+  createdAt: Date;
 };
 
 export type CommentType = PostType & {

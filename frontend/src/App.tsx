@@ -26,6 +26,7 @@ const HomePage = () => {
     setPage((prev) => prev + 1);
   };
 
+  // Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (
