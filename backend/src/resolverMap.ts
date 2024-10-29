@@ -107,7 +107,10 @@ export const resolvers: IResolvers = {
 
       try {
         const newComment = new Comment({ body, author: user.username, parentID: parentID });
-        return await newComment.save();
+        const savedComment = await newComment.save();
+        await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+
+        return savedComment;
       } catch (err) {
         throw new Error('Error creating comment');
       }
@@ -126,12 +129,18 @@ export const resolvers: IResolvers = {
       }
     },
 
-    deleteComment: async (_, { id }) => {
+    deleteComment: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to delete a comment');
+      }
+
       try {
         const deletedComment = await Comment.findByIdAndDelete(id);
         if (!deletedComment) {
           throw new Error('Comment not found');
         }
+        await Post.findByIdAndUpdate(deletedComment.parentID, { $inc: { amtComments: -1 } });
+
         return deletedComment;
       } catch (err) {
         throw new Error(`Error deleting comment: ${(err as Error).message}`);
