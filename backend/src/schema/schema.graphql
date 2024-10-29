@@ -42,5 +42,6 @@ type Mutation {
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!
   unlikePost(postID: ID!): Post!
-  createUser(username: String!): User!
+  register(username: String!, password: String!): String!
+  login(username: String!, password: String!): String!
 }

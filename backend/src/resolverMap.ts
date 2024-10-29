@@ -2,6 +2,8 @@ import { IResolvers } from 'graphql-tools';
 import { Post } from './models/post';
 import { User } from './models/user';
 import { Comment } from './models/comment';
+import bcrypt from 'bcryptjs';
+import { generateToken } from './jwt';
 
 export const resolvers: IResolvers = {
   Query: {
@@ -68,17 +70,24 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating post');
       }
     },
-    createUser: async (_, { username }) => {
-      try {
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-          throw new Error('Username already taken');
-        }
-        const newUser = new User({ username });
-        return await newUser.save();
-      } catch (err) {
-        throw new Error(`Error creating user: ${(err as Error).message}`);
-      }
+    register: async (_, { username, password }) => {
+      const existingUser = await User.findOne({ username });
+      if (existingUser) throw new Error('Username already taken');
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({ username, password: hashedPassword });
+      await newUser.save();
+
+      return generateToken(newUser.id);
+    },
+    login: async (_, { username, password }) => {
+      const user = await User.findOne({ username });
+      if (!user) throw new Error('User not found');
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) throw new Error('Invalid credentials');
+
+      return generateToken(user.id);
     },
 
     createComment: async (_, { body, author, parentID }) => {
