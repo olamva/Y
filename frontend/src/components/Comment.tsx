@@ -55,7 +55,6 @@ const Comment = ({ comment }: { comment: CommentType }) => {
         }
       },
       onError: (err) => {
-        console.error("Error deleting the comment:", err);
         toast.error(`Error deleting comment: ${err.message}`);
       },
       onCompleted: () => {
