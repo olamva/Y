@@ -22,6 +22,6 @@ Install dependencies
 
 - npm install
 
-Run project
+Run the project:
 
 - npm run dev
