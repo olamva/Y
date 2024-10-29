@@ -70,5 +70,32 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating comment');
       }
     },
+    likePost: async (_, { postID }, { username }) => {
+      try {
+        const user = await User.findOne({ username });
+        if (!user) throw new Error('User not found');
+
+        if (user.likedPostIds.includes(postID)) {
+          throw new Error('Post already liked by this user');
+        }
+
+        const post = await Post.findById(postID);
+        if (!post) throw new Error('Post not found');
+
+        post.amtLikes += 1;
+        user.likedPostIds.push(postID);
+
+        await post.save();
+        await user.save();
+
+        return post;
+      } catch (err) {
+        if (err instanceof Error) {
+          throw new Error(`Error liking post: ${err.message}`);
+        } else {
+          throw new Error('Error liking post');
+        }
+      }
+    },
   },
 };
