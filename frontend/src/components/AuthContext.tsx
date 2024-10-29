@@ -32,9 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (storedToken) {
       try {
         const decoded: DecodedToken = jwtDecode(storedToken);
-        // Check if token is expired
         if (decoded.exp * 1000 < Date.now()) {
-          // Token expired
           logout();
         } else {
           setIsLoggedIn(true);

@@ -7,7 +7,8 @@ import Navbar from "@/components/Navbar/Navbar.tsx";
 // import Profile from "@/pages/Profile.tsx";
 import SearchPage from "@/pages/Search.tsx";
 import PostPage from "@/pages/PostPage.tsx";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { client } from "./lib/apolloClient";
+import { ApolloProvider } from "@apollo/client";
 import UserPage from "./pages/UserPage";
 import { AuthProvider } from "./components/AuthContext";
 import { Toaster } from "react-hot-toast";
@@ -34,11 +35,6 @@ const router = createBrowserRouter([
     element: <PostPage />,
   },
 ]);
-
-const client = new ApolloClient({
-  uri: "http://localhost:3001/graphql",
-  cache: new InMemoryCache(),
-});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

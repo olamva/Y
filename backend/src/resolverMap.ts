@@ -131,27 +131,27 @@ export const resolvers: IResolvers = {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to like a post');
       }
+
       const post = await Post.findById(postID);
       if (!post) {
         throw new UserInputError('Post not found');
       }
 
       const user = await User.findById(context.user.id);
-
       if (!user) {
         throw new UserInputError('User not found');
       }
 
       if (!user.likedPostIds.includes(postID)) {
         post.amtLikes += 1;
-        user.likedPostIds.push(context.user.id);
+        user.likedPostIds.push(postID);
         await post.save();
-
-        context.user.likedPostIds.push(postID);
-        await context.user.save();
+        await user.save();
       }
+
       return post;
     },
+
     unlikePost: async (_, { postID }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to unlike a post');
