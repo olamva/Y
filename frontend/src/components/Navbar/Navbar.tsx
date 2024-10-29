@@ -13,6 +13,10 @@ const Navbar = () => {
     window.location.href = `/project2/search?q=${encodeURIComponent(searchQuery)}`;
   };
 
+  const login = () => {
+    window.location.href = "/project2/user";
+  };
+
   return (
     <div className="w-full bg-gray-950/80 text-white">
       <div className="flex w-full justify-center">
@@ -40,12 +44,19 @@ const Navbar = () => {
               <a href="/project2/user" className="p-2 hover:scale-110">
                 <UserIcon size={24} />
               </a>
-              {isLoggedIn && (
+              {isLoggedIn ? (
                 <button
                   onClick={logout}
                   className="ml-2 rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
                 >
                   Logout
+                </button>
+              ) : (
+                <button
+                  onClick={login}
+                  className="ml-2 rounded-md bg-green-600 px-3 py-1 text-sm font-semibold text-white hover:bg-green-700"
+                >
+                  Login
                 </button>
               )}
             </div>
