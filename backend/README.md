@@ -8,6 +8,8 @@ npm install
 
 start:dev
 
+Make sure you are connected to NTNU's network
+
 ## Current resolvers
 
 getPosts() -> Returns all posts
