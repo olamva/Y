@@ -10,7 +10,7 @@ start:dev
 
 Make sure you are connected to NTNU's network
 
-# Current resolvers
+## Current resolvers
 
 getPosts() -> Returns all posts
 
