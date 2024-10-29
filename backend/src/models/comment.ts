@@ -6,6 +6,7 @@ export interface CommentType extends Document {
   author: string;
   amtLikes: number;
   amtComments: number;
+  createdAt: Date;
 }
 
 const CommentSchema = new Schema<CommentType>({
@@ -14,6 +15,7 @@ const CommentSchema = new Schema<CommentType>({
   author: { type: String, required: true },
   amtLikes: { type: Number, default: 0 },
   amtComments: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export const Comment = model<CommentType>('Comment', CommentSchema);

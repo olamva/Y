@@ -15,6 +15,7 @@ type Post {
   author: String!
   amtLikes: Int!
   amtComments: Int!
+  createdAt: String!
 }
 
 type Comment {
@@ -23,6 +24,7 @@ type Comment {
   author: String!
   parentID: ID!
   amtLikes: Int!
+  createdAt: String!
 }
 
 type User {
