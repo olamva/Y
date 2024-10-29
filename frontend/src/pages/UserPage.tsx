@@ -3,7 +3,7 @@ import LoginForm from "@/components/LoginForm";
 import { useState, useEffect } from "react";
 
 const UserPage = () => {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [user, setUser] = useState<{ username: string } | null>(null);
 
   useEffect(() => {
@@ -42,7 +42,6 @@ const UserPage = () => {
       {isLoggedIn ? (
         <div>
           <h2>Welcome, {user?.username}</h2>
-          <button onClick={logout}>Logout</button>
         </div>
       ) : (
         <LoginForm />
