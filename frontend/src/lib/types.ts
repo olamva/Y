@@ -1,4 +1,5 @@
 export type PostType = {
+  __typename: "Post";
   id: string;
   body: string;
   author: string;
@@ -12,6 +13,8 @@ export type CommentType = PostType & {
 };
 
 export type UserType = {
+  __typename: "User";
+  id: string;
   username: string;
   postIds: string[];
   likedPostIds: string[];
