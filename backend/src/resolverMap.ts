@@ -63,9 +63,19 @@ export const resolvers: IResolvers = {
   },
 
   Mutation: {
-    createPost: async (_, { body, author }) => {
+    createPost: async (_, { body }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to create a comment');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
       try {
-        const newPost = new Post({ body, author });
+        const newPost = new Post({ body, author: user.username });
         return await newPost.save();
       } catch (err) {
         throw new Error('Error creating post');
@@ -115,7 +125,21 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating comment');
       }
     },
-    deletePost: async (_, { id }) => {
+    deletePost: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to create a comment');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (!user.postIds.includes(id)) {
+        throw new AuthenticationError('You are not authorized to delete this post');
+      }
+
       try {
         const deletedPost = await Post.findByIdAndDelete(id);
         if (!deletedPost) {
@@ -132,6 +156,16 @@ export const resolvers: IResolvers = {
     deleteComment: async (_, { id }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to delete a comment');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (!user.commentIds.includes(id)) {
+        throw new AuthenticationError('You are not authorized to delete this post');
       }
 
       try {
