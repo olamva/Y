@@ -10,6 +10,7 @@ import PostPage from "@/pages/PostPage.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import UserPage from "./pages/UserPage";
 import { AuthProvider } from "./components/AuthContext";
+import { Toaster } from "react-hot-toast";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ApolloProvider client={client}>
       <AuthProvider>
+        <Toaster />
         <div className="min-h-screen">
           <Navbar />
           <RouterProvider router={router} />

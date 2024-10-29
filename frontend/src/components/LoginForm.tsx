@@ -1,7 +1,8 @@
-import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { useState } from "react";
+import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,8 +14,10 @@ const LoginForm = () => {
   const [errors, setErrors] = useState<{ confirmPassword?: string }>({});
   const { login } = useAuth();
 
-  const [loginMutation] = useMutation(LOGIN_MUTATION);
-  const [registerMutation] = useMutation(REGISTER_MUTATION);
+  const [loginMutation, { loading: loginLoading }] =
+    useMutation(LOGIN_MUTATION);
+  const [registerMutation, { loading: registerLoading }] =
+    useMutation(REGISTER_MUTATION);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,9 +33,16 @@ const LoginForm = () => {
           password: formData.password,
         },
       });
-      login(data.login);
+      if (data.login) {
+        login(data.login);
+        toast.success("Logged in successfully!");
+      }
     } catch (error) {
-      console.error("Error logging in", error);
+      if (error instanceof Error) {
+        toast.error(`Error logging in: ${error.message}`);
+      } else {
+        toast.error("Error logging in");
+      }
     }
   };
 
@@ -50,9 +60,16 @@ const LoginForm = () => {
           password: formData.password,
         },
       });
-      login(data.register);
+      if (data.register) {
+        login(data.register); // Update AuthContext
+        toast.success("Registered and logged in successfully!");
+      }
     } catch (error) {
-      console.error("Error registering", error);
+      if (error instanceof Error) {
+        toast.error(`Error registering: ${error.message}`);
+      } else {
+        toast.error("Error registering");
+      }
     }
   };
 
@@ -126,9 +143,19 @@ const LoginForm = () => {
           )}
           <button
             type="submit"
-            className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            disabled={loginLoading || registerLoading}
+            className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              (loginLoading || registerLoading) &&
+              "cursor-not-allowed opacity-50"
+            }`}
           >
-            {isLogin ? "Login" : "Register"}
+            {isLogin
+              ? loginLoading
+                ? "Logging in..."
+                : "Login"
+              : registerLoading
+                ? "Registering..."
+                : "Register"}
           </button>
         </form>
         <div className="mt-4 text-center">
