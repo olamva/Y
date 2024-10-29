@@ -12,6 +12,18 @@ export const GET_COMMENTS = gql`
   }
 `;
 
+export const GET_COMMENTS_BY_IDS = gql`
+  query GetCommentsByIds($ids: [ID!]!) {
+    getCommentsByIds(ids: $ids) {
+      id
+      body
+      author
+      amtLikes
+      createdAt
+    }
+  }
+`;
+
 export const CREATE_COMMENT = gql`
   mutation CreateComment($body: String!, $parentID: ID!) {
     createComment(body: $body, parentID: $parentID) {

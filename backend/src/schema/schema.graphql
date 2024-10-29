@@ -5,6 +5,8 @@ type Query {
   getUser(username: String!): User
   searchAll(query: String!): [SearchResult!]!
   searchUsers(query: String!): [User!]!
+  getPostsByIds(ids: [ID!]!): [Post!]!
+  getCommentsByIds(ids: [ID!]!): [Comment!]!
 }
 
 union SearchResult = User | Post

@@ -39,6 +39,21 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments');
       }
     },
+    getPostsByIds: async (_, { ids }) => {
+      try {
+        return await Post.find({ _id: { $in: ids } }).sort({ createdAt: -1 });
+      } catch (err) {
+        throw new Error('Error fetching posts by IDs');
+      }
+    },
+
+    getCommentsByIds: async (_, { ids }) => {
+      try {
+        return await Comment.find({ _id: { $in: ids } }).sort({ createdAt: -1 });
+      } catch (err) {
+        throw new Error('Error fetching comments by IDs');
+      }
+    },
     async searchAll(_: any, { query }: { query: string }) {
       try {
         const posts = await Post.find({
