@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { GET_USER_QUERY } from "@/queries/user";
+import { useLazyQuery } from "@apollo/client";
+import { UserType } from "@/lib/types";
 
 interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
-  user: { id: string; username: string } | null;
+  user: UserType | null;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -23,9 +26,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<{ id: string; username: string } | null>(
-    null,
-  );
+  const [user, setUser] = useState<UserType | null>(null);
+
+  const [fetchUser] = useLazyQuery(GET_USER_QUERY, {
+    onCompleted: (data) => {
+      if (data && data.getUser) {
+        setUser(data.getUser);
+      }
+    },
+    onError: (err) => {
+      console.error("Error fetching user data:", err);
+      logout();
+    },
+  });
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -37,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } else {
           setIsLoggedIn(true);
           setToken(storedToken);
-          setUser({ id: decoded.id, username: decoded.username });
+          fetchUser({ variables: { username: decoded.username } });
         }
       } catch (error) {
         console.error("Invalid token:", error);
@@ -52,9 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem("token", newToken);
       setIsLoggedIn(true);
       setToken(newToken);
-      setUser({ id: decoded.id, username: decoded.username });
+      fetchUser({ variables: { username: decoded.username } });
     } catch (error) {
       console.error("Invalid token:", error);
+      logout();
     }
   };
 

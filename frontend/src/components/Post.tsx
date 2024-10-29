@@ -2,14 +2,21 @@ import Avatar from "@/components/Avatar";
 import { PostType } from "@/lib/types";
 import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { MouseEvent, TouchEvent, useState } from "react";
+import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 
 import { useMutation } from "@apollo/client";
 import { LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 
+import { useAuth } from "./AuthContext";
+
 const Post = ({ post }: { post: PostType }) => {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [amtLikes, setAmtLikes] = useState(post.amtLikes);
+
+  useEffect(() => {
+    setIsLiked(user?.likedPostIds.includes(post.id) ?? false);
+  }, [user?.likedPostIds, post.id]);
 
   const [likePost] = useMutation(LIKE_POST, {
     variables: { postID: post.id },

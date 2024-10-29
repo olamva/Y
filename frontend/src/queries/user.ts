@@ -16,6 +16,9 @@ export const GET_USER_QUERY = gql`
   query GetUser($username: String!) {
     getUser(username: $username) {
       username
+      postIds
+      likedPostIds
+      commentIds
     }
   }
 `;
