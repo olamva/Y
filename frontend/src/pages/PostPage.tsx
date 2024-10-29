@@ -19,6 +19,7 @@ const PostPage = () => {
     data: postData,
     loading: postLoading,
     error: postError,
+    refetch: refetchPost,
   } = useQuery<{ getPost: PostType }>(GET_POST, {
     variables: { id },
     notifyOnNetworkStatusChange: true,
@@ -42,6 +43,7 @@ const PostPage = () => {
       onCompleted: () => {
         setComment("");
         refetchComments();
+        refetchPost();
       },
       onError: (err) => {
         console.error("Error creating comment:", err);
