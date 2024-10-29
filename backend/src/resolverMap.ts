@@ -33,11 +33,22 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments');
       }
     },
-    async searchPosts(_: any, { query }: { query: string }) {
-      return await Post.find({
-        $or: [{ body: { $regex: query, $options: 'i' } }, { author: { $regex: query, $options: 'i' } }],
-      });
+    async searchAll(_: any, { query }: { query: string }) {
+      try {
+        const posts = await Post.find({
+          $or: [{ body: { $regex: query, $options: 'i' } }, { author: { $regex: query, $options: 'i' } }],
+        });
+
+        const users = await User.find({
+          username: { $regex: query, $options: 'i' },
+        });
+
+        return [...users, ...posts];
+      } catch (err) {
+        throw new Error('Error performing search');
+      }
     },
+
     async searchUsers(_: any, { query }: { query: string }) {
       return await User.find({
         username: { $regex: query, $options: 'i' },
@@ -128,6 +139,17 @@ export const resolvers: IResolvers = {
           throw new Error('Error liking post');
         }
       }
+    },
+  },
+  SearchResult: {
+    __resolveType(obj: any) {
+      if (obj.username) {
+        return 'User';
+      }
+      if (obj.body) {
+        return 'Post';
+      }
+      return null;
     },
   },
 };

@@ -22,7 +22,7 @@ getUser(username) -> Takes in username as param, and returns the matching user
 
 getComments(PostID) -> Takes in postID as param, and returns comments for that post
 
-searchPosts(query) -> Takes in a query and returns any matching posts
+searchAll(query) -> Takes in a query and returns any matching posts or Users
 
 searchUsers(query) -> Takes in a quert and returns any matching Users
 
