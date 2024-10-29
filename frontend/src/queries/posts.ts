@@ -25,3 +25,21 @@ export const GET_POST = gql`
     }
   }
 `;
+
+export const LIKE_POST = gql`
+  mutation LikePost($postID: ID!) {
+    likePost(postID: $postID) {
+      id
+      amtLikes
+    }
+  }
+`;
+
+export const UNLIKE_POST = gql`
+  mutation UnlikePost($postID: ID!) {
+    unlikePost(postID: $postID) {
+      id
+      amtLikes
+    }
+  }
+`;

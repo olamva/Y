@@ -2,33 +2,40 @@ import Avatar from "@/components/Avatar";
 import { PostType } from "@/lib/types";
 import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { MouseEvent, TouchEvent, useEffect, useState } from "react";
+import { MouseEvent, TouchEvent, useState } from "react";
+
+import { useMutation } from "@apollo/client";
+import { LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 
 const Post = ({ post }: { post: PostType }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [amtLikes, setAmtLikes] = useState(post.amtLikes);
 
-  useEffect(() => {
-    const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "[]");
-    if (likedPosts.includes(post.id)) {
+  const [likePost] = useMutation(LIKE_POST, {
+    variables: { postID: post.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.likePost.amtLikes);
       setIsLiked(true);
-    }
-  }, [post.id]);
+    },
+  });
+
+  const [unlikePost] = useMutation(UNLIKE_POST, {
+    variables: { postID: post.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.unlikePost.amtLikes);
+      setIsLiked(false);
+    },
+  });
 
   const toggleLike = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
 
-    const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "[]");
-
     if (isLiked) {
-      const updatedLikes = likedPosts.filter((id: string) => id !== post.id);
-      localStorage.setItem("likedPosts", JSON.stringify(updatedLikes));
+      unlikePost();
     } else {
-      likedPosts.push(post.id);
-      localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+      likePost();
     }
-
-    setIsLiked(!isLiked);
   };
 
   return (
@@ -53,7 +60,7 @@ const Post = ({ post }: { post: PostType }) => {
           ) : (
             <HeartIcon className="size-6 hover:scale-110" />
           )}
-          <span>{isLiked ? post.amtLikes + 1 : post.amtLikes}</span>
+          <span>{amtLikes}</span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
