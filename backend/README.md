@@ -6,4 +6,4 @@ npm install
 
 2. Run the server
 
-npx ts-node src/index.ts
+start:dev

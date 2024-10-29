@@ -16,4 +16,5 @@ Thumbs.db
 
 # Config
 conf/env.json
+
 .env

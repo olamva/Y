@@ -3,6 +3,9 @@ import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
 import { resolvers } from './resolverMap';
 import mongoose from 'mongoose';
+import 'dotenv/config';
+import compression from 'compression';
+import cors from 'cors';
 
 async function startServer() {
   const app = express();
@@ -12,10 +15,18 @@ async function startServer() {
     resolvers,
   });
 
+  app.use('*', cors());
+  app.use(compression());
+
   await server.start();
   server.applyMiddleware({ app });
 
-  const MONGODB_URI = 'your_mongodb_connection_string';
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI environment variable is not defined');
+  }
+
+  console.log('Connecting to', MONGODB_URI);
 
   mongoose
     .connect(MONGODB_URI)
