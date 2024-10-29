@@ -35,6 +35,6 @@ type Mutation {
   createPost(body: String!, author: String!): Post!
   createComment(body: String!, author: String!, parentID: ID!): Comment!
   likePost(postID: ID!): Post!
-  dislikePost(postID: ID!): Post!
+  unlikePost(postID: ID!): Post!
   createUser(username: String!): User!
 }

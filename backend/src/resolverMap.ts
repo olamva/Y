@@ -102,7 +102,7 @@ export const resolvers: IResolvers = {
         }
       }
     },
-    dislikePost: async (_, { postID }, { username }) => {
+    unlikePost: async (_, { postID }, { username }) => {
       try {
         const user = await User.findOne({ username });
         if (!user) throw new Error('User not found');
