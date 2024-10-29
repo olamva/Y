@@ -130,7 +130,7 @@ const HomePage = () => {
         <Button
           type="submit"
           disabled={createLoading || postBody.trim() === ""}
-          className={`w-full ${
+          className={`w-full max-w-md ${
             postBody.trim()
               ? "bg-indigo-600 hover:bg-indigo-700"
               : "cursor-not-allowed bg-gray-400"

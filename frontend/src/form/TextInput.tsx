@@ -21,7 +21,7 @@ const TextInput: React.FC<TextInputProps> = ({
   className = "",
   placeholder = "",
 }) => (
-  <div>
+  <div className="w-full">
     <label
       htmlFor={id}
       className="block text-sm font-medium text-gray-800 dark:text-gray-200"
