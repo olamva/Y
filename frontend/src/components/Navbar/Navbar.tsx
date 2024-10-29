@@ -1,6 +1,6 @@
-import Avatar from "@/components/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
+import { UserIcon } from "lucide-react";
 import { useState } from "react";
 
 const Navbar = () => {
@@ -34,9 +34,9 @@ const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <div className="p-2 hover:scale-110">
-              <Avatar username="John" />
-            </div>
+            <a href="/project2/user" className="p-2 hover:scale-110">
+              <UserIcon size={24} />
+            </a>
           </div>
           <DropdownMenu />
         </nav>

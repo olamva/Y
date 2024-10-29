@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar/Navbar.tsx";
 import SearchPage from "@/pages/Search.tsx";
 import PostPage from "@/pages/PostPage.tsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import UserPage from "./pages/UserPage";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   //   path: "/project2/user/:username",
   //   element: <Profile />,
   // },
+  {
+    path: "/project2/user",
+    element: <UserPage />,
+  },
   {
     path: "/project2/search/",
     element: <SearchPage />,
