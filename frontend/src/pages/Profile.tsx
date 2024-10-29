@@ -143,9 +143,11 @@ const Profile = ({ username }: Props) => {
               {commentsError && (
                 <p>Error loading comments: {commentsError.message}</p>
               )}
-              {comments.map((comment) => (
-                <Comment comment={comment} key={comment.id} />
-              ))}
+              <div className="w-full max-w-lg">
+                {comments.map((comment) => (
+                  <Comment comment={comment} key={comment.id} />
+                ))}
+              </div>
               {!commentsLoading && comments.length === 0 && (
                 <p>No comments to display.</p>
               )}
