@@ -32,6 +32,10 @@ createPost(body, author) -> Takes in author and body and creates a post
 
 createUser(username) -> Takes in a username and creates a user if the username doesn't already exist
 
+deletePost(id) -> Takes in postId and deletes that post and all comments attached to that post
+
+deleteComment(id) -> Takes in commentId and deletes that comment
+
 createComment(body, author, postId) -> Takes in a body, author and parent postId and creates a comment
 
 likePost(postId, username) -> Takes in a postID and username. Checks if the user has already liked a post, and if not likes the post

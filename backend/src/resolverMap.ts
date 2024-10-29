@@ -89,6 +89,31 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating comment');
       }
     },
+    deletePost: async (_, { id }) => {
+      try {
+        const deletedPost = await Post.findByIdAndDelete(id);
+        if (!deletedPost) {
+          throw new Error('Post not found');
+        }
+        await Comment.deleteMany({ parentID: id });
+
+        return deletedPost;
+      } catch (err) {
+        throw new Error(`Error deleting post and its comments: ${(err as Error).message}`);
+      }
+    },
+
+    deleteComment: async (_, { id }) => {
+      try {
+        const deletedComment = await Comment.findByIdAndDelete(id);
+        if (!deletedComment) {
+          throw new Error('Comment not found');
+        }
+        return deletedComment;
+      } catch (err) {
+        throw new Error(`Error deleting comment: ${(err as Error).message}`);
+      }
+    },
     likePost: async (_, { postID }, { username }) => {
       try {
         const user = await User.findOne({ username });
