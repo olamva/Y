@@ -14,8 +14,15 @@ import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 
 type ViewState = "posts" | "likes" | "comments";
 
-const Profile = () => {
-  const { username } = useParams<{ username: string }>();
+interface Props {
+  username?: string;
+}
+
+const Profile = ({ username }: Props) => {
+  const { username: paramUsername } = useParams<{ username: string }>();
+  if (!username) {
+    username = paramUsername;
+  }
   const [currentView, setCurrentView] = useState<ViewState>("posts");
 
   const {
@@ -37,8 +44,6 @@ const Profile = () => {
     variables: { ids: user?.postIds || [] },
     skip: !user || !user.postIds.length,
   });
-
-  console.log(user);
 
   const posts: PostType[] = postsData?.getPostsByIds || [];
 

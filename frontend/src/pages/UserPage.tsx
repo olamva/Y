@@ -2,6 +2,7 @@ import { useAuth } from "@/components/AuthContext";
 import LoginForm from "@/components/LoginForm";
 import { GET_USER_QUERY } from "@/queries/user";
 import { useQuery } from "@apollo/client";
+import Profile from "./Profile";
 
 const UserPage = () => {
   const { isLoggedIn, user } = useAuth();
@@ -25,9 +26,10 @@ const UserPage = () => {
 
   return (
     <main className="flex flex-col justify-center">
-      <div>
-        <h2>Welcome, {data.getUser.username}</h2>
+      <div className="pt-5 text-center">
+        <h2 className="text-2xl font-bold">Welcome, {data.getUser.username}</h2>
       </div>
+      <Profile username={data.getUser.username} />
     </main>
   );
 };
