@@ -26,8 +26,6 @@ async function startServer() {
     throw new Error('MONGODB_URI environment variable is not defined');
   }
 
-  console.log('Connecting to', MONGODB_URI);
-
   mongoose
     .connect(MONGODB_URI)
     .then(() => {
