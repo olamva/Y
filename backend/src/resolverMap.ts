@@ -33,6 +33,16 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments');
       }
     },
+    async searchPosts(_: any, { query }: { query: string }) {
+      return await Post.find({
+        $or: [{ body: { $regex: query, $options: 'i' } }, { author: { $regex: query, $options: 'i' } }],
+      });
+    },
+    async searchUsers(_: any, { query }: { query: string }) {
+      return await User.find({
+        username: { $regex: query, $options: 'i' },
+      });
+    },
   },
 
   Mutation: {
