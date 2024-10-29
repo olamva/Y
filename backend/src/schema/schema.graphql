@@ -1,0 +1,16 @@
+type Query {
+  getPosts: [Post!]!
+  getPost(id: ID!): Post
+}
+
+type Post {
+  id: ID!
+  body: String!
+  author: String!
+  amtLikes: Int!
+  amtComments: Int!
+}
+
+type Mutation {
+  createPost(body: String!, author: String!): Post!
+}
