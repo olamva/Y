@@ -3,6 +3,7 @@ import { GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery } from "@apollo/client";
 import { jwtDecode } from "jwt-decode";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -67,13 +68,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setToken(newToken);
       fetchUser({ variables: { username: decoded.username } });
     } catch (error) {
-      console.error("Invalid token:", error);
+      toast.error(`Invalid token: ${(error as Error).message}`);
       logout();
     }
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    toast.success("Logged out successfully");
     setIsLoggedIn(false);
     setToken(null);
     setUser(null);
