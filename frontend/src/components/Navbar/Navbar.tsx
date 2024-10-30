@@ -41,7 +41,7 @@ const Navbar = () => {
               />
             </form>
             <div className="flex flex-row items-center gap-2">
-              {user && <Avatar username={user.username} />}
+              {user && <Avatar username={user.username} navbar />}
               {user ? (
                 <button
                   onClick={logout}
