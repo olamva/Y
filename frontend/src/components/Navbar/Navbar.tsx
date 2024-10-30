@@ -31,8 +31,8 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="flex max-w-xs flex-1 items-center gap-2 sm:max-w-md">
-          <form onSubmit={navigateSearch} className="flex-1">
+        <div className="justify-center md:justify-end flex max-w-xs flex-1 items-center gap-2 sm:max-w-md">
+          <form onSubmit={navigateSearch}>
             <input
               type="search"
               placeholder="Search here..."
