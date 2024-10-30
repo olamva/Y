@@ -25,18 +25,18 @@ export const formatTimestamp = (timestamp: number | string): string => {
   const intervals: { [key: string]: number } = {
     year: 31536000,
     month: 2592000,
-    week: 604800,
-    day: 86400,
-    hour: 3600,
-    minute: 60,
-    second: 1,
+    w: 604800,
+    d: 86400,
+    h: 3600,
+    m: 60,
+    s: 1,
   };
 
   for (const key in intervals) {
     const interval = intervals[key];
     const count = Math.floor(secondsElapsed / interval);
     if (count >= 1) {
-      return count === 1 ? `1 ${key} ago` : `${count} ${key}s ago`;
+      return `${count}${key}`;
     }
   }
 
