@@ -3,33 +3,98 @@ import { PostType } from "@/lib/types";
 import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
+import { useMutation } from "@apollo/client";
+import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
+import { useAuth } from "./AuthContext";
+import { TrashIcon } from "@heroicons/react/24/solid";
+import toast from "react-hot-toast";
 
 const Post = ({ post }: { post: PostType }) => {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
+  const [amtLikes, setAmtLikes] = useState(post.amtLikes);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
-    const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "[]");
-    if (likedPosts.includes(post.id)) {
+    setIsLiked(user?.likedPostIds.includes(post.id) ?? false);
+  }, [user?.likedPostIds, post.id]);
+
+  const [likePost] = useMutation(LIKE_POST, {
+    variables: { postID: post.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.likePost.amtLikes);
       setIsLiked(true);
-    }
-  }, [post.id]);
+    },
+    onError: (error) => {
+      toast.error(`Error liking post: ${error.message}`);
+    },
+  });
+
+  const [unlikePost] = useMutation(UNLIKE_POST, {
+    variables: { postID: post.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.unlikePost.amtLikes);
+      setIsLiked(false);
+    },
+    onError: (error) => {
+      toast.error(`Error unliking post: ${error.message}`);
+    },
+  });
+
+  const [deletePostMutation, { loading: deleteLoading, error: deleteError }] =
+    useMutation(DELETE_POST, {
+      variables: { id: post.id },
+      update: (cache, { data }) => {
+        if (!data) return;
+        const deletedPostId = data.deletePost.id;
+        cache.modify({
+          fields: {
+            getPosts(existingPosts = []) {
+              return existingPosts.filter(
+                (postRef: { __ref: string }) =>
+                  postRef.__ref !== `Post:${deletedPostId}`,
+              );
+            },
+          },
+        });
+      },
+      onCompleted: () => {
+        setIsDeleted(true);
+        toast.success("Post deleted successfully");
+      },
+      onError: (err) => {
+        toast.error(`Error deleting post: ${err.message}`);
+      },
+    });
 
   const toggleLike = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
 
-    const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "[]");
-
     if (isLiked) {
-      const updatedLikes = likedPosts.filter((id: string) => id !== post.id);
-      localStorage.setItem("likedPosts", JSON.stringify(updatedLikes));
+      unlikePost();
     } else {
-      likedPosts.push(post.id);
-      localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+      likePost();
     }
-
-    setIsLiked(!isLiked);
   };
+
+  const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this post?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deletePostMutation();
+    } catch (error) {
+      toast.error(`Error deleting post: ${(error as Error).message}`);
+    }
+  };
+
+  if (isDeleted) return null;
 
   return (
     <article
@@ -39,9 +104,21 @@ const Post = ({ post }: { post: PostType }) => {
         document.location.href = `/project2/post/${post.id}`;
       }}
     >
-      <header className="flex items-center gap-2">
-        <Avatar username={post.author} />
-        <p className="font-mono">{post.author}</p>
+      <header className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Avatar username={post.author} />
+          <p className="font-mono">{post.author}</p>
+        </div>
+        {user && user.username === post.author && (
+          <button
+            onClick={handleDelete}
+            className="text-gray-500 hover:text-red-500 focus:outline-none"
+            aria-label="Delete post"
+            disabled={deleteLoading}
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        )}
       </header>
 
       <p className="my-2">{post.body}</p>
@@ -53,13 +130,19 @@ const Post = ({ post }: { post: PostType }) => {
           ) : (
             <HeartIcon className="size-6 hover:scale-110" />
           )}
-          <span>{isLiked ? post.amtLikes + 1 : post.amtLikes}</span>
+          <span>{amtLikes}</span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
           <span>{post.amtComments}</span>
         </div>
       </footer>
+
+      {deleteError && (
+        <p className="mt-2 text-sm text-red-500">
+          Error deleting post: {deleteError.message}
+        </p>
+      )}
     </article>
   );
 };

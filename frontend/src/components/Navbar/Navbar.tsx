@@ -1,14 +1,20 @@
-import Avatar from "@/components/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
+import { UserIcon } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../AuthContext";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { isLoggedIn, logout } = useAuth();
 
   const navigateSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     window.location.href = `/project2/search?q=${encodeURIComponent(searchQuery)}`;
+  };
+
+  const login = () => {
+    window.location.href = "/project2/user";
   };
 
   return (
@@ -34,8 +40,25 @@ const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <div className="p-2 hover:scale-110">
-              <Avatar username="John" />
+            <div className="flex flex-row gap-2">
+              <a href="/project2/user" className="p-2 hover:scale-110">
+                <UserIcon size={24} />
+              </a>
+              {isLoggedIn ? (
+                <button
+                  onClick={logout}
+                  className="ml-2 rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
+                >
+                  Logout
+                </button>
+              ) : (
+                <button
+                  onClick={login}
+                  className="ml-2 rounded-md bg-green-600 px-3 py-1 text-sm font-semibold text-white hover:bg-green-700"
+                >
+                  Login
+                </button>
+              )}
             </div>
           </div>
           <DropdownMenu />

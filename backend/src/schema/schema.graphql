@@ -5,6 +5,8 @@ type Query {
   getUser(username: String!): User
   searchAll(query: String!): [SearchResult!]!
   searchUsers(query: String!): [User!]!
+  getPostsByIds(ids: [ID!]!): [Post!]!
+  getCommentsByIds(ids: [ID!]!): [Comment!]!
 }
 
 union SearchResult = User | Post
@@ -36,11 +38,12 @@ type User {
 }
 
 type Mutation {
-  createPost(body: String!, author: String!): Post!
-  createComment(body: String!, author: String!, parentID: ID!): Comment!
+  createPost(body: String!): Post!
+  createComment(body: String!, parentID: ID!): Comment!
   deletePost(id: ID!): Post!
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!
   unlikePost(postID: ID!): Post!
-  createUser(username: String!): User!
+  register(username: String!, password: String!): String!
+  login(username: String!, password: String!): String!
 }
