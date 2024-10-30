@@ -88,6 +88,9 @@ export const resolvers: IResolvers = {
       if (!user) {
         throw new UserInputError('User not found');
       }
+      if (body.length > 281) {
+        throw new UserInputError('Post body exceeds 281 characters');
+      }
 
       try {
         const newPost = new Post({ body, author: user.username });
@@ -106,6 +109,15 @@ export const resolvers: IResolvers = {
       if (existingUser) {
         throw new Error('Username already exists');
       }
+
+      if (username.length < 3 || password.length < 6) {
+        throw new Error('Username must be at least 3 characters and password must be at least 6 characters');
+      }
+
+      if (username.length > 20 || password.length > 20) {
+        throw new Error('Username and password must be at most 20 characters');
+      }
+
       const user = new User({ username, password });
       await user.save();
       const token = signToken(user);
@@ -135,6 +147,10 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
+      if (body.length > 281) {
+        throw new UserInputError('Post body exceeds 281 characters');
+      }
+
       try {
         const newComment = new Comment({ body, author: user.username, parentID: parentID });
         const savedComment = await newComment.save();
@@ -159,7 +175,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (!user.postIds.includes(id)) {
+      if (!user.postIds.includes(id) || user.username !== 'admin') {
         throw new AuthenticationError('You are not authorized to delete this post');
       }
 
@@ -186,7 +202,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (!user.commentIds.includes(id)) {
+      if (!user.commentIds.includes(id) || user.username !== 'admin') {
         throw new AuthenticationError('You are not authorized to delete this comment');
       }
 
