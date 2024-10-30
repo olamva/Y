@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
-import { useAuth } from "./AuthContext";
+import { useMutation } from "@apollo/client";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "./AuthContext";
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -74,9 +74,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-96 rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-800">
+      <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
+        <h1 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
           {isLogin ? "Login" : "Register"}
         </h1>
         <form
@@ -86,7 +86,7 @@ const LoginForm = () => {
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
             >
               Username
             </label>
@@ -96,14 +96,14 @@ const LoginForm = () => {
               name="username"
               value={formData.username}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
               required
             />
           </div>
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
             >
               Password
             </label>
@@ -113,7 +113,7 @@ const LoginForm = () => {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
               required
             />
           </div>
@@ -144,7 +144,7 @@ const LoginForm = () => {
           <button
             type="submit"
             disabled={loginLoading || registerLoading}
-            className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+            className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 ${
               (loginLoading || registerLoading) &&
               "cursor-not-allowed opacity-50"
             }`}
@@ -161,7 +161,7 @@ const LoginForm = () => {
         <div className="mt-4 text-center">
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-indigo-600 hover:text-indigo-500"
+            className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
           >
             {isLogin
               ? "Need an account? Register"

@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery, useMutation } from "@apollo/client";
+import { useAuth } from "@/components/AuthContext";
 import Comment from "@/components/Comment";
 import Post from "@/components/Post";
 import { Button } from "@/components/ui/button";
 import TextInput from "@/form/TextInput";
 import { CommentType, PostType } from "@/lib/types";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import { GET_POST } from "@/queries/posts";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
+import { GET_POST } from "@/queries/posts";
+import { useMutation, useQuery } from "@apollo/client";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "@/components/AuthContext";
+import { useParams } from "react-router-dom";
 
 const PostPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -103,26 +104,26 @@ const PostPage = () => {
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
         >
-          <div className="w-full max-w-xl">
+          <div className="mt-2 flex w-full max-w-md items-center gap-2">
             <TextInput
               id="commentText"
-              label="Write a comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your reply..."
               required
             />
+            <button
+              type="submit"
+              disabled={createLoading}
+              className={`rounded-md border border-transparent p-1 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                comment && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400"
+              }`}
+            >
+              <PaperAirplaneIcon className="size-6" />
+            </button>
           </div>
-          <button
-            type="submit"
-            disabled={createLoading}
-            className={`rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-              comment && user
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "cursor-not-allowed bg-gray-400"
-            }`}
-          >
-            {createLoading ? "Adding..." : "Add Comment"}
-          </button>
           {createError && (
             <p className="text-red-500">
               Error adding comment: {createError.message}

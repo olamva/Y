@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useQuery, useMutation, NetworkStatus } from "@apollo/client";
 import Post from "@/components/Post";
 import TextInput from "@/form/TextInput";
 import { PostType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
-import { Button } from "@/components/ui/button";
+import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "./components/AuthContext";
 
@@ -24,22 +24,24 @@ const HomePage = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  const [createPost, { loading: createLoading, error: createError }] =
-    useMutation<{ createPost: PostType }, { body: string }>(CREATE_POST, {
-      variables: { body: postBody },
+  const [createPost, { loading: createLoading }] = useMutation<
+    { createPost: PostType },
+    { body: string }
+  >(CREATE_POST, {
+    variables: { body: postBody },
 
-      onError: (err) => {
-        console.error("Error creating post:", err);
-        toast.error(`Error adding post: ${err.message}`);
-      },
-      onCompleted: () => {
-        setPostBody("");
-        toast.success("Post added successfully!");
-      },
-      refetchQueries: [
-        { query: GET_POSTS, variables: { page: 1, limit: PAGE_SIZE } },
-      ],
-    });
+    onError: (err) => {
+      console.error("Error creating post:", err);
+      toast.error(`Error adding post: ${err.message}`);
+    },
+    onCompleted: () => {
+      setPostBody("");
+      toast.success("Post added successfully!");
+    },
+    refetchQueries: [
+      { query: GET_POSTS, variables: { page: 1, limit: PAGE_SIZE } },
+    ],
+  });
 
   const handleAddPost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,33 +107,27 @@ const HomePage = () => {
   return (
     <main className="flex w-full flex-col items-center p-4">
       <form
-        className="mb-8 flex w-full max-w-xl flex-col items-center gap-4"
+        className="mb-2 flex w-full max-w-md items-center gap-2"
         onSubmit={handleAddPost}
       >
         <TextInput
           id="postText"
-          label="Write a post"
           value={postBody}
           onChange={(e) => setPostBody(e.target.value)}
           required
           placeholder="What's on your mind?"
         />
-        <Button
+        <button
           type="submit"
-          disabled={createLoading || postBody.trim() === ""}
-          className={`w-full max-w-xl ${
-            postBody.trim() && user
+          disabled={createLoading}
+          className={`rounded-md border border-transparent p-1 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+            postBody && user
               ? "bg-indigo-600 hover:bg-indigo-700"
-              : "cursor-not-allowed bg-gray-400"
-          } rounded-md py-2 text-white`}
+              : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+          }`}
         >
-          {createLoading ? "Adding..." : "Add Post"}
-        </Button>
-        {createError && (
-          <p className="text-sm text-red-500">
-            Error adding post: {createError.message}
-          </p>
-        )}
+          <PaperAirplaneIcon className="size-6" />
+        </button>
       </form>
 
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}

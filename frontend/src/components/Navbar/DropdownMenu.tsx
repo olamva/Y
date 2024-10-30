@@ -69,7 +69,7 @@ export const DropdownMenu = () => {
       </div>
 
       <div
-        className={`absolute right-0 top-12 z-50 mt-2 w-48 rounded-md border border-gray-500 bg-gray-300 text-gray-900 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:text-white ${
+        className={`absolute right-0 top-12 z-50 mt-2 w-48 rounded-md border border-gray-500 bg-gray-300 text-gray-900 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:text-white overflow-hidden ${
           isOpen
             ? "scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0"

@@ -1,12 +1,12 @@
 import { CommentType, PostType } from "@/lib/types";
-import Avatar from "./Avatar";
-import { useAuth } from "./AuthContext";
-import { useMutation } from "@apollo/client";
 import { DELETE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
+import { useMutation } from "@apollo/client";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "./AuthContext";
+import Avatar from "./Avatar";
 
 const Comment = ({ comment }: { comment: CommentType }) => {
   const { user } = useAuth();
@@ -79,30 +79,37 @@ const Comment = ({ comment }: { comment: CommentType }) => {
   if (isDeleted) return null;
 
   return (
-    <div className="relative flex w-full flex-col gap-2 rounded-lg border border-gray-400 bg-gray-100 p-4 dark:bg-gray-900">
+    <article className="relative flex w-full flex-col rounded-lg border border-gray-400 bg-gray-100 p-4 dark:bg-gray-900">
       <header className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={comment.author} />
-          <p className="font-mono">{comment.author}</p>
+          <a href={`/project2/user/${comment.author}`}>
+            <p className="font-mono underline-offset-4 hover:underline">
+              {comment.author}
+            </p>
+          </a>
         </div>
-        {user && user.username === comment.author && (
-          <button
-            onClick={handleDelete}
-            className="text-gray-500 hover:text-red-500 focus:outline-none"
-            aria-label="Delete comment"
-            disabled={deleteLoading}
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
-        )}
+        {user &&
+          (user.username === comment.author || user.username === "admin") && (
+            <button
+              onClick={handleDelete}
+              className="text-gray-500 hover:text-red-500 focus:outline-none"
+              aria-label="Delete comment"
+              disabled={deleteLoading}
+            >
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          )}
       </header>
-      <p className="text-gray-900 dark:text-gray-200">{comment.body}</p>
+      <p className="mx-1 my-2 text-gray-900 dark:text-gray-200">
+        {comment.body}
+      </p>
       {deleteError && (
         <p className="text-sm text-red-500">
           Error deleting comment: {deleteError.message}
         </p>
       )}
-    </div>
+    </article>
   );
 };
 
