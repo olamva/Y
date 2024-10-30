@@ -53,17 +53,24 @@ const SearchPage = () => {
         </select>
       </div>
       {filteredResults.length > 0 ? (
-        filteredResults.map((item) =>
-          item.__typename === "Post" ? (
-            <div key={item.id} className="flex w-full justify-center">
-              <Post post={item as PostType} />
-            </div>
-          ) : (
-            <div key={item.id} className="flex w-full justify-center gap-2">
-              <ProfileCard user={item} />
-            </div>
-          ),
-        )
+        <div
+          className={`grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3`}
+        >
+          {filteredResults.map((item) =>
+            item.__typename === "Post" ? (
+              <div
+                key={item.id}
+                className="col-span-1 flex justify-center sm:col-span-2 lg:col-span-3"
+              >
+                <Post post={item as PostType} />
+              </div>
+            ) : (
+              <div key={item.id} className="col-span-1 flex justify-center">
+                <ProfileCard user={item} />
+              </div>
+            ),
+          )}
+        </div>
       ) : (
         <p className="text-center text-gray-500">No results found.</p>
       )}
