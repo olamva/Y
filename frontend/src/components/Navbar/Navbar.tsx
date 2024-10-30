@@ -19,7 +19,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed flex h-20 w-full items-center justify-between bg-gray-200/80 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
+      <nav className="fixed flex h-20 w-full z-10 items-center justify-between bg-gray-200/80 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
         <a
           href="/"
           className="group flex items-center justify-center gap-5 hover:scale-110 hover:text-gray-300"

@@ -80,7 +80,7 @@ export const DropdownMenu = () => {
             href={route.href}
             key={i}
             onClick={closeMenu}
-            className="flex flex-row items-center gap-2 px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+            className="flex flex-row items-center gap-2 p-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           >
             {route.icon}
             {route.name}

@@ -3,6 +3,7 @@ import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
 import { Button } from "@/components/ui/button";
+import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
@@ -97,8 +98,9 @@ const PostPage = () => {
           <p>Back</p>
         </Button>
       </header>
-      <main className="flex flex-col items-center pt-5">
+      <main className="px-4 flex flex-col items-center pt-5">
         <Post post={postData.getPost} doesntRedirect />
+        <Divider />
         <form
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
