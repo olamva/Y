@@ -1,17 +1,17 @@
 import HomePage from "@/App.tsx";
+import { AuthProvider } from "@/components/AuthContext";
+import Navbar from "@/components/Navbar/Navbar.tsx";
 import "@/globals.css";
+import { client } from "@/lib/apolloClient";
+import PostPage from "@/pages/PostPage.tsx";
+import Profile from "@/pages/Profile";
+import SearchPage from "@/pages/Search.tsx";
+import UserPage from "@/pages/UserPage";
+import { ApolloProvider } from "@apollo/client";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Navbar from "@/components/Navbar/Navbar.tsx";
-import SearchPage from "@/pages/Search.tsx";
-import PostPage from "@/pages/PostPage.tsx";
-import { client } from "./lib/apolloClient";
-import { ApolloProvider } from "@apollo/client";
-import UserPage from "./pages/UserPage";
-import { AuthProvider } from "./components/AuthContext";
 import { Toaster } from "react-hot-toast";
-import Profile from "./pages/Profile";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {

@@ -1,14 +1,10 @@
-import Avatar from "@/components/Avatar";
-import PostBody from "@/components/PostBody";
+import { useAuth } from "@/components/AuthContext";
+import PostContent from "@/components/Post/PostContent";
 import { PostType } from "@/lib/types";
 import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 import { useMutation } from "@apollo/client";
-import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
-import { TrashIcon } from "@heroicons/react/24/solid";
-import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { MouseEvent, TouchEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./AuthContext";
 
 interface PostProps {
   post: PostType;
@@ -102,61 +98,17 @@ const Post = ({ post, doesntRedirect }: PostProps) => {
   if (isDeleted) return null;
 
   return (
-    <article
-      className={`m-2 w-full max-w-xl rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"}`}
-      onClick={(e: MouseEvent | TouchEvent) => {
-        e.stopPropagation();
-        if (!doesntRedirect) {
-          document.location.href = `/project2/post/${post.id}`;
-        }
-      }}
-    >
-      <header className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Avatar username={post.author} />
-          <a href={`/project2/user/${post.author}`}>
-            <p className="font-mono underline-offset-4 hover:underline">
-              <span className="font-sans">@</span>
-              {post.author}
-            </p>
-          </a>
-        </div>
-        {user &&
-          (user.username === post.author || user.username === "admin") && (
-            <button
-              onClick={handleDelete}
-              className="text-gray-500 hover:text-red-500 focus:outline-none"
-              aria-label="Delete post"
-              disabled={deleteLoading}
-            >
-              <TrashIcon className="h-5 w-5" />
-            </button>
-          )}
-      </header>
-
-      <PostBody text={post.body} />
-
-      <footer className="flex w-full justify-around">
-        <button className="flex items-center gap-1" onClick={toggleLike}>
-          {isLiked ? (
-            <HeartFilledIcon className="size-6 text-red-600 hover:scale-110" />
-          ) : (
-            <HeartIcon className="size-6 hover:scale-110" />
-          )}
-          <span>{amtLikes}</span>
-        </button>
-        <div className="flex items-center gap-1">
-          <ChatBubbleLeftIcon className="size-6" />
-          <span>{post.amtComments}</span>
-        </div>
-      </footer>
-
-      {deleteError && (
-        <p className="mt-2 text-sm text-red-500">
-          Error deleting post: {deleteError.message}
-        </p>
-      )}
-    </article>
+    <PostContent
+      post={post}
+      handleDelete={handleDelete}
+      toggleLike={toggleLike}
+      isLiked={isLiked}
+      amtLikes={amtLikes}
+      deleteLoading={deleteLoading}
+      deleteError={deleteError}
+      doesntRedirect={doesntRedirect}
+      className="border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
+    />
   );
 };
 

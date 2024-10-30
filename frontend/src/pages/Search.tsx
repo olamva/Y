@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { SEARCH_ALL } from "@/queries/search";
-import Post from "@/components/Post";
+import Post from "@/components/Post/Post";
 import { PostType, UserType } from "@/lib/types";
 import ProfileCard from "@/components/ProfileCard";
 import { useState } from "react";
