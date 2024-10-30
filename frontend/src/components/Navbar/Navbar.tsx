@@ -45,14 +45,14 @@ const Navbar = () => {
               {user ? (
                 <button
                   onClick={logout}
-                  className="ml-2 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700"
+                  className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700"
                 >
                   Logout
                 </button>
               ) : (
                 <button
                   onClick={login}
-                  className="ml-2 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-700"
+                  className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-700"
                 >
                   Login
                 </button>
