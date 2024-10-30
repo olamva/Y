@@ -1,12 +1,12 @@
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import { UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../AuthContext";
+import Avatar from "../Avatar";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { isLoggedIn, logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const navigateSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,21 +40,19 @@ const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <div className="flex flex-row gap-2">
-              <a href="/project2/user" className="p-2 hover:scale-110">
-                <UserIcon size={24} />
-              </a>
-              {isLoggedIn ? (
+            <div className="flex flex-row items-center gap-2">
+              {user && <Avatar username={user.username} />}
+              {user ? (
                 <button
                   onClick={logout}
-                  className="ml-2 rounded-md bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
+                  className="ml-2 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700"
                 >
                   Logout
                 </button>
               ) : (
                 <button
                   onClick={login}
-                  className="ml-2 rounded-md bg-green-600 px-3 py-1 text-sm font-semibold text-white hover:bg-green-700"
+                  className="ml-2 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-700"
                 >
                   Login
                 </button>

@@ -1,13 +1,13 @@
 import Avatar from "@/components/Avatar";
 import { PostType } from "@/lib/types";
+import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
+import { useMutation } from "@apollo/client";
 import { ChatBubbleLeftIcon, HeartIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/solid";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
-import { useMutation } from "@apollo/client";
-import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
-import { useAuth } from "./AuthContext";
-import { TrashIcon } from "@heroicons/react/24/solid";
 import toast from "react-hot-toast";
+import { useAuth } from "./AuthContext";
 
 const Post = ({ post }: { post: PostType }) => {
   const { user } = useAuth();
@@ -107,21 +107,26 @@ const Post = ({ post }: { post: PostType }) => {
       <header className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={post.author} />
-          <p className="font-mono">{post.author}</p>
+          <a href={`/project2/user/${post.author}`}>
+            <p className="font-mono underline-offset-4 hover:underline">
+              {post.author}
+            </p>
+          </a>
         </div>
-        {user && user.username === post.author && (
-          <button
-            onClick={handleDelete}
-            className="text-gray-500 hover:text-red-500 focus:outline-none"
-            aria-label="Delete post"
-            disabled={deleteLoading}
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
-        )}
+        {user &&
+          (user.username === post.author || user.username === "admin") && (
+            <button
+              onClick={handleDelete}
+              className="text-gray-500 hover:text-red-500 focus:outline-none"
+              aria-label="Delete post"
+              disabled={deleteLoading}
+            >
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          )}
       </header>
 
-      <p className="my-2">{post.body}</p>
+      <p className="mx-1 my-2">{post.body}</p>
 
       <footer className="flex w-full justify-around">
         <button className="flex items-center gap-1" onClick={toggleLike}>
