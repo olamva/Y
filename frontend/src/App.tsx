@@ -1,11 +1,11 @@
+import { useAuth } from "@/components/AuthContext";
+import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
 import { PostType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./components/AuthContext";
-import CreatePostField from "./components/CreatePostField";
 
 const PAGE_SIZE = 10;
 

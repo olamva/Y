@@ -1,8 +1,8 @@
+import { useAuth } from "@/components/AuthContext";
+import Avatar from "@/components/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { useState } from "react";
-import { useAuth } from "../AuthContext";
-import Avatar from "../Avatar";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");

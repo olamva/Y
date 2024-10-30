@@ -1,8 +1,8 @@
+import { useAuth } from "@/components/AuthContext";
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./AuthContext";
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);

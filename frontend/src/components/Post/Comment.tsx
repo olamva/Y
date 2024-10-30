@@ -1,10 +1,10 @@
+import PostContent from "@/components/Post/PostContent";
 import { CommentType, PostType } from "@/lib/types";
 import { DELETE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import PostContent from "./PostContent";
 
 const Comment = ({ comment }: { comment: CommentType }) => {
   const [isDeleted, setIsDeleted] = useState(false);

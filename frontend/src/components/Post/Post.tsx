@@ -1,10 +1,10 @@
+import { useAuth } from "@/components/AuthContext";
+import PostContent from "@/components/Post/PostContent";
 import { PostType } from "@/lib/types";
 import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "../AuthContext";
-import PostContent from "./PostContent";
 
 interface PostProps {
   post: PostType;

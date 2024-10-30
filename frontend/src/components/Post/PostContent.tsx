@@ -1,12 +1,12 @@
+import { useAuth } from "@/components/AuthContext";
+import Avatar from "@/components/Avatar";
+import PostBody from "@/components/Post/PostBody";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent } from "react";
-import { useAuth } from "../AuthContext";
-import Avatar from "../Avatar";
-import PostBody from "./PostBody";
 
 interface PostContentProps {
   post: PostType | CommentType;

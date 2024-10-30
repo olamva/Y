@@ -1,3 +1,4 @@
+import { useAuth } from "@/components/AuthContext";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import {
   Bars3Icon,
@@ -5,9 +6,8 @@ import {
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../AuthContext";
 import { LogInIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
