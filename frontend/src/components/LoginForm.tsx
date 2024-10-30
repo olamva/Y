@@ -87,6 +87,7 @@ const LoginForm = () => {
           <FormField
             label="Username"
             id="username"
+            autocomplete="username"
             type="text"
             value={formData.username}
             onChange={handleInputChange}
@@ -94,6 +95,7 @@ const LoginForm = () => {
           <FormField
             label="Password"
             id="password"
+            autocomplete="current-password"
             type="password"
             value={formData.password}
             onChange={handleInputChange}
