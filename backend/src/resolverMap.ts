@@ -55,6 +55,10 @@ export const resolvers: IResolvers = {
       }
     },
     async searchAll(_: any, { query }: { query: string }) {
+      if (query.length > 40) {
+        throw new UserInputError('Query can max be 40 characters');
+      }
+
       try {
         const posts = await Post.find({
           $or: [{ body: { $regex: query, $options: 'i' } }, { author: { $regex: query, $options: 'i' } }],
@@ -71,6 +75,10 @@ export const resolvers: IResolvers = {
     },
 
     async searchUsers(_: any, { query }: { query: string }) {
+      if (query.length > 40) {
+        throw new UserInputError('Query can max be 40 characters');
+      }
+
       return await User.find({
         username: { $regex: query, $options: 'i' },
       });
