@@ -1,3 +1,4 @@
+import FormField from "@/components/FormField";
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import React, { useState } from "react";
@@ -83,63 +84,29 @@ const LoginForm = () => {
           onSubmit={isLogin ? handleLogin : handleRegister}
           className="space-y-4"
         >
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
-              required
-            />
-          </div>
+          <FormField
+            label="Username"
+            id="username"
+            type="text"
+            value={formData.username}
+            onChange={handleInputChange}
+          />
+          <FormField
+            label="Password"
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={handleInputChange}
+          />
           {!isLogin && (
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                required
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
+            <FormField
+              label="Confirm Password"
+              id="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              errors={errors}
+            />
           )}
           <button
             type="submit"
