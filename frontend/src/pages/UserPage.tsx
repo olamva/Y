@@ -25,7 +25,7 @@ const UserPage = () => {
   }
 
   return (
-    <main className="flex flex-col justify-center">
+    <main className="flex w-full flex-col justify-center">
       <div className="pt-5 text-center">
         <h2 className="text-2xl font-bold">Welcome, {data.getUser.username}</h2>
       </div>

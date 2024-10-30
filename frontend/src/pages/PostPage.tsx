@@ -86,7 +86,7 @@ const PostPage = () => {
   }
 
   return (
-    <>
+    <div className="w-full">
       <header>
         <Button
           className="m-2 flex gap-2 text-xl"
@@ -138,7 +138,7 @@ const PostPage = () => {
           </>
         )}
       </main>
-    </>
+    </div>
   );
 };
 

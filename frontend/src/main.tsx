@@ -1,5 +1,6 @@
 import HomePage from "@/App.tsx";
 import { AuthProvider } from "@/components/AuthContext";
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar.tsx";
 import "@/globals.css";
 import { client } from "@/lib/apolloClient";
@@ -12,7 +13,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Footer from "./components/Footer";
 
 const router = createBrowserRouter([
   {
@@ -42,11 +42,13 @@ createRoot(document.getElementById("root")!).render(
     <ApolloProvider client={client}>
       <AuthProvider>
         <Toaster />
-        <div className="min-h-screen">
+        <div className="flex min-h-svh flex-col bg-gray-100 dark:bg-gray-800">
           <Navbar />
-          <RouterProvider router={router} />
+          <div className="flex items-start mb-4 flex-grow">
+            <RouterProvider router={router} />
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </AuthProvider>
     </ApolloProvider>
   </StrictMode>,
