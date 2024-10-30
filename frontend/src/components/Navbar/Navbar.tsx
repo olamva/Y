@@ -35,6 +35,7 @@ const Navbar = () => {
           <form onSubmit={navigateSearch}>
             <input
               type="search"
+              id="search"
               placeholder="Search here..."
               className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
               value={searchQuery}
