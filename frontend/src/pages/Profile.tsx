@@ -73,7 +73,7 @@ const Profile = ({ username }: Props) => {
   if (userError) return <p>Error loading user: {userError.message}</p>;
 
   return (
-    <div>
+    <div className="w-full">
       <header>
         <Button
           className="m-2 flex gap-2 text-xl"

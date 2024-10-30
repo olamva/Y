@@ -1,5 +1,6 @@
 import HomePage from "@/App.tsx";
 import { AuthProvider } from "@/components/AuthContext";
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar.tsx";
 import "@/globals.css";
 import { client } from "@/lib/apolloClient";
@@ -41,9 +42,12 @@ createRoot(document.getElementById("root")!).render(
     <ApolloProvider client={client}>
       <AuthProvider>
         <Toaster />
-        <div className="min-h-screen">
+        <div className="flex min-h-svh flex-col bg-gray-100 dark:bg-gray-800">
           <Navbar />
-          <RouterProvider router={router} />
+          <div className="flex items-start mb-4 flex-grow">
+            <RouterProvider router={router} />
+          </div>
+          <Footer />
         </div>
       </AuthProvider>
     </ApolloProvider>
