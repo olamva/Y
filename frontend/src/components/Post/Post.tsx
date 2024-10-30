@@ -107,6 +107,7 @@ const Post = ({ post, doesntRedirect }: PostProps) => {
       deleteLoading={deleteLoading}
       deleteError={deleteError}
       doesntRedirect={doesntRedirect}
+      className="border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
     />
   );
 };

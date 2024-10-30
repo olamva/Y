@@ -19,8 +19,7 @@ const PostBody = ({ text }: { text: string }) => {
       const lines = bodyRef.current.scrollHeight / lineHeight;
       if (lines <= 3) {
         setIsExpanded(true);
-      }
-      if (lines > 3) {
+      } else {
         setShowReadMore(true);
       }
     }

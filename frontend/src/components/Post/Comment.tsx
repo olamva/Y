@@ -81,6 +81,7 @@ const Comment = ({ comment }: { comment: CommentType }) => {
       handleDelete={handleDelete}
       deleteLoading={deleteLoading}
       deleteError={deleteError}
+      className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
       doesntRedirect
     />
   );

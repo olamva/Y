@@ -17,6 +17,7 @@ interface PostContentProps {
   handleDelete: (e: MouseEvent<HTMLButtonElement>) => Promise<void>;
   deleteLoading: boolean;
   deleteError: ApolloError | undefined;
+  className?: string;
 }
 const PostContent = ({
   post,
@@ -27,16 +28,13 @@ const PostContent = ({
   handleDelete,
   deleteLoading,
   deleteError,
+  className = "",
 }: PostContentProps) => {
   const { user } = useAuth();
   const isComment = "parentID" in post;
   return (
     <article
-      className={`my-2 w-full max-w-xl rounded-md border-2 p-3 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${
-        isComment
-          ? "bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
-          : "border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
-      }`}
+      className={`my-2 w-full max-w-xl rounded-md border-2 p-3 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
