@@ -1,4 +1,5 @@
 import Avatar from "@/components/Avatar";
+import PostBody from "@/components/PostBody";
 import { PostType } from "@/lib/types";
 import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 import { useMutation } from "@apollo/client";
@@ -9,7 +10,11 @@ import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "./AuthContext";
 
-const Post = ({ post }: { post: PostType }) => {
+interface PostProps {
+  post: PostType;
+  doesntRedirect?: boolean;
+}
+const Post = ({ post, doesntRedirect }: PostProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [amtLikes, setAmtLikes] = useState(post.amtLikes);
@@ -98,10 +103,12 @@ const Post = ({ post }: { post: PostType }) => {
 
   return (
     <article
-      className="m-2 w-full max-w-xl cursor-pointer rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+      className={`m-2 w-full max-w-xl rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
-        document.location.href = `/project2/post/${post.id}`;
+        if (!doesntRedirect) {
+          document.location.href = `/project2/post/${post.id}`;
+        }
       }}
     >
       <header className="flex items-center justify-between gap-2">
@@ -125,7 +132,7 @@ const Post = ({ post }: { post: PostType }) => {
           )}
       </header>
 
-      <p className="mx-1 my-2">{post.body}</p>
+      <PostBody text={post.body} />
 
       <footer className="flex w-full justify-around">
         <button className="flex items-center gap-1" onClick={toggleLike}>

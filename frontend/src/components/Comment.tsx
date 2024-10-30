@@ -1,3 +1,4 @@
+import PostBody from "@/components/PostBody";
 import { CommentType, PostType } from "@/lib/types";
 import { DELETE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
@@ -100,9 +101,8 @@ const Comment = ({ comment }: { comment: CommentType }) => {
             </button>
           )}
       </header>
-      <p className="mx-1 my-2 text-gray-900 dark:text-gray-200">
-        {comment.body}
-      </p>
+      <PostBody text={comment.body} />
+
       {deleteError && (
         <p className="text-sm text-red-500">
           Error deleting comment: {deleteError.message}
