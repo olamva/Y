@@ -4,7 +4,7 @@ type ContentType = {
   author: string;
   amtLikes: number;
   amtComments: number;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type PostType = ContentType & {
