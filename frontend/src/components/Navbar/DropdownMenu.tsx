@@ -61,9 +61,9 @@ export const DropdownMenu = () => {
           }`}
         >
           {isOpen ? (
-            <XMarkIcon className="h-8 w-8 text-white" />
+            <XMarkIcon className="size-8" />
           ) : (
-            <Bars3Icon className="h-8 w-8 text-white" />
+            <Bars3Icon className="size-8" />
           )}
         </div>
       </div>
