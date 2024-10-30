@@ -7,7 +7,7 @@ export const DropdownMenu = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const routes = [
-    { name: "Profile", href: "/" },
+    { name: "Profile", href: "/project2/user" },
     { name: "Homepage", href: "/" },
   ];
 
