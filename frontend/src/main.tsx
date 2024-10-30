@@ -45,8 +45,8 @@ createRoot(document.getElementById("root")!).render(
         <div className="min-h-screen">
           <Navbar />
           <RouterProvider router={router} />
-          <Footer />
         </div>
+        <Footer />
       </AuthProvider>
     </ApolloProvider>
   </StrictMode>,
