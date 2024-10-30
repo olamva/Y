@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (storedToken) {
       try {
         const decoded: DecodedToken = jwtDecode(storedToken);
-        if (decoded.exp * 1000 < Date.now()) {
+        if (decoded.exp * 1000 * 24 < Date.now()) {
           logout();
         } else {
           setIsLoggedIn(true);
