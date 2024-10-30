@@ -10,10 +10,12 @@ import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { GET_POST } from "@/queries/posts";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import toast from "react-hot-toast";
+import { useAuth } from "@/components/AuthContext";
 
 const PostPage = () => {
   const { id } = useParams<{ id: string }>();
   const [comment, setComment] = useState("");
+  const user = useAuth();
 
   const {
     data: postData,
@@ -114,7 +116,7 @@ const PostPage = () => {
             type="submit"
             disabled={createLoading}
             className={`rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-              comment
+              comment && user
                 ? "bg-indigo-600 hover:bg-indigo-700"
                 : "cursor-not-allowed bg-gray-400"
             }`}
