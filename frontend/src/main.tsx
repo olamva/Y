@@ -12,6 +12,7 @@ import UserPage from "./pages/UserPage";
 import { AuthProvider } from "./components/AuthContext";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
+import Footer from "./components/Footer";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ createRoot(document.getElementById("root")!).render(
         <div className="min-h-screen">
           <Navbar />
           <RouterProvider router={router} />
+          <Footer />
         </div>
       </AuthProvider>
     </ApolloProvider>
