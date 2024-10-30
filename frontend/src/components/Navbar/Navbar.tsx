@@ -30,6 +30,13 @@ const Navbar = () => {
             </span>
           </h1>
         </a>
+        <input
+          type="search"
+          placeholder="Search here..."
+          className="block w-44 rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800 md:hidden"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <div className="hidden flex-row items-center justify-center gap-2 text-center md:flex">
           <ThemeToggle />
           <form onSubmit={navigateSearch}>
