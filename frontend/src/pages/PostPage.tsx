@@ -103,7 +103,7 @@ const PostPage = () => {
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
         >
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-xl">
             <TextInput
               id="commentText"
               label="Write a comment"
@@ -135,7 +135,7 @@ const PostPage = () => {
         ) : commentsError ? (
           <p>Error loading comments: {commentsError.message}</p>
         ) : (
-          <div className="mt-4 flex w-full max-w-md flex-col gap-2">
+          <div className="mt-4 flex w-full max-w-xl flex-col gap-2">
             {commentsData?.getComments &&
             commentsData.getComments.length > 0 ? (
               commentsData.getComments.map((comment) => (
