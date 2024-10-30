@@ -1,12 +1,11 @@
-import Post from "@/components/Post";
-import TextInput from "@/form/TextInput";
+import Post from "@/components/Post/Post";
 import { PostType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "./components/AuthContext";
+import CreatePostField from "./components/CreatePostField";
 
 const PAGE_SIZE = 10;
 
@@ -110,24 +109,17 @@ const HomePage = () => {
         className="mb-2 flex w-full max-w-xl items-center gap-2"
         onSubmit={handleAddPost}
       >
-        <TextInput
-          id="postText"
-          value={postBody}
-          onChange={(e) => setPostBody(e.target.value)}
-          required
+        <CreatePostField
           placeholder="What's on your mind?"
-        />
-        <button
-          type="submit"
-          disabled={createLoading}
-          className={`rounded-md border border-transparent p-1 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+          value={postBody}
+          setValue={setPostBody}
+          loading={createLoading}
+          className={
             postBody && user
               ? "bg-indigo-600 hover:bg-indigo-700"
               : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-          }`}
-        >
-          <PaperAirplaneIcon className="size-6" />
-        </button>
+          }
+        />
       </form>
 
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
