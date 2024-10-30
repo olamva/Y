@@ -75,7 +75,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full flex justify-center self-center">
+    <div className="flex w-full justify-center self-center">
       <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
         <h1 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
           {isLogin ? "Login" : "Register"}

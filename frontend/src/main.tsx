@@ -44,7 +44,7 @@ createRoot(document.getElementById("root")!).render(
         <Toaster />
         <div className="flex min-h-svh flex-col bg-gray-100 dark:bg-gray-800">
           <Navbar />
-          <div className="flex items-start mb-4 flex-grow">
+          <div className="mb-4 flex flex-grow items-start">
             <RouterProvider router={router} />
           </div>
           <Footer />
