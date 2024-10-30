@@ -118,7 +118,7 @@ const PostPage = () => {
               className={`rounded-md border border-transparent p-1 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
                 comment && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-400"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }`}
             >
               <PaperAirplaneIcon className="size-6" />
