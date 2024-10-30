@@ -31,7 +31,7 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="justify-center md:justify-end flex max-w-xs flex-1 items-center gap-2 sm:max-w-md">
+        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-md md:justify-end">
           <form onSubmit={navigateSearch}>
             <input
               type="search"
