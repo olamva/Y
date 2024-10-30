@@ -1,13 +1,15 @@
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../AuthContext";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const routes = [
-    { name: "Profile", href: "/project2/user" },
+    { name: user ? "Profile" : "Login", href: "/project2/user" },
     { name: "Homepage", href: "/" },
   ];
 
