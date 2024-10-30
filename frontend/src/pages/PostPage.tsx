@@ -100,6 +100,9 @@ const PostPage = () => {
       </header>
       <main className="flex flex-col items-center pt-5">
         <Post post={postData.getPost} doesntRedirect />
+
+        <Divider />
+        
         <form
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
@@ -121,8 +124,6 @@ const PostPage = () => {
             </p>
           )}
         </form>
-
-        <Divider />
 
         {commentsLoading ? (
           <p>Loading comments...</p>

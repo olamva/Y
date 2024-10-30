@@ -32,5 +32,5 @@ export const formatTimestamp = (timestamp: number | string): string => {
     "Dec",
   ];
 
-  return `${day}. ${monthNames[monthIndex]} ${year}`;
+  return `${day}. ${monthNames[monthIndex]}${year === new Date().getFullYear() ? "" : " " + year}`;
 };
