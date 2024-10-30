@@ -98,11 +98,9 @@ const PostPage = () => {
           <p>Back</p>
         </Button>
       </header>
-      <main className="flex flex-col items-center pt-5">
+      <main className="px-4 flex flex-col items-center pt-5">
         <Post post={postData.getPost} doesntRedirect />
-
         <Divider />
-        
         <form
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}

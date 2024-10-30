@@ -34,7 +34,7 @@ const SearchPage = () => {
     }) || [];
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-col items-center justify-center px-5">
+    <main className="mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4">
       <h1 className="my-4 text-center text-2xl font-bold">
         Search results for: {searchQuery}
       </h1>
