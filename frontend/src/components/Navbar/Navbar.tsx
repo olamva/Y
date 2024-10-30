@@ -32,7 +32,7 @@ const Navbar = () => {
         </a>
 
         <div className="flex max-w-xs flex-1 items-center gap-2 sm:max-w-md">
-          <form onSubmit={navigateSearch} className="mx-4 flex-1">
+          <form onSubmit={navigateSearch} className="flex-1">
             <input
               type="search"
               placeholder="Search here..."
