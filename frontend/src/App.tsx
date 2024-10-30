@@ -104,37 +104,36 @@ const HomePage = () => {
 
   return (
     <main className="flex w-full flex-col items-center p-4">
-      {user && (
-        <form
-          className="mb-8 flex w-full max-w-md flex-col items-center gap-4"
-          onSubmit={handleAddPost}
+      <form
+        className="mb-8 flex w-full max-w-md flex-col items-center gap-4"
+        onSubmit={handleAddPost}
+      >
+        <TextInput
+          id="postText"
+          label="Write a post"
+          value={postBody}
+          onChange={(e) => setPostBody(e.target.value)}
+          required
+          placeholder="What's on your mind?"
+        />
+        <Button
+          type="submit"
+          disabled={createLoading || postBody.trim() === ""}
+          className={`w-full max-w-md ${
+            postBody.trim() && user
+              ? "bg-indigo-600 hover:bg-indigo-700"
+              : "cursor-not-allowed bg-gray-400"
+          } rounded-md py-2 text-white`}
         >
-          <TextInput
-            id="postText"
-            label="Write a post"
-            value={postBody}
-            onChange={(e) => setPostBody(e.target.value)}
-            required
-            placeholder="What's on your mind?"
-          />
-          <Button
-            type="submit"
-            disabled={createLoading || postBody.trim() === ""}
-            className={`w-full max-w-md ${
-              postBody.trim()
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "cursor-not-allowed bg-gray-400"
-            } rounded-md py-2 text-white`}
-          >
-            {createLoading ? "Adding..." : "Add Post"}
-          </Button>
-          {createError && (
-            <p className="text-sm text-red-500">
-              Error adding post: {createError.message}
-            </p>
-          )}
-        </form>
-      )}
+          {createLoading ? "Adding..." : "Add Post"}
+        </Button>
+        {createError && (
+          <p className="text-sm text-red-500">
+            Error adding post: {createError.message}
+          </p>
+        )}
+      </form>
+
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
       {!hasMore && (
         <p className="mt-4 text-gray-500">

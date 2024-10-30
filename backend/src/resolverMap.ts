@@ -80,7 +80,7 @@ export const resolvers: IResolvers = {
   Mutation: {
     createPost: async (_, { body }, context) => {
       if (!context.user) {
-        throw new AuthenticationError('You must be logged in to create a comment');
+        throw new AuthenticationError('You must be logged in to create a post');
       }
 
       const user = await User.findById(context.user.id);
