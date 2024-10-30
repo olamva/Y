@@ -27,7 +27,7 @@ const CreatePostField = ({
 
   return (
     <div
-      className="my-2 flex w-full max-w-xl cursor-pointer flex-col rounded-md border-gray-900 bg-gray-200 p-2 shadow-sm dark:border-gray-300 dark:bg-gray-700"
+      className="my-2 flex w-full max-w-xl cursor-text flex-col rounded-md border-gray-900 bg-gray-200 p-2 shadow-sm dark:border-gray-300 dark:bg-gray-700"
       onClick={handleDivClick}
     >
       <TextInput
