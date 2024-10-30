@@ -105,7 +105,7 @@ const HomePage = () => {
   return (
     <main className="flex w-full flex-col items-center p-4">
       <form
-        className="mb-8 flex w-full max-w-md flex-col items-center gap-4"
+        className="mb-8 flex w-full max-w-xl flex-col items-center gap-4"
         onSubmit={handleAddPost}
       >
         <TextInput
@@ -119,7 +119,7 @@ const HomePage = () => {
         <Button
           type="submit"
           disabled={createLoading || postBody.trim() === ""}
-          className={`w-full max-w-md ${
+          className={`w-full max-w-xl ${
             postBody.trim() && user
               ? "bg-indigo-600 hover:bg-indigo-700"
               : "cursor-not-allowed bg-gray-400"
