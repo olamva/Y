@@ -27,7 +27,7 @@ const CreatePostField = ({
         disabled={loading}
         className={`flex w-fit gap-1 rounded-md border border-transparent p-1 font-thin text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${className}`}
       >
-        <p>Post</p>
+        <p className="font-semibold">Post</p>
         <PaperAirplaneIcon className="size-6" />
       </button>
     </div>
