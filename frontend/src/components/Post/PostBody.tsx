@@ -25,7 +25,7 @@ const PostBody = ({ text }: { text: string }) => {
       }
     }
   }, []);
-  
+
   return (
     <div>
       <p
