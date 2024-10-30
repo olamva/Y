@@ -1,7 +1,13 @@
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  HomeIcon,
+  UserIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../AuthContext";
+import { LogInIcon } from "lucide-react";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,8 +15,16 @@ export const DropdownMenu = () => {
   const { user } = useAuth();
 
   const routes = [
-    { name: user ? "Profile" : "Login", href: "/project2/user" },
-    { name: "Homepage", href: "/" },
+    {
+      name: user ? "Profile" : "Login",
+      href: "/project2/user",
+      icon: user ? (
+        <UserIcon className="size-5" />
+      ) : (
+        <LogInIcon className="size-5" />
+      ),
+    },
+    { name: "Homepage", href: "/", icon: <HomeIcon className="size-5" /> },
   ];
 
   const toggleMenu = () => {
@@ -66,8 +80,9 @@ export const DropdownMenu = () => {
             href={route.href}
             key={i}
             onClick={closeMenu}
-            className="block px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+            className="flex flex-row items-center gap-2 px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           >
+            {route.icon}
             {route.name}
           </a>
         ))}
