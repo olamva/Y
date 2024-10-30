@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import { UserType } from "@/lib/types";
 import { GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery } from "@apollo/client";
-import { UserType } from "@/lib/types";
+import { jwtDecode } from "jwt-decode";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         logout();
       }
     }
-  }, []);
+  }, [fetchUser]);
 
   const login = (newToken: string) => {
     try {

@@ -4,7 +4,7 @@ import { PostType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "./components/AuthContext";
 
@@ -58,7 +58,7 @@ const HomePage = () => {
   };
 
   // Infinite scroll to load more posts
-  const loadMorePosts = async () => {
+  const loadMorePosts = useCallback(async () => {
     if (!hasMore || loading) return;
 
     try {
@@ -77,7 +77,7 @@ const HomePage = () => {
     } catch (error) {
       toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
-  };
+  }, [fetchMore, hasMore, loading, page]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,7 +92,7 @@ const HomePage = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, page, hasMore, networkStatus]);
+  }, [loading, page, hasMore, networkStatus, loadMorePosts]);
 
   if (networkStatus === NetworkStatus.loading)
     return <p className="mt-4 text-center">Loading...</p>;
