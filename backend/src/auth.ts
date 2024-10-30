@@ -11,7 +11,7 @@ export const signToken = (user: UserType) => {
       username: user.username,
     },
     JWT_SECRET,
-    { expiresIn: '1h' }
+    { expiresIn: '24h' }
   );
 };
 
