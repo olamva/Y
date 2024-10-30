@@ -39,9 +39,14 @@ const ThemeToggle = () => {
       </div>
       <div className="md:hidden">
         <button
-          className="block w-full px-4 py-2 text-left text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+          className="flex w-full flex-row items-center gap-2 px-4 py-2 text-left text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           onClick={toggleTheme}
         >
+          {theme === "dark" ? (
+            <SunIconSolid className="size-5" />
+          ) : (
+            <MoonIconSolid className="size-5" />
+          )}
           {theme === "dark" ? <p>Lightmode</p> : <p>Darkmode</p>}
         </button>
       </div>

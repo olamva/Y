@@ -104,7 +104,7 @@ const PostPage = () => {
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
         >
-          <div className="mt-2 flex w-full max-w-md gap-2 items-center">
+          <div className="mt-2 flex w-full max-w-xl items-center gap-2">
             <TextInput
               id="commentText"
               value={comment}
@@ -118,7 +118,7 @@ const PostPage = () => {
               className={`rounded-md border border-transparent p-1 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
                 comment && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-400"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }`}
             >
               <PaperAirplaneIcon className="size-6" />
@@ -136,7 +136,7 @@ const PostPage = () => {
         ) : commentsError ? (
           <p>Error loading comments: {commentsError.message}</p>
         ) : (
-          <div className="mt-4 flex w-full max-w-md flex-col gap-2">
+          <div className="mt-4 flex w-full max-w-xl flex-col gap-2">
             {commentsData?.getComments &&
             commentsData.getComments.length > 0 ? (
               commentsData.getComments.map((comment) => (

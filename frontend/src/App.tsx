@@ -107,7 +107,7 @@ const HomePage = () => {
   return (
     <main className="flex w-full flex-col items-center p-4">
       <form
-        className="mb-2 flex w-full max-w-md items-center gap-2"
+        className="mb-2 flex w-full max-w-xl items-center gap-2"
         onSubmit={handleAddPost}
       >
         <TextInput

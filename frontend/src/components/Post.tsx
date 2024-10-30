@@ -98,7 +98,7 @@ const Post = ({ post }: { post: PostType }) => {
 
   return (
     <article
-      className="m-2 w-full max-w-md cursor-pointer rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+      className="m-2 w-full max-w-xl cursor-pointer rounded-md border-2 border-white bg-zinc-50 p-3 text-black shadow-md dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         document.location.href = `/project2/post/${post.id}`;
@@ -107,11 +107,10 @@ const Post = ({ post }: { post: PostType }) => {
       <header className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={post.author} />
-          <a href={`/project2/user/${post.author}`}>
-            <p className="font-mono underline-offset-4 hover:underline">
-              {post.author}
-            </p>
-          </a>
+          <p className="font-mono">
+            <span className="font-sans">@</span>
+            {post.author}
+          </p>
         </div>
         {user &&
           (user.username === post.author || user.username === "admin") && (
