@@ -44,7 +44,7 @@ const PostContent = ({
           }
         }}
       >
-        <header className="flex items-center justify-between gap-2">
+        <header className="relative flex flex-wrap items-center justify-between gap-2 p-4">
           <div className="flex items-center gap-2">
             <Avatar username={post.author} />
             <a href={`/project2/user/${post.author}`}>
@@ -54,20 +54,20 @@ const PostContent = ({
               </p>
             </a>
           </div>
-          <div className="flex flex-row gap-2">
+          <div className="w-full pl-1 pr-8 text-gray-600 dark:text-gray-300 sm:w-auto">
             <p>{formatTimestamp(post.createdAt)}</p>
-            {user &&
-              (user.username === post.author || user.username === "admin") && (
-                <button
-                  onClick={handleDelete}
-                  className="text-gray-500 hover:text-red-500 focus:outline-none"
-                  aria-label="Delete post"
-                  disabled={deleteLoading}
-                >
-                  <TrashIcon className="h-5 w-5" />
-                </button>
-              )}
           </div>
+          {user &&
+            (user.username === post.author || user.username === "admin") && (
+              <button
+                onClick={handleDelete}
+                className="absolute right-5 top-5 text-gray-500 hover:text-red-500 focus:outline-none"
+                aria-label="Delete post"
+                disabled={deleteLoading}
+              >
+                <TrashIcon className="h-5 w-5" />
+              </button>
+            )}
         </header>
 
         <PostBody text={post.body} />
