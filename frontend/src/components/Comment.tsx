@@ -83,7 +83,10 @@ const Comment = ({ comment }: { comment: CommentType }) => {
       <header className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={comment.author} />
-          <p className="font-mono">{comment.author}</p>
+          <p className="font-mono">
+            <span className="font-sans">@</span>
+            {comment.author}
+          </p>
         </div>
         {user && user.username === comment.author && (
           <button

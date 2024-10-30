@@ -45,7 +45,7 @@ const SearchPage = () => {
           onChange={(e) =>
             setFilterType(e.target.value as "all" | "post" | "user")
           }
-          className="rounded border border-gray-300 bg-white p-2 dark:bg-gray-800"
+          className="rounded border border-gray-300 bg-white p-2 outline-none dark:bg-gray-800"
         >
           <option value="all">All</option>
           <option value="post">Posts</option>

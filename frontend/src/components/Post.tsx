@@ -107,7 +107,7 @@ const Post = ({ post }: { post: PostType }) => {
       <header className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={post.author} />
-          <p className="font-mono">{post.author}</p>
+          <p className="font-mono"><span className="font-sans">@</span>{post.author}</p>
         </div>
         {user && user.username === post.author && (
           <button
