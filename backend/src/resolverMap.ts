@@ -55,8 +55,8 @@ export const resolvers: IResolvers = {
       }
     },
     async searchAll(_: any, { query }: { query: string }) {
-      if (query.length > 30) {
-        throw new UserInputError('Query must be at most 30 characters');
+      if (query.length > 40) {
+        throw new UserInputError('Query can max be 40 characters');
       }
 
       try {
@@ -75,8 +75,8 @@ export const resolvers: IResolvers = {
     },
 
     async searchUsers(_: any, { query }: { query: string }) {
-      if (query.length > 30) {
-        throw new UserInputError('Query must be at most 30 characters');
+      if (query.length > 40) {
+        throw new UserInputError('Query can max be 40 characters');
       }
 
       return await User.find({
