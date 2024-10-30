@@ -3,6 +3,7 @@ import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
 import { Button } from "@/components/ui/button";
+import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
@@ -120,6 +121,8 @@ const PostPage = () => {
             </p>
           )}
         </form>
+
+        <Divider />
 
         {commentsLoading ? (
           <p>Loading comments...</p>

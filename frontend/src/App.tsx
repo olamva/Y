@@ -6,6 +6,7 @@ import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Divider from "./components/ui/Divider";
 
 const PAGE_SIZE = 10;
 
@@ -121,6 +122,8 @@ const HomePage = () => {
           }
         />
       </form>
+
+      <Divider />
 
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
       {!hasMore && (
