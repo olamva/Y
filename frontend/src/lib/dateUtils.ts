@@ -23,7 +23,6 @@ export const formatTimestamp = (timestamp: number | string): string => {
   }
 
   const intervals: { [key: string]: number } = {
-    year: 31536000,
     month: 2592000,
     w: 604800,
     d: 86400,
@@ -31,6 +30,10 @@ export const formatTimestamp = (timestamp: number | string): string => {
     m: 60,
     s: 1,
   };
+
+  if (secondsElapsed >= intervals.month) {
+    return date.toLocaleDateString("no");
+  }
 
   for (const key in intervals) {
     const interval = intervals[key];
