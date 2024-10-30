@@ -175,7 +175,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (!user.postIds.includes(id)) {
+      if (!user.postIds.includes(id) || user.username !== 'admin') {
         throw new AuthenticationError('You are not authorized to delete this post');
       }
 
@@ -202,7 +202,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (!user.commentIds.includes(id)) {
+      if (!user.commentIds.includes(id) || user.username !== 'admin') {
         throw new AuthenticationError('You are not authorized to delete this comment');
       }
 
