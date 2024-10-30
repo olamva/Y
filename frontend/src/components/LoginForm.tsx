@@ -1,9 +1,9 @@
+import { useAuth } from "@/components/AuthContext";
 import FormField from "@/components/FormField";
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./AuthContext";
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -75,7 +75,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-800">
+    <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-gray-100 dark:bg-gray-800">
       <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
         <h1 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
           {isLogin ? "Login" : "Register"}

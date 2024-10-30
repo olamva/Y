@@ -1,5 +1,4 @@
-export type PostType = {
-  __typename: "Post";
+type ContentType = {
   id: string;
   body: string;
   author: string;
@@ -8,7 +7,12 @@ export type PostType = {
   createdAt: Date;
 };
 
-export type CommentType = PostType & {
+export type PostType = ContentType & {
+  __typename: "Post";
+};
+
+export type CommentType = ContentType & {
+  __typename: "Comment";
   parentID: string;
 };
 

@@ -1,8 +1,8 @@
 import { useAuth } from "@/components/AuthContext";
 import LoginForm from "@/components/LoginForm";
+import Profile from "@/pages/Profile";
 import { GET_USER_QUERY } from "@/queries/user";
 import { useQuery } from "@apollo/client";
-import Profile from "./Profile";
 
 const UserPage = () => {
   const { isLoggedIn, user } = useAuth();
