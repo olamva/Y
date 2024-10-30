@@ -107,11 +107,10 @@ const Post = ({ post }: { post: PostType }) => {
       <header className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={post.author} />
-          <a href={`/project2/user/${post.author}`}>
-            <p className="font-mono underline-offset-4 hover:underline">
-              {post.author}
-            </p>
-          </a>
+          <p className="font-mono">
+            <span className="font-sans">@</span>
+            {post.author}
+          </p>
         </div>
         {user &&
           (user.username === post.author || user.username === "admin") && (
