@@ -1,13 +1,13 @@
 import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
 import PostBody from "@/components/Post/PostBody";
+import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent } from "react";
-import { formatTimestamp } from "@/lib/dateUtils";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -35,7 +35,7 @@ const PostContent = ({
   const isComment = "parentID" in post;
   return (
     <article
-      className={`my-2 w-full max-w-xl rounded-md border-2 p-3 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`my-2 w-full gap-2 flex flex-col max-w-xl rounded-md border-2 p-4 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
@@ -43,7 +43,7 @@ const PostContent = ({
         }
       }}
     >
-      <header className="relative flex flex-wrap items-center justify-between gap-2 p-4">
+      <header className="relative flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Avatar username={post.author} />
           <a href={`/project2/user/${post.author}`}>
@@ -52,15 +52,15 @@ const PostContent = ({
               {post.author}
             </p>
           </a>
-        </div>
-        <div className="w-full pl-1 pr-8 text-gray-600 dark:text-gray-300 sm:w-auto">
+          <p>·</p>
           <p>{formatTimestamp(post.createdAt)}</p>
         </div>
+
         {user &&
           (user.username === post.author || user.username === "admin") && (
             <button
               onClick={handleDelete}
-              className="absolute right-5 top-5 text-gray-500 hover:text-red-500 focus:outline-none"
+              className="text-gray-500 hover:text-red-500 outline-none"
               aria-label="Delete post"
               disabled={deleteLoading}
             >
