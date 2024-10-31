@@ -41,7 +41,7 @@ const PostContent = ({
   const isComment = "parentID" in post;
   return (
     <article
-      className={`${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${maxWidth !== undefined ? maxWidth : "max-w-xl"} rounded-md border-2 p-4 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${maxWidth !== undefined ? maxWidth : "max-w-xl"} rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
@@ -80,17 +80,20 @@ const PostContent = ({
       {/* TODO: comment liking and replying  */}
       {!isComment && (
         <footer className="flex w-full justify-around">
-          <button className="flex items-center gap-1" onClick={toggleLike}>
+          <button
+            className="group flex items-center gap-1 p-2"
+            onClick={toggleLike}
+          >
             {isLiked ? (
-              <HeartFilledIcon className="size-6 text-red-600 hover:scale-110" />
+              <HeartFilledIcon className="size-6 text-red-600 group-hover:scale-110" />
             ) : (
-              <HeartIcon className="size-6 hover:scale-110" />
+              <HeartIcon className="size-6 group-hover:scale-110" />
             )}
-            <span>{amtLikes}</span>
+            <span className="select-none">{amtLikes}</span>
           </button>
           <div className="flex items-center gap-1">
             <ChatBubbleLeftIcon className="size-6" />
-            <span>{post.amtComments}</span>
+            <span className="select-none">{post.amtComments}</span>
           </div>
         </footer>
       )}

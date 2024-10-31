@@ -35,7 +35,6 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          required
           className="mt-1 block min-h-12 w-full max-w-xl resize-none rounded-md bg-transparent outline-none"
         />
       </div>
