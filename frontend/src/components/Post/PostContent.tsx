@@ -35,7 +35,7 @@ const PostContent = ({
   const isComment = "parentID" in post;
   return (
     <article
-      className={`my-2 flex w-full max-w-xl flex-col gap-2 rounded-md border-2 p-4 pb-0 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`my-2 flex w-full max-w-xl flex-col gap-2 rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
