@@ -71,7 +71,7 @@ const CreatePostField = ({
               }
               strokeWidth="2"
               strokeDasharray="101"
-              strokeDashoffset={percentage === 100 ? 0 : 101 - percentage}
+              strokeDashoffset={Math.ceil(101 - percentage * 1.01)}
               transform="rotate(-90 18 18)"
             />
             <text
