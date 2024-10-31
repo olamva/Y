@@ -98,7 +98,7 @@ const PostPage = () => {
           <p>Back</p>
         </Button>
       </header>
-      <main className="px-4 flex flex-col items-center pt-5">
+      <main className="flex flex-col items-center px-4 pt-5">
         <Post post={postData.getPost} doesntRedirect />
         <Divider />
         <form

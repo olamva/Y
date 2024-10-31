@@ -19,6 +19,9 @@ interface PostContentProps {
   deleteLoading: boolean;
   deleteError: ApolloError | undefined;
   className?: string;
+  disableTopMargin: boolean;
+  disableBottomMargin: boolean;
+  maxWidth?: string;
 }
 const PostContent = ({
   post,
@@ -30,16 +33,19 @@ const PostContent = ({
   deleteLoading,
   deleteError,
   className = "",
+  disableTopMargin,
+  disableBottomMargin,
+  maxWidth,
 }: PostContentProps) => {
   const { user } = useAuth();
   const isComment = "parentID" in post;
   return (
     <article
-      className={`my-2 flex w-full max-w-xl flex-col gap-2 rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${maxWidth !== undefined ? maxWidth : "max-w-xl"} rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/post/${post.id}`;
+          document.location.href = `/project2/post/${isComment ? post.parentID : post.id}`;
         }
       }}
     >

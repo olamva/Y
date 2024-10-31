@@ -6,7 +6,20 @@ import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const Comment = ({ comment }: { comment: CommentType }) => {
+interface CommentProps {
+  comment: CommentType;
+  disableTopMargin?: boolean;
+  disableBottomMargin?: boolean;
+  redirects?: boolean;
+  maxWidth?: string;
+}
+const Comment = ({
+  comment,
+  disableTopMargin = false,
+  disableBottomMargin = false,
+  redirects = false,
+  maxWidth,
+}: CommentProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
 
   const [deleteComment, { loading: deleteLoading, error: deleteError }] =
@@ -82,7 +95,10 @@ const Comment = ({ comment }: { comment: CommentType }) => {
       deleteLoading={deleteLoading}
       deleteError={deleteError}
       className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
-      doesntRedirect
+      doesntRedirect={!redirects}
+      disableTopMargin={disableTopMargin}
+      disableBottomMargin={disableBottomMargin}
+      maxWidth={maxWidth}
     />
   );
 };
