@@ -6,13 +6,13 @@ import {
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { LogInIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const routes = [
     {
@@ -87,6 +87,18 @@ export const DropdownMenu = () => {
           </a>
         ))}
         <ThemeToggle />
+        {user && (
+          <button
+            onClick={() => {
+              logout();
+              closeMenu();
+            }}
+            className="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+          >
+            <LogOutIcon className="size-5" />
+            Log out
+          </button>
+        )}
       </div>
     </div>
   );
