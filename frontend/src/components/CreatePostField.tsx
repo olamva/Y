@@ -24,6 +24,8 @@ const CreatePostField = ({
       textInputRef.current?.focus();
     }
   };
+  const maxChars = 281;
+  const percentage = (value.length / maxChars) * 100;
 
   return (
     <div
@@ -37,7 +39,36 @@ const CreatePostField = ({
         placeholder={placeholder}
         maxChars={281}
       />
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <div className="flex items-center">
+          <span
+            className="mr-2 text-sm text-black dark:text-gray-500"
+            aria-live="polite"
+          >
+            {value.length}/{maxChars}
+          </span>
+          <svg className="h-8 w-8" viewBox="0 0 36 36">
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              className="stroke-gray-300 dark:stroke-gray-600"
+              strokeWidth="2"
+            />
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              className="stroke-blue-600 dark:stroke-blue-400"
+              strokeWidth="2"
+              strokeDasharray="100"
+              strokeDashoffset={100 - percentage}
+              transform="rotate(-90 18 18)"
+            />
+          </svg>
+        </div>
         <button
           type="submit"
           disabled={loading}

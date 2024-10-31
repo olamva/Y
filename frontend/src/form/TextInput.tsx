@@ -24,8 +24,6 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       }
     };
 
-    const percentage = (value.length / maxChars) * 100;
-
     return (
       <div className="relative w-full">
         <textarea
@@ -41,35 +39,6 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           placeholder={placeholder}
           className="/* Added padding-right */ /* Added padding-bottom */ mt-1 block min-h-12 w-full max-w-xl resize-none rounded-md bg-transparent pb-4 pr-12 outline-none"
         />
-        <div className="absolute bottom-3 right-3 flex items-center">
-          <span
-            className="mr-2 text-sm text-black dark:text-gray-500"
-            aria-live="polite"
-          >
-            {value.length}/{maxChars}
-          </span>
-          <svg className="h-8 w-8" viewBox="0 0 36 36">
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              fill="none"
-              className="stroke-gray-300 dark:stroke-gray-600"
-              strokeWidth="2"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              fill="none"
-              className="stroke-blue-600 dark:stroke-blue-400"
-              strokeWidth="2"
-              strokeDasharray="100"
-              strokeDashoffset={100 - percentage}
-              transform="rotate(-90 18 18)"
-            />
-          </svg>
-        </div>
       </div>
     );
   },

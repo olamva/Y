@@ -26,8 +26,7 @@ const PostBody = ({ text }: { text: string }) => {
   }, []);
 
   return (
-    <div className="w-full">
-      {" "}
+    <div>
       <p
         ref={bodyRef}
         className={`mx-1 whitespace-pre-wrap break-words ${
