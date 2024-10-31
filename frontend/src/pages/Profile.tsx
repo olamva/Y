@@ -1,6 +1,6 @@
 import Avatar from "@/components/Avatar";
-import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
+import PostWithReply from "@/components/Post/PostWithReply";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { Button } from "@/components/ui/button";
 import { CommentType, PostType, UserType } from "@/lib/types";
@@ -122,7 +122,7 @@ const Profile = ({ username }: Props) => {
             <p>Comments</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className="flex w-full flex-col items-center mt-4">
+        <div className="mt-4 flex w-full flex-col items-center">
           {currentView === "posts" && (
             <>
               {postsLoading && <p>Loading posts...</p>}
@@ -162,28 +162,15 @@ const Profile = ({ username }: Props) => {
               )}
               <div className="flex flex-col gap-6">
                 {comments.map((comment) => (
-                  <div className="flex w-full flex-col items-center">
-                    {parentPosts.find(
-                      (post) => post.id === comment.parentID,
-                    ) && (
-                      <Post
-                        post={
-                          parentPosts.find(
-                            (post) => post.id === comment.parentID,
-                          )!
-                        }
-                        disableBottomMargin
-                      />
-                    )}
-                    <div className="h-4 w-1 bg-gray-300"></div>
-                    <Comment
-                      comment={comment}
-                      key={comment.id}
-                      disableTopMargin
-                      redirects
-                      maxWidth="max-w-lg"
-                    />
-                  </div>
+                  <PostWithReply
+                    key={comment.id}
+                    post={
+                      parentPosts.find(
+                        (post) => post.id === comment.parentID,
+                      ) ?? parentPosts[0]
+                    }
+                    reply={comment}
+                  />
                 ))}
               </div>
               {!commentsLoading && comments.length === 0 && (
