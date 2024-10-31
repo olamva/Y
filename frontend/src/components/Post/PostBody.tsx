@@ -29,7 +29,9 @@ const PostBody = ({ text }: { text: string }) => {
     <div>
       <p
         ref={bodyRef}
-        className={`mx-1 whitespace-pre-wrap ${isExpanded ? "" : "line-clamp-3"}`}
+        className={`mx-1 whitespace-pre-wrap break-words ${
+          isExpanded ? "" : "line-clamp-3"
+        }`}
       >
         {text}
       </p>

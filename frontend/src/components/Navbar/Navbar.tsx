@@ -36,6 +36,7 @@ const Navbar = () => {
             <input
               type="search"
               id="search"
+              maxLength={40}
               placeholder="Search here..."
               className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
               value={searchQuery}

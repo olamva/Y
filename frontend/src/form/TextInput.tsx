@@ -4,10 +4,11 @@ interface TextInputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder: string;
+  maxChars: number;
 }
 
 const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
-  ({ value, onChange, placeholder }, ref) => {
+  ({ value, onChange, placeholder, maxChars }, ref) => {
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -24,10 +25,11 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
     };
 
     return (
-      <div className="w-full">
+      <div className="relative w-full">
         <textarea
           ref={ref}
           value={value}
+          maxLength={maxChars}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
             onChange(e);
             e.target.style.height = "auto";
