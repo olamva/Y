@@ -19,7 +19,7 @@ const HomePage = () => {
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getPosts: PostType[];
   }>(GET_POSTS, {
-    variables: { page, limit: PAGE_SIZE },
+    variables: { page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
@@ -127,7 +127,7 @@ const HomePage = () => {
 
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
       {!hasMore && (
-        <p className="mt-4 text-gray-500">
+        <p className="mt-4 text-gray-500 dark:text-gray-400">
           You've reached the end of the posts.
         </p>
       )}

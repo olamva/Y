@@ -35,7 +35,7 @@ const PostContent = ({
   const isComment = "parentID" in post;
   return (
     <article
-      className={`my-2 w-full gap-2 flex flex-col max-w-xl rounded-md border-2 p-4 text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`my-2 flex w-full max-w-xl flex-col gap-2 rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
@@ -60,7 +60,7 @@ const PostContent = ({
           (user.username === post.author || user.username === "admin") && (
             <button
               onClick={handleDelete}
-              className="text-gray-500 hover:text-red-500 outline-none"
+              className="text-gray-500 outline-none hover:text-red-500"
               aria-label="Delete post"
               disabled={deleteLoading}
             >
@@ -74,17 +74,20 @@ const PostContent = ({
       {/* TODO: comment liking and replying  */}
       {!isComment && (
         <footer className="flex w-full justify-around">
-          <button className="flex items-center gap-1" onClick={toggleLike}>
+          <button
+            className="group flex items-center gap-1 p-2"
+            onClick={toggleLike}
+          >
             {isLiked ? (
-              <HeartFilledIcon className="size-6 text-red-600 hover:scale-110" />
+              <HeartFilledIcon className="size-6 text-red-600 group-hover:scale-110" />
             ) : (
-              <HeartIcon className="size-6 hover:scale-110" />
+              <HeartIcon className="size-6 group-hover:scale-110" />
             )}
-            <span>{amtLikes}</span>
+            <span className="select-none">{amtLikes}</span>
           </button>
           <div className="flex items-center gap-1">
             <ChatBubbleLeftIcon className="size-6" />
-            <span>{post.amtComments}</span>
+            <span className="select-none">{post.amtComments}</span>
           </div>
         </footer>
       )}

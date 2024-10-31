@@ -36,7 +36,7 @@ const PostBody = ({ text }: { text: string }) => {
       {showReadMore && (
         <button
           onClick={toggleExpand}
-          className="mx-1 text-gray-500 hover:underline focus:outline-none dark:text-gray-300"
+          className="p-2 pl-1 text-gray-500 hover:underline focus:outline-none dark:text-gray-300"
         >
           {isExpanded ? "Hide" : "Read more..."}
         </button>
