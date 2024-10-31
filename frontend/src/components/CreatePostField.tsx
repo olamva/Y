@@ -43,7 +43,7 @@ const CreatePostField = ({
       <div className="flex justify-end gap-2">
         <div className="flex items-center">
           <span
-            className="mr-2 text-sm text-black dark:text-gray-500"
+            className="mr-2 select-none text-sm text-black dark:text-gray-500"
             aria-live="polite"
           >
             {value.length}/{MAX_CHARS}
