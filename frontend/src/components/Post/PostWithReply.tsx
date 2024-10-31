@@ -15,7 +15,7 @@ const PostWithReply = ({ post, reply }: PostWithReplyProps) => {
       ) : (
         <Post post={post} disableBottomMargin />
       )}
-      <div className="h-4 w-1 bg-gray-300"></div>
+      <div className="h-4 w-1 bg-gray-300 dark:bg-gray-700"></div>
       <Comment comment={reply} disableTopMargin redirects maxWidth="max-w-lg" />
     </div>
   );
