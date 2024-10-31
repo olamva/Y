@@ -75,67 +75,72 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex w-full justify-center self-center">
-      <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
-        <h1 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
-          {isLogin ? "Login" : "Register"}
-        </h1>
-        <form
-          onSubmit={isLogin ? handleLogin : handleRegister}
-          className="space-y-4"
-        >
-          <FormField
-            label="Username"
-            id="username"
-            autocomplete="username"
-            type="text"
-            value={formData.username}
-            onChange={handleInputChange}
-          />
-          <FormField
-            label="Password"
-            id="password"
-            autocomplete="current-password"
-            type="password"
-            value={formData.password}
-            onChange={handleInputChange}
-          />
-          {!isLogin && (
+    <div className="flex w-full flex-col items-center justify-center self-center">
+      <h1 className="w-fit bg-gradient-to-r absolute top-32 from-indigo-950 to-indigo-700 bg-clip-text text-4xl sm:text-6xl md:text-7xl font-extrabold text-transparent dark:from-indigo-200 dark:to-indigo-500">
+        Welcome to Y
+      </h1>
+      <div className="flex w-full justify-center">
+        <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
+          <h3 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
+            {isLogin ? "Login" : "Register"}
+          </h3>
+          <form
+            onSubmit={isLogin ? handleLogin : handleRegister}
+            className="space-y-4"
+          >
             <FormField
-              label="Confirm Password"
-              id="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
+              label="Username"
+              id="username"
+              autocomplete="username"
+              type="text"
+              value={formData.username}
               onChange={handleInputChange}
-              errors={errors}
             />
-          )}
-          <button
-            type="submit"
-            disabled={loginLoading || registerLoading}
-            className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 ${
-              (loginLoading || registerLoading) &&
-              "cursor-not-allowed opacity-50"
-            }`}
-          >
-            {isLogin
-              ? loginLoading
-                ? "Logging in..."
-                : "Login"
-              : registerLoading
-                ? "Registering..."
-                : "Register"}
-          </button>
-        </form>
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
-          >
-            {isLogin
-              ? "Need an account? Register"
-              : "Already have an account? Login"}
-          </button>
+            <FormField
+              label="Password"
+              id="password"
+              autocomplete="current-password"
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            {!isLogin && (
+              <FormField
+                label="Confirm Password"
+                id="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                errors={errors}
+              />
+            )}
+            <button
+              type="submit"
+              disabled={loginLoading || registerLoading}
+              className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 ${
+                (loginLoading || registerLoading) &&
+                "cursor-not-allowed opacity-50"
+              }`}
+            >
+              {isLogin
+                ? loginLoading
+                  ? "Logging in..."
+                  : "Login"
+                : registerLoading
+                  ? "Registering..."
+                  : "Register"}
+            </button>
+          </form>
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
+            >
+              {isLogin
+                ? "Need an account? Register"
+                : "Already have an account? Login"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
