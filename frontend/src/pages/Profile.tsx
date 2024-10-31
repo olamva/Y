@@ -84,12 +84,19 @@ const Profile = ({ username }: Props) => {
           <p>Back</p>
         </Button>
       </header>
-      <div className="p-4">
-        <div className="flex items-center gap-2">
-          <Avatar username={user?.username || "unknown"} />
-          <h1 className="font-mono">{user?.username || "Unknown User"}</h1>
+      <section className="relative mb-36 p-6">
+        <img
+          src="../coverphoto.jpg"
+          alt="Cover photo"
+          className="h-56 w-full object-cover"
+        />
+        <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
+          <Avatar username={user?.username || "unknown"} large />
+          <h1 className="ml-3 mt-3 font-mono text-lg">
+            @{user?.username || "Unknown User"}
+          </h1>
         </div>
-      </div>
+      </section>
       <section>
         <ToggleGroup
           value={currentView}
@@ -101,13 +108,13 @@ const Profile = ({ username }: Props) => {
           className="flex justify-around gap-1"
         >
           <ToggleGroupItem value="posts" aria-label="View Posts">
-            <p>Posts</p>
+            <p>{user?.postIds.length} Posts</p>
           </ToggleGroupItem>
           <ToggleGroupItem value="likes" aria-label="View Likes">
-            <p>Likes</p>
+            <p>{user?.likedPostIds.length} Likes</p>
           </ToggleGroupItem>
           <ToggleGroupItem value="comments" aria-label="View Comments">
-            <p>Comments</p>
+            <p>{user?.commentIds.length} Comments</p>
           </ToggleGroupItem>
         </ToggleGroup>
         <div className="mt-2 flex w-full flex-col items-center">
