@@ -35,6 +35,7 @@ const CreatePostField = ({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
+        maxChars={281}
       />
       <div className="flex justify-end">
         <button
