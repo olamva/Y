@@ -127,7 +127,7 @@ const HomePage = () => {
 
       {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
       {!hasMore && (
-        <p className="mt-4 text-gray-500">
+        <p className="mt-4 text-gray-500 dark:text-gray-400">
           You've reached the end of the posts.
         </p>
       )}
