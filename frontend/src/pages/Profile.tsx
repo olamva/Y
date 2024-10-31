@@ -160,7 +160,7 @@ const Profile = ({ username }: Props) => {
               {parentPostsError && (
                 <p>Error loading parent posts: {parentPostsError.message}</p>
               )}
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col w-full gap-6">
                 {comments.map((comment) => (
                   <PostWithReply
                     key={comment.id}
