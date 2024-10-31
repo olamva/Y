@@ -122,7 +122,7 @@ const Profile = ({ username }: Props) => {
             <p>Comments</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className="mt-2 flex w-full flex-col items-center">
+        <div className="flex w-full flex-col items-center mt-4">
           {currentView === "posts" && (
             <>
               {postsLoading && <p>Loading posts...</p>}
@@ -160,7 +160,7 @@ const Profile = ({ username }: Props) => {
               {parentPostsError && (
                 <p>Error loading parent posts: {parentPostsError.message}</p>
               )}
-              <div className="mt-2 flex flex-col gap-6">
+              <div className="flex flex-col gap-6">
                 {comments.map((comment) => (
                   <div className="flex w-full flex-col items-center">
                     {parentPosts.find(
