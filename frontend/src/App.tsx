@@ -19,7 +19,7 @@ const HomePage = () => {
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getPosts: PostType[];
   }>(GET_POSTS, {
-    variables: { page, limit: PAGE_SIZE },
+    variables: { page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
