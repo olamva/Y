@@ -2,6 +2,8 @@ import TextInput from "@/form/TextInput";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { MouseEvent, useRef } from "react";
 
+const MAX_CHARS = 281;
+
 interface CreatePostFieldProps {
   placeholder: string;
   value: string;
@@ -9,7 +11,6 @@ interface CreatePostFieldProps {
   loading: boolean;
   className?: string;
 }
-
 const CreatePostField = ({
   placeholder,
   value,
@@ -24,8 +25,8 @@ const CreatePostField = ({
       textInputRef.current?.focus();
     }
   };
-  const maxChars = 281;
-  const percentage = (value.length / maxChars) * 100;
+
+  const percentage = (value.length / MAX_CHARS) * 100;
 
   return (
     <div
@@ -37,7 +38,7 @@ const CreatePostField = ({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        maxChars={281}
+        maxChars={MAX_CHARS}
       />
       <div className="flex justify-end gap-2">
         <div className="flex items-center">
@@ -45,9 +46,9 @@ const CreatePostField = ({
             className="mr-2 text-sm text-black dark:text-gray-500"
             aria-live="polite"
           >
-            {value.length}/{maxChars}
+            {value.length}/{MAX_CHARS}
           </span>
-          <svg className="h-8 w-8" viewBox="0 0 36 36">
+          <svg className="size-8" viewBox="0 0 36 36">
             <circle
               cx="18"
               cy="18"
@@ -64,13 +65,23 @@ const CreatePostField = ({
               className={
                 percentage === 100
                   ? "stroke-red-600 dark:stroke-red-500"
-                  : "stroke-blue-600 dark:stroke-blue-500"
+                  : percentage >= 90
+                    ? "stroke-yellow-600 dark:stroke-yellow-500"
+                    : "stroke-blue-600 dark:stroke-blue-500"
               }
               strokeWidth="2"
-              strokeDasharray="100"
-              strokeDashoffset={100 - percentage}
+              strokeDasharray="101"
+              strokeDashoffset={percentage === 100 ? 0 : 101 - percentage}
               transform="rotate(-90 18 18)"
             />
+            <text
+              x="18"
+              y="22"
+              textAnchor="middle"
+              className="fill-current text-sm text-black dark:text-gray-500"
+            >
+              {percentage >= 90 ? MAX_CHARS - value.length : ""}
+            </text>
           </svg>
         </div>
 
