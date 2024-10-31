@@ -16,7 +16,7 @@ const Comment = ({
   comment,
   disableTopMargin = false,
   disableBottomMargin = false,
-  maxWidth = "",
+  maxWidth,
 }: CommentProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
 
