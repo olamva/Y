@@ -45,7 +45,7 @@ const PostContent = ({
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/post/${post.id}`;
+          document.location.href = `/project2/post/${isComment ? post.parentID : post.id}`;
         }
       }}
     >

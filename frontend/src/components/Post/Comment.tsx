@@ -10,12 +10,14 @@ interface CommentProps {
   comment: CommentType;
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
+  redirects?: boolean;
   maxWidth?: string;
 }
 const Comment = ({
   comment,
   disableTopMargin = false,
   disableBottomMargin = false,
+  redirects = false,
   maxWidth,
 }: CommentProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
@@ -93,7 +95,7 @@ const Comment = ({
       deleteLoading={deleteLoading}
       deleteError={deleteError}
       className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
-      doesntRedirect
+      doesntRedirect={!redirects}
       disableTopMargin={disableTopMargin}
       disableBottomMargin={disableBottomMargin}
       maxWidth={maxWidth}

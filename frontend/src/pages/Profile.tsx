@@ -180,6 +180,7 @@ const Profile = ({ username }: Props) => {
                       comment={comment}
                       key={comment.id}
                       disableTopMargin
+                      redirects
                       maxWidth="max-w-lg"
                     />
                   </div>
