@@ -6,7 +6,18 @@ import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const Comment = ({ comment }: { comment: CommentType }) => {
+interface CommentProps {
+  comment: CommentType;
+  disableTopMargin?: boolean;
+  disableBottomMargin?: boolean;
+  maxWidth?: string;
+}
+const Comment = ({
+  comment,
+  disableTopMargin = false,
+  disableBottomMargin = false,
+  maxWidth = "",
+}: CommentProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
 
   const [deleteComment, { loading: deleteLoading, error: deleteError }] =
@@ -83,6 +94,9 @@ const Comment = ({ comment }: { comment: CommentType }) => {
       deleteError={deleteError}
       className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
       doesntRedirect
+      disableTopMargin={disableTopMargin}
+      disableBottomMargin={disableBottomMargin}
+      maxWidth={maxWidth}
     />
   );
 };

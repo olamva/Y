@@ -9,8 +9,10 @@ import toast from "react-hot-toast";
 interface PostProps {
   post: PostType;
   doesntRedirect?: boolean;
+  disableTopMargin?: boolean;
+  disableBottomMargin?: boolean;
 }
-const Post = ({ post, doesntRedirect }: PostProps) => {
+const Post = ({ post, doesntRedirect, disableBottomMargin = false, disableTopMargin = false }: PostProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [amtLikes, setAmtLikes] = useState(post.amtLikes);
@@ -108,6 +110,8 @@ const Post = ({ post, doesntRedirect }: PostProps) => {
       deleteError={deleteError}
       doesntRedirect={doesntRedirect}
       className="border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
+      disableTopMargin={disableTopMargin}
+      disableBottomMargin={disableBottomMargin}
     />
   );
 };
