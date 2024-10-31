@@ -61,7 +61,11 @@ const CreatePostField = ({
               cy="18"
               r="16"
               fill="none"
-              className="stroke-blue-600 dark:stroke-blue-400"
+              className={
+                percentage === 100
+                  ? "stroke-red-600 dark:stroke-red-500"
+                  : "stroke-blue-600 dark:stroke-blue-500"
+              }
               strokeWidth="2"
               strokeDasharray="100"
               strokeDashoffset={100 - percentage}
@@ -69,6 +73,7 @@ const CreatePostField = ({
             />
           </svg>
         </div>
+
         <button
           type="submit"
           disabled={loading}
