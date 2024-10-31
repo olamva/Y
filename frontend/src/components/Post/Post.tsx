@@ -12,7 +12,12 @@ interface PostProps {
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
 }
-const Post = ({ post, doesntRedirect, disableBottomMargin = false, disableTopMargin = false }: PostProps) => {
+const Post = ({
+  post,
+  doesntRedirect,
+  disableBottomMargin = false,
+  disableTopMargin = false,
+}: PostProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [amtLikes, setAmtLikes] = useState(post.amtLikes);
