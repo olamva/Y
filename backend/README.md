@@ -29,8 +29,8 @@ Ensure you have the following installed on your machine:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/your-repo.git
-   cd your-repo
+   git clone https://git.ntnu.no/IT2810-H24/T06-Project-2
+   cd T06-Project-2/backend
    ```
 2. Install dependencies:
    ```bash
@@ -49,7 +49,9 @@ JWT_SECRET=your_jwt_secret_key
 ### Running the server
 
 Start the development server with:
+```bash
 npm run start:dev
+```
 
 # graphql-api
 
@@ -267,22 +269,6 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ```
 
-## Contributing
+## Testing
 
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the repository.**
-
-2. **Create a new branch:**
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-3. **Commit your changes:**
-   ```bash
-   git commit -m 'Add some feature'
-   ```
-4. **Push to the branch:**
-
-   ```bash
-   git push origin feature/YourFeature
-   ```
+**TODO**
