@@ -1,15 +1,20 @@
-import 'graphql-import-node';
-import * as typeDefs from './schema/schema.graphql';
-import { makeExecutableSchema } from 'graphql-tools';
-
+import path from 'path';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { loadSchema } from '@graphql-tools/load';
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import { GraphQLSchema } from 'graphql';
 import { resolvers } from './resolverMap';
 
-export { typeDefs };
+export async function createSchema(): Promise<GraphQLSchema> {
+  const schemaPath = path.join(__dirname, 'schema', 'schema.graphql');
 
-const schema: GraphQLSchema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-});
+  const typeDefs = await loadSchema(schemaPath, {
+    loaders: [new GraphQLFileLoader()],
+  });
+  const schema: GraphQLSchema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+  });
 
-export default schema;
+  return schema;
+}

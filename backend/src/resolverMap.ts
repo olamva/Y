@@ -1,10 +1,10 @@
-import { IResolvers } from 'graphql-tools';
+import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { Post } from './models/post';
 import { User } from './models/user';
 import { Comment } from './models/comment';
 import bcrypt from 'bcryptjs';
+import { IResolvers } from '@graphql-tools/utils';
 import { signToken } from './auth';
-import { AuthenticationError, UserInputError } from 'apollo-server-express';
 
 export const resolvers: IResolvers = {
   Query: {
