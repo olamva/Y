@@ -1,16 +1,17 @@
+import CoverPhoto from "@/../public/coverphoto.jpg";
 import Avatar from "@/components/Avatar";
-import Post from "@/components/Post";
 import Comment from "@/components/Comment";
+import Post from "@/components/Post";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { Button } from "@/components/ui/button";
 import { CommentType, PostType, UserType } from "@/lib/types";
+import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
+import { GET_POSTS_BY_IDS } from "@/queries/posts";
+import { GET_USER_QUERY } from "@/queries/user";
+import { useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { GET_USER_QUERY } from "@/queries/user";
-import { GET_POSTS_BY_IDS } from "@/queries/posts";
-import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -86,14 +87,15 @@ const Profile = ({ username }: Props) => {
       </header>
       <section className="relative mb-36 p-6">
         <img
-          src="../coverphoto.jpg"
+          src={CoverPhoto}
           alt="Cover photo"
           className="h-56 w-full object-cover"
         />
         <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
           <Avatar username={user?.username || "unknown"} large />
           <h1 className="ml-3 mt-3 font-mono text-lg">
-            @{user?.username || "Unknown User"}
+            <span className="font-sans">@</span>
+            {user?.username || "Unknown User"}
           </h1>
         </div>
       </section>
