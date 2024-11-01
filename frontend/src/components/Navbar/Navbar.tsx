@@ -10,6 +10,7 @@ const Navbar = () => {
 
   const navigateSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (searchQuery.trim() === "") return;
     window.location.href = `/project2/search?q=${encodeURIComponent(searchQuery)}`;
   };
 
