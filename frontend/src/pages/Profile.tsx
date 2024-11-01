@@ -104,7 +104,12 @@ const Profile = ({ username }: Props) => {
           className="h-56 w-full object-cover"
         />
         <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
-          <Avatar username={user?.username || "unknown"} large />
+          <Avatar
+            username={user?.username || "unknown"}
+            large
+            navbar
+            disableHover
+          />
           <h1 className="ml-3 mt-3 font-mono text-lg">
             <span className="font-sans">@</span>
             {user?.username || "Unknown User"}
