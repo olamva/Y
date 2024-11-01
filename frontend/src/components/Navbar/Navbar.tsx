@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   const login = () => {
-    window.location.href = "/project2/user";
+    window.location.href = "/project2/login";
   };
 
   return (
@@ -46,7 +46,7 @@ const Navbar = () => {
           <div className="hidden items-center gap-2 md:flex">
             <ThemeToggle />
             <div className="flex items-center gap-2">
-              {user && <Avatar username={user.username} navbar large={false} />}
+              {user && <Avatar username={user.username} />}
               {user ? (
                 <button
                   onClick={logout}

@@ -1,8 +1,9 @@
+import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { CommentType, PostType, UserType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_POSTS_BY_IDS } from "@/queries/posts";
@@ -10,21 +11,30 @@ import { GET_USER_QUERY } from "@/queries/user";
 import { useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
 
 type ViewState = "posts" | "likes" | "comments";
 
-interface Props {
-  username?: string;
-}
+const Profile = () => {
+  const { username, view } = useParams<{
+    username: string;
+    view: ViewState;
+  }>();
+  const { user: loggedInUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-const Profile = ({ username }: Props) => {
-  const { username: paramUsername } = useParams<{ username: string }>();
-  if (!username) {
-    username = paramUsername;
-  }
-  const [currentView, setCurrentView] = useState<ViewState>("posts");
+  const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
+
+  const handleViewChange = (value: ViewState) => {
+    setCurrentView(value);
+    console.log(location.pathname);
+    navigate(
+      location.pathname.replace(/\/(posts|likes|comments)$/, "") +
+        (value === "posts" ? "" : `/${value}`),
+    );
+  };
 
   const {
     data: userData,
@@ -97,6 +107,13 @@ const Profile = ({ username }: Props) => {
           <p>Back</p>
         </Button>
       </header>
+      {loggedInUser && loggedInUser.username === username && (
+        <div className="pt-5 text-center">
+          <h2 className="mt-2 text-3xl font-bold">
+            Welcome, {loggedInUser.username}
+          </h2>
+        </div>
+      )}
       <section className="relative mb-36 p-6">
         <img
           src={CoverPhoto}
@@ -104,12 +121,7 @@ const Profile = ({ username }: Props) => {
           className="h-56 w-full object-cover"
         />
         <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
-          <Avatar
-            username={user?.username || "unknown"}
-            large
-            navbar
-            disableHover
-          />
+          <Avatar username={user?.username || "unknown"} large disableHover />
           <h1 className="ml-3 mt-3 font-mono text-lg">
             <span className="font-sans">@</span>
             {user?.username || "Unknown User"}
@@ -119,9 +131,7 @@ const Profile = ({ username }: Props) => {
       <section>
         <ToggleGroup
           value={currentView}
-          onValueChange={(value: ViewState) => {
-            if (value) setCurrentView(value);
-          }}
+          onValueChange={(value: ViewState) => handleViewChange(value)}
           type="single"
           variant="outline"
           className="flex justify-around gap-1"
