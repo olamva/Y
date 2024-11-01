@@ -26,6 +26,11 @@ const Profile = () => {
 
   const username = paramUsername ?? loggedInUser?.username;
 
+  if (!paramUsername && username) {
+    console.log("Redirecting to", username);
+    window.location.href = `/project2/user/${username}`;
+  }
+
   const location = useLocation();
 
   const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
