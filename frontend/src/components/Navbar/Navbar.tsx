@@ -21,7 +21,7 @@ const Navbar = () => {
     <>
       <nav className="fixed z-10 flex h-20 w-full items-center justify-between bg-gray-200/40 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
         <a
-          href="/"
+          href="/project2"
           className="group flex items-center justify-center gap-5 hover:scale-110 hover:text-gray-300"
         >
           <h1 className="text-2xl font-semibold sm:text-2xl md:text-2xl lg:text-2xl xl:text-3xl">
@@ -46,7 +46,7 @@ const Navbar = () => {
           <div className="hidden items-center gap-2 md:flex">
             <ThemeToggle />
             <div className="flex items-center gap-2">
-              {user && <Avatar username={user.username} navbar />}
+              {user && <Avatar username={user.username} navbar large={false} />}
               {user ? (
                 <button
                   onClick={logout}
