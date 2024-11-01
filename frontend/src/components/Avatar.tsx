@@ -1,6 +1,6 @@
 interface AvatarProps {
   username: string;
-  large: boolean
+  large: boolean;
   navbar?: boolean;
 }
 const Avatar = ({ username, large, navbar }: AvatarProps) => (

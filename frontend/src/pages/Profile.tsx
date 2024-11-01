@@ -1,4 +1,3 @@
-import CoverPhoto from "@/../public/coverphoto.jpg";
 import Avatar from "@/components/Avatar";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
@@ -12,6 +11,7 @@ import { useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import CoverPhoto from "/coverphoto.jpg";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -169,7 +169,7 @@ const Profile = ({ username }: Props) => {
               {parentPostsError && (
                 <p>Error loading parent posts: {parentPostsError.message}</p>
               )}
-              <div className="flex flex-col w-full gap-6">
+              <div className="flex w-full flex-col gap-6">
                 {comments.map((comment) => (
                   <PostWithReply
                     key={comment.id}
