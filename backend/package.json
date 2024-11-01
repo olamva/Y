@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "node dist/index.ts",
-    "build": "tsc -p . && ncp src/schema dist/schema",
+    "build": "tsc -p . && cpy src/schema/**/* dist/schema --parents",
     "start:dev": "nodemon src/index.ts --exec ts-node -r dotenv/config",
     "build:dev": "tsc && node dist/index.ts"
   },
@@ -27,6 +27,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "22.8.6",
     "@types/serve-static": "^1.15.7",
+    "cpy-cli": "^5.0.0",
     "graphql-depth-limit": "1.1.0",
     "nodemon": "^3.1.7",
     "ts-node": "10.9.2",
@@ -49,7 +50,6 @@
     "graphql": "^16.9.0",
     "http": "0.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.7.3",
-    "ncp": "2.0.0"
+    "mongoose": "^8.7.3"
   }
 }
