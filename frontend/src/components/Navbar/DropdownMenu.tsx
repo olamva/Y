@@ -1,3 +1,4 @@
+import { useAuth } from "@/components/AuthContext";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import {
   Bars3Icon,
@@ -5,9 +6,8 @@ import {
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../AuthContext";
 import { LogInIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,15 +61,15 @@ export const DropdownMenu = () => {
           }`}
         >
           {isOpen ? (
-            <XMarkIcon className="h-8 w-8 text-white" />
+            <XMarkIcon className="size-8" />
           ) : (
-            <Bars3Icon className="h-8 w-8 text-white" />
+            <Bars3Icon className="size-8" />
           )}
         </div>
       </div>
 
       <div
-        className={`absolute right-0 top-12 z-50 mt-2 w-48 rounded-md border border-gray-500 bg-gray-300 text-gray-900 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:text-white overflow-hidden ${
+        className={`absolute right-0 top-12 z-50 mt-2 w-48 overflow-hidden rounded-md border border-gray-500 bg-gray-300 text-gray-900 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:text-white ${
           isOpen
             ? "scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0"
@@ -80,7 +80,7 @@ export const DropdownMenu = () => {
             href={route.href}
             key={i}
             onClick={closeMenu}
-            className="flex flex-row items-center gap-2 px-4 py-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+            className="flex flex-row items-center gap-2 p-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
           >
             {route.icon}
             {route.name}

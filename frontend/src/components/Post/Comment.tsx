@@ -1,16 +1,25 @@
-import PostBody from "@/components/PostBody";
+import PostContent from "@/components/Post/PostContent";
 import { CommentType, PostType } from "@/lib/types";
 import { DELETE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
 import { useMutation } from "@apollo/client";
-import { TrashIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./AuthContext";
-import Avatar from "./Avatar";
 
-const Comment = ({ comment }: { comment: CommentType }) => {
-  const { user } = useAuth();
+interface CommentProps {
+  comment: CommentType;
+  disableTopMargin?: boolean;
+  disableBottomMargin?: boolean;
+  redirects?: boolean;
+  maxWidth?: string;
+}
+const Comment = ({
+  comment,
+  disableTopMargin = false,
+  disableBottomMargin = false,
+  redirects = false,
+  maxWidth,
+}: CommentProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
 
   const [deleteComment, { loading: deleteLoading, error: deleteError }] =
@@ -80,37 +89,17 @@ const Comment = ({ comment }: { comment: CommentType }) => {
   if (isDeleted) return null;
 
   return (
-    <article className="relative flex w-full flex-col rounded-lg border border-gray-400 bg-gray-100 p-4 dark:bg-gray-900">
-      <header className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Avatar username={comment.author} />
-          <a href={`/project2/user/${comment.author}`}>
-            <p className="font-mono underline-offset-4 hover:underline">
-              <span className="font-sans">@</span>
-              {comment.author}
-            </p>
-          </a>
-        </div>
-        {user &&
-          (user.username === comment.author || user.username === "admin") && (
-            <button
-              onClick={handleDelete}
-              className="text-gray-500 hover:text-red-500 focus:outline-none"
-              aria-label="Delete comment"
-              disabled={deleteLoading}
-            >
-              <TrashIcon className="h-5 w-5" />
-            </button>
-          )}
-      </header>
-      <PostBody text={comment.body} />
-
-      {deleteError && (
-        <p className="text-sm text-red-500">
-          Error deleting comment: {deleteError.message}
-        </p>
-      )}
-    </article>
+    <PostContent
+      post={comment}
+      handleDelete={handleDelete}
+      deleteLoading={deleteLoading}
+      deleteError={deleteError}
+      className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
+      doesntRedirect={!redirects}
+      disableTopMargin={disableTopMargin}
+      disableBottomMargin={disableBottomMargin}
+      maxWidth={maxWidth}
+    />
   );
 };
 

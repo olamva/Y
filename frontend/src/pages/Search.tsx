@@ -1,11 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { SEARCH_ALL } from "@/queries/search";
-import Post from "@/components/Post";
+import Post from "@/components/Post/Post";
 import { PostType, UserType } from "@/lib/types";
 import ProfileCard from "@/components/ProfileCard";
 import { useState } from "react";
 import { FilterIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 
 type SearchResult = PostType | UserType;
 
@@ -34,47 +36,59 @@ const SearchPage = () => {
     }) || [];
 
   return (
-    <main className="mx-auto flex max-w-xl flex-col items-center justify-center">
-      <h1 className="my-4 text-center text-2xl font-bold">
-        Search results for: {searchQuery}
-      </h1>
-      <div className="mb-4 flex items-center gap-2">
-        <FilterIcon className="text-gray-800 dark:text-gray-200" />
-        <select
-          value={filterType}
-          onChange={(e) =>
-            setFilterType(e.target.value as "all" | "post" | "user")
-          }
-          className="rounded border border-gray-300 bg-white p-2 outline-none dark:bg-gray-800"
+    <div className="w-full">
+      <header>
+        <Button
+          className="m-2 flex gap-2 text-xl"
+          onClick={() => window.history.back()}
+          variant="ghost"
         >
-          <option value="all">All</option>
-          <option value="post">Posts</option>
-          <option value="user">Users</option>
-        </select>
-      </div>
-      {filteredResults.length > 0 ? (
-        <div
-          className={`grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3`}
-        >
-          {filteredResults.map((item) =>
-            item.__typename === "Post" ? (
-              <div
-                key={item.id}
-                className="col-span-1 flex justify-center sm:col-span-2 lg:col-span-3"
-              >
-                <Post post={item as PostType} />
-              </div>
-            ) : (
-              <div key={item.id} className="col-span-1 flex justify-center">
-                <ProfileCard user={item} />
-              </div>
-            ),
-          )}
+          <ArrowUturnLeftIcon className="size-6" />
+          <p>Back</p>
+        </Button>
+      </header>
+      <main className="mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4">
+        <h1 className="my-4 text-center text-2xl font-bold">
+          Search results for: {searchQuery}
+        </h1>
+        <div className="mb-4 flex items-center gap-2">
+          <FilterIcon className="text-gray-800 dark:text-gray-200" />
+          <select
+            value={filterType}
+            onChange={(e) =>
+              setFilterType(e.target.value as "all" | "post" | "user")
+            }
+            className="rounded border border-gray-300 bg-white p-2 outline-none dark:bg-gray-800"
+          >
+            <option value="all">All</option>
+            <option value="post">Posts</option>
+            <option value="user">Users</option>
+          </select>
         </div>
-      ) : (
-        <p className="text-center text-gray-500">No results found.</p>
-      )}
-    </main>
+        {filteredResults.length > 0 ? (
+          <div
+            className={`grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3`}
+          >
+            {filteredResults.map((item) =>
+              item.__typename === "Post" ? (
+                <div
+                  key={item.id}
+                  className="col-span-1 flex justify-center sm:col-span-2 lg:col-span-3"
+                >
+                  <Post post={item as PostType} />
+                </div>
+              ) : (
+                <div key={item.id} className="col-span-1 flex justify-center">
+                  <ProfileCard user={item} />
+                </div>
+              ),
+            )}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">No results found.</p>
+        )}
+      </main>
+    </div>
   );
 };
 

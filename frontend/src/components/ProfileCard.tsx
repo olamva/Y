@@ -1,5 +1,5 @@
+import Avatar from "@/components/Avatar";
 import { UserType } from "@/lib/types";
-import Avatar from "./Avatar";
 
 const ProfileCard = ({ user }: { user: UserType }) => {
   return (

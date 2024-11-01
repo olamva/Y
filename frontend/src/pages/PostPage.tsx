@@ -1,14 +1,14 @@
 import { useAuth } from "@/components/AuthContext";
-import Comment from "@/components/Comment";
-import Post from "@/components/Post";
+import CreatePostField from "@/components/CreatePostField";
+import Comment from "@/components/Post/Comment";
+import Post from "@/components/Post/Post";
 import { Button } from "@/components/ui/button";
-import TextInput from "@/form/TextInput";
+import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { GET_POST } from "@/queries/posts";
 import { useMutation, useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -87,7 +87,7 @@ const PostPage = () => {
   }
 
   return (
-    <>
+    <div className="w-full">
       <header>
         <Button
           className="m-2 flex gap-2 text-xl"
@@ -98,32 +98,24 @@ const PostPage = () => {
           <p>Back</p>
         </Button>
       </header>
-      <main className="flex flex-col items-center pt-5">
+      <main className="flex flex-col items-center px-4 pt-5">
         <Post post={postData.getPost} doesntRedirect />
+        <Divider />
         <form
           className="flex w-full flex-col items-center gap-2"
           onSubmit={handleAddComment}
         >
-          <div className="mt-2 flex w-full max-w-xl items-center gap-2">
-            <TextInput
-              id="commentText"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write your reply..."
-              required
-            />
-            <button
-              type="submit"
-              disabled={createLoading}
-              className={`rounded-md border border-transparent p-1 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                comment && user
-                  ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-              }`}
-            >
-              <PaperAirplaneIcon className="size-6" />
-            </button>
-          </div>
+          <CreatePostField
+            placeholder="Write your reply..."
+            value={comment}
+            setValue={setComment}
+            loading={createLoading}
+            className={
+              comment && user
+                ? "bg-indigo-600 hover:bg-indigo-700"
+                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+            }
+          />
           {createError && (
             <p className="text-red-500">
               Error adding comment: {createError.message}
@@ -136,7 +128,7 @@ const PostPage = () => {
         ) : commentsError ? (
           <p>Error loading comments: {commentsError.message}</p>
         ) : (
-          <div className="mt-4 flex w-full max-w-xl flex-col gap-2">
+          <>
             {commentsData?.getComments &&
             commentsData.getComments.length > 0 ? (
               commentsData.getComments.map((comment) => (
@@ -145,10 +137,10 @@ const PostPage = () => {
             ) : (
               <h1>No comments</h1>
             )}
-          </div>
+          </>
         )}
       </main>
-    </>
+    </div>
   );
 };
 

@@ -1,62 +1,47 @@
-import React, { ChangeEvent, KeyboardEvent } from "react";
+import { ChangeEvent, KeyboardEvent, forwardRef } from "react";
 
 interface TextInputProps {
-  id: string;
-  label?: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  required?: boolean;
-  className?: string;
-  placeholder?: string;
+  placeholder: string;
+  maxChars: number;
 }
 
-const TextInput: React.FC<TextInputProps> = ({
-  id,
-  label,
-  value,
-  onChange,
-  required = false,
-  className = "",
-  placeholder = "",
-}) => {
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      const form = e.currentTarget.form;
-      if (form) {
-        const submitEvent = new Event("submit", {
-          bubbles: true,
-          cancelable: true,
-        });
-        form.dispatchEvent(submitEvent);
-        e.currentTarget.style.height = "auto"; // Reset the height after form submission
+const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
+  ({ value, onChange, placeholder, maxChars }, ref) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        const form = e.currentTarget.form;
+        if (form) {
+          const submitEvent = new Event("submit", {
+            bubbles: true,
+            cancelable: true,
+          });
+          form.dispatchEvent(submitEvent);
+          e.currentTarget.style.height = "auto";
+        }
       }
-    }
-  };
+    };
 
-  return (
-    <div className="w-full">
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-gray-800 dark:text-gray-200"
-      >
-        {label}
-      </label>
-      <textarea
-        id={id}
-        value={value}
-        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-          onChange(e);
-          e.target.style.height = "auto"; // Reset the height
-          e.target.style.height = `${e.target.scrollHeight}px`; // Set it to the scrollHeight
-        }}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        required={required}
-        className={`mt-1 block min-h-12 w-full max-w-xl resize-none rounded-md border-gray-900 bg-gray-200 p-1 shadow-sm focus:border-indigo-300 focus:outline-none focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:border-gray-300 dark:bg-gray-700 ${className}`}
-      />
-    </div>
-  );
-};
+    return (
+      <div className="relative w-full">
+        <textarea
+          ref={ref}
+          value={value}
+          maxLength={maxChars}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+            onChange(e);
+            e.target.style.height = "auto";
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="mt-1 block min-h-12 w-full max-w-xl resize-none rounded-md bg-transparent outline-none"
+        />
+      </div>
+    );
+  },
+);
 
 export default TextInput;

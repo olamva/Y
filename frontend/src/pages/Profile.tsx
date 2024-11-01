@@ -1,7 +1,7 @@
 import CoverPhoto from "@/../public/coverphoto.jpg";
 import Avatar from "@/components/Avatar";
-import Comment from "@/components/Comment";
-import Post from "@/components/Post";
+import Post from "@/components/Post/Post";
+import PostWithReply from "@/components/Post/PostWithReply";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { Button } from "@/components/ui/button";
 import { CommentType, PostType, UserType } from "@/lib/types";
@@ -70,11 +70,23 @@ const Profile = ({ username }: Props) => {
 
   const comments: CommentType[] = commentsData?.getCommentsByIds || [];
 
+  const parentPostIds = comments.map((comment) => comment.parentID);
+  const {
+    data: parentPostsData,
+    loading: parentPostsLoading,
+    error: parentPostsError,
+  } = useQuery(GET_POSTS_BY_IDS, {
+    variables: { ids: parentPostIds },
+    skip: !parentPostIds.length,
+  });
+
+  const parentPosts: PostType[] = parentPostsData?.getPostsByIds || [];
+
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
 
   return (
-    <div>
+    <div className="w-full px-5">
       <header>
         <Button
           className="m-2 flex gap-2 text-xl"
@@ -119,7 +131,7 @@ const Profile = ({ username }: Props) => {
             <p>{user?.commentIds.length} Comments</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className="mt-2 flex w-full flex-col items-center">
+        <div className="mt-4 flex w-full flex-col items-center">
           {currentView === "posts" && (
             <>
               {postsLoading && <p>Loading posts...</p>}
@@ -148,13 +160,26 @@ const Profile = ({ username }: Props) => {
           )}
           {currentView === "comments" && (
             <>
-              {commentsLoading && <p>Loading comments...</p>}
+              {(commentsLoading || parentPostsLoading) && (
+                <p>Loading comments...</p>
+              )}
               {commentsError && (
                 <p>Error loading comments: {commentsError.message}</p>
               )}
-              <div className="w-full max-w-lg">
+              {parentPostsError && (
+                <p>Error loading parent posts: {parentPostsError.message}</p>
+              )}
+              <div className="flex flex-col w-full gap-6">
                 {comments.map((comment) => (
-                  <Comment comment={comment} key={comment.id} />
+                  <PostWithReply
+                    key={comment.id}
+                    post={
+                      parentPosts.find(
+                        (post) => post.id === comment.parentID,
+                      ) ?? parentPosts[0]
+                    }
+                    reply={comment}
+                  />
                 ))}
               </div>
               {!commentsLoading && comments.length === 0 && (
