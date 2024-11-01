@@ -17,19 +17,21 @@ import CoverPhoto from "/coverphoto.jpg";
 type ViewState = "posts" | "likes" | "comments";
 
 const Profile = () => {
-  const { username, view } = useParams<{
+  const { username: paramUsername, view } = useParams<{
     username: string;
     view: ViewState;
   }>();
   const { user: loggedInUser } = useAuth();
   const navigate = useNavigate();
+
+  const username = paramUsername ?? loggedInUser?.username;
+
   const location = useLocation();
 
   const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
 
   const handleViewChange = (value: ViewState) => {
     setCurrentView(value);
-    console.log(location.pathname);
     navigate(
       location.pathname.replace(/\/(posts|likes|comments)$/, "") +
         (value === "posts" ? "" : `/${value}`),
