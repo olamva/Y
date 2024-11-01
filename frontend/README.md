@@ -1,8 +1,37 @@
-# Y (Twitter klone)
+# Frontend for Y
 
-Stakken vi har valgt er: React Typescript og Vite. Vi har valgt tailwindcss og shadcn/ui for styling og komponenter.
+A React TS + Vite frontend for Y.
 
-For å kjøre prosjektet, sørg for at du har node installert. Videre kan du kjøre
+## Table of Contents
+
+## Getting Started
+
+### Prerequisites
+
+Ensure you have the following installed on your machine:
+
+- Node.js (v14 or higher)
+- npm (comes with Node.js)
+- Access to NTNU's network
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://git.ntnu.no/IT2810-H24/T06-Project-2
+   cd T06-Project-2/frontend
+   ```
+2. Install dependencies:
+   ```bash
+    npm install
+    ```
+
+### Running the server
+
+Start the development server with:
+```bash
+npm run dev
+```
 
 ```
 npm install
@@ -13,10 +42,6 @@ og
 ```
 npm run dev
 ```
-
-## Produktkrav
-
-**TODO**
 
 ## Testing
 
