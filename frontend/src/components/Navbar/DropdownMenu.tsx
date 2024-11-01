@@ -80,7 +80,7 @@ export const DropdownMenu = () => {
             href={route.href}
             key={i}
             onClick={closeMenu}
-            className="flex flex-row items-center gap-2 p-2 text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+            className="flex flex-row items-center gap-2 p-2 text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
           >
             {route.icon}
             {route.name}
@@ -93,7 +93,7 @@ export const DropdownMenu = () => {
               logout();
               closeMenu();
             }}
-            className="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-500 dark:hover:bg-gray-900"
+            className="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
           >
             <LogOutIcon className="size-5" />
             Log out
