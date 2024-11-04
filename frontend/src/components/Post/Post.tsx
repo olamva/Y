@@ -26,7 +26,7 @@ const Post = ({
 
   useEffect(() => {
     setIsLiked(user?.likedPostIds.includes(post.id) ?? false);
-  }, [user, post.id]);
+  }, [user?.likedPostIds, post.id]);
 
   const [likePost] = useMutation(LIKE_POST, {
     variables: { postID: post.id },
