@@ -2,7 +2,6 @@ import { useAuth } from "@/components/AuthContext";
 import PostContent from "@/components/Post/PostContent";
 import { PostType } from "@/lib/types";
 import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
-import { FOLLOW_USER_MUTATION, UNFOLLOW_USER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -20,18 +19,14 @@ const Post = ({
   disableBottomMargin = false,
   disableTopMargin = false,
 }: PostProps) => {
-  const { user, refetchUser } = useAuth();
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [amtLikes, setAmtLikes] = useState(post.amtLikes);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     setIsLiked(user?.likedPostIds.includes(post.id) ?? false);
-
-    const followingUsernames = user?.following?.map((u) => u.username) ?? [];
-    setIsFollowing(followingUsernames.includes(post.author));
-  }, [user, post.id, post.author]);
+  }, [user, post.id]);
 
   const [likePost] = useMutation(LIKE_POST, {
     variables: { postID: post.id },
@@ -81,30 +76,6 @@ const Post = ({
       },
     });
 
-  const [followUserMutation] = useMutation(FOLLOW_USER_MUTATION, {
-    variables: { username: post.author },
-    onCompleted: () => {
-      setIsFollowing(true);
-      toast.success(`You are now following ${post.author}`);
-      refetchUser();
-    },
-    onError: (error) => {
-      toast.error(`Error following user: ${error.message}`);
-    },
-  });
-
-  const [unfollowUserMutation] = useMutation(UNFOLLOW_USER_MUTATION, {
-    variables: { username: post.author },
-    onCompleted: () => {
-      setIsFollowing(false);
-      toast.success(`You have unfollowed ${post.author}`);
-      refetchUser();
-    },
-    onError: (error) => {
-      toast.error(`Error unfollowing user: ${error.message}`);
-    },
-  });
-
   const toggleLike = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
@@ -132,28 +103,6 @@ const Post = ({
     }
   };
 
-  const followUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
-
-    try {
-      await followUserMutation();
-    } catch (error) {
-      toast.error(`Error following user: ${(error as Error).message}`);
-    }
-  };
-
-  const unfollowUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
-
-    try {
-      await unfollowUserMutation();
-    } catch (error) {
-      toast.error(`Error unfollowing user: ${(error as Error).message}`);
-    }
-  };
-
   if (isDeleted) return null;
 
   return (
@@ -169,9 +118,6 @@ const Post = ({
       className="border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
       disableTopMargin={disableTopMargin}
       disableBottomMargin={disableBottomMargin}
-      followUser={followUser}
-      unfollowUser={unfollowUser}
-      isFollowing={isFollowing}
     />
   );
 };

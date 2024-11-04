@@ -4,14 +4,11 @@ import PostBody from "@/components/Post/PostBody";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
-import {
-  ChatBubbleLeftIcon,
-  MinusCircleIcon,
-  PlusCircleIcon,
-} from "@heroicons/react/24/outline";
+import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent } from "react";
+import FollowButton from "@/components/FollowButton";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -26,10 +23,8 @@ interface PostContentProps {
   disableTopMargin: boolean;
   disableBottomMargin: boolean;
   maxWidth?: string;
-  isFollowing?: boolean;
-  followUser: (e: MouseEvent<HTMLButtonElement>) => void;
-  unfollowUser: (e: MouseEvent<HTMLButtonElement>) => void;
 }
+
 const PostContent = ({
   post,
   toggleLike,
@@ -43,19 +38,26 @@ const PostContent = ({
   disableTopMargin,
   disableBottomMargin,
   maxWidth,
-  isFollowing,
-  followUser,
-  unfollowUser,
 }: PostContentProps) => {
   const { user } = useAuth();
   const isComment = "parentID" in post;
   return (
     <article
-      className={`${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${maxWidth !== undefined ? maxWidth : "max-w-xl"} rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`${
+        disableBottomMargin ? "" : "mb-2"
+      } ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${
+        maxWidth !== undefined ? maxWidth : "max-w-xl"
+      } rounded-md border-2 p-4 ${
+        isComment ? "" : "pb-2"
+      } text-black shadow-md dark:text-white ${
+        doesntRedirect ? "cursor-text" : "cursor-pointer"
+      } ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/post/${isComment ? post.parentID : post.id}`;
+          document.location.href = `/project2/post/${
+            isComment ? post.parentID : post.id
+          }`;
         }
       }}
     >
@@ -68,24 +70,7 @@ const PostContent = ({
               {post.author}
             </p>
           </a>
-          <button
-            className="hover:scale-110"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isFollowing) {
-                unfollowUser(e);
-              } else {
-                followUser(e);
-              }
-            }}
-          >
-            {isFollowing ? (
-              <MinusCircleIcon className="size-6" />
-            ) : (
-              <PlusCircleIcon className="size-6" />
-            )}
-          </button>
-
+          <FollowButton targetUsername={post.author} className="size-6" />
           <p>·</p>
           <p>{formatTimestamp(post.createdAt)}</p>
         </div>

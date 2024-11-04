@@ -12,6 +12,7 @@ import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
+import FollowButton from "@/components/FollowButton";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -110,10 +111,17 @@ const Profile = ({ username }: Props) => {
             navbar
             disableHover
           />
-          <h1 className="ml-3 mt-3 font-mono text-lg">
-            <span className="font-sans">@</span>
-            {user?.username || "Unknown User"}
-          </h1>
+
+          <div className="flex items-center justify-center">
+            <h1 className="font-mono text-lg">
+              <span className="font-sans">@</span>
+              {user?.username || "Unknown User"}
+            </h1>
+            <FollowButton
+              targetUsername={user?.username || ""}
+              className="size-8"
+            />
+          </div>
         </div>
       </section>
       <section>
