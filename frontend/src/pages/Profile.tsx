@@ -15,19 +15,21 @@ import CoverPhoto from "/coverphoto.jpg";
 import FollowButton from "@/components/FollowButton";
 import { UserIcon, UsersIcon } from "lucide-react";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
+import { useAuth } from "@/components/AuthContext";
 
 type ViewState = "posts" | "likes" | "comments";
 
 interface Props {
   username?: string;
-  isMe?: boolean;
 }
 
-const Profile = ({ username, isMe }: Props) => {
+const Profile = ({ username }: Props) => {
   const { username: paramUsername } = useParams<{ username: string }>();
   if (!username) {
     username = paramUsername;
   }
+
+  const { user: currentUser } = useAuth();
   const [currentView, setCurrentView] = useState<ViewState>("posts");
   const [modalContent, setModalContent] = useState<{
     title: string;
@@ -132,7 +134,7 @@ const Profile = ({ username, isMe }: Props) => {
               <span className="font-sans">@</span>
               {user?.username || "Unknown User"}
             </h1>
-            {!isMe && (
+            {currentUser?.username !== user.username && (
               <FollowButton
                 targetUsername={user?.username || ""}
                 className="size-6"

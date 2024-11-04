@@ -31,7 +31,7 @@ const UserPage = () => {
           Welcome, {data.getUser.username}
         </h2>
       </div>
-      <Profile username={data.getUser.username} isMe={true} />
+      <Profile username={data.getUser.username} />
     </main>
   );
 };
