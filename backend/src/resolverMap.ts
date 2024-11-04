@@ -326,7 +326,7 @@ export const resolvers: IResolvers = {
 
       user.following = user.following.filter((id) => String(id) !== String(personToUnfollow.id));
 
-      personToUnfollow.followers = personToUnfollow.followers.filter((id) => id !== user.id);
+      personToUnfollow.followers = personToUnfollow.followers.filter((id) => String(id) !== String(user.id));
 
       await personToUnfollow.save();
       await user.save();
