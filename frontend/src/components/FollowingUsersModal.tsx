@@ -46,7 +46,7 @@ const FollowingUsersModal = ({ isOpen, onClose, title, users }: Props) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div
         ref={modalRef}
-        className="max-h-[80vh] w-full max-w-md overflow-auto rounded-lg bg-white p-6"
+        className="max-h-[80vh] w-full max-w-md overflow-auto rounded-lg bg-white p-6 dark:bg-gray-900"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold">{title}</h2>
