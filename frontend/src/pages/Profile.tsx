@@ -99,7 +99,7 @@ const Profile = ({ username }: Props) => {
           <p>Back</p>
         </Button>
       </header>
-      <section className="relative mb-36 p-6">
+      <section className="relative mb-36">
         <img
           src={CoverPhoto}
           alt="Cover photo"
@@ -126,7 +126,7 @@ const Profile = ({ username }: Props) => {
         </div>
       </section>
       <section>
-        <div className="mx-8 mb-8 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl">
+        <div className="mb-8 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl">
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center space-x-2">
               <UserIcon className="h-5 w-5" />
