@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
 import FollowButton from "@/components/FollowButton";
+import { UserIcon, UsersIcon } from "lucide-react";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -125,6 +126,26 @@ const Profile = ({ username }: Props) => {
         </div>
       </section>
       <section>
+        <div className="mx-8 mb-8 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl">
+          <div className="flex items-center justify-between text-white">
+            <div className="flex items-center space-x-2">
+              <UserIcon className="h-5 w-5" />
+              <span className="text-lg font-semibold">
+                {user?.followers.length}
+              </span>
+              <span className="text-sm">Followers</span>
+            </div>
+            <div className="h-8 w-px bg-white/30" />
+            <div className="flex items-center space-x-2">
+              <UsersIcon className="h-5 w-5" />
+              <span className="text-lg font-semibold">
+                {user?.following.length}
+              </span>
+              <span className="text-sm">Following</span>
+            </div>
+          </div>
+        </div>
+
         <ToggleGroup
           value={currentView}
           onValueChange={(value: ViewState) => {
