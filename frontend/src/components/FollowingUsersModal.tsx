@@ -64,7 +64,7 @@ const FollowingUsersModal = ({ isOpen, onClose, title, users }: Props) => {
               <li key={user.id} className="flex items-center space-x-2">
                 <a
                   href={`/project2/user/${user.username}`}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 hover:scale-110"
                 >
                   <Avatar username={user.username} />
                   <span>{user.username}</span>
