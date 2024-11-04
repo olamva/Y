@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export interface UserType extends Document {
@@ -7,8 +7,8 @@ export interface UserType extends Document {
   postIds: string[];
   likedPostIds: string[];
   commentIds: string[];
-  followers: string[];
-  following: string[];
+  followers: Types.ObjectId[];
+  following: Types.ObjectId[];
   comparePassword: (candidatePassword: string) => Promise<boolean>;
 }
 
