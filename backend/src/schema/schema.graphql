@@ -35,8 +35,8 @@ type User {
   postIds: [ID!]!
   likedPostIds: [ID!]!
   commentIds: [ID!]!
-  following: [String!]!
-  followers: [String!]!
+  following: [User!]!
+  followers: [User!]!
 }
 
 type Mutation {

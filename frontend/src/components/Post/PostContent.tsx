@@ -4,7 +4,11 @@ import PostBody from "@/components/Post/PostBody";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
-import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import {
+  ChatBubbleLeftIcon,
+  MinusCircleIcon,
+  PlusCircleIcon,
+} from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent } from "react";
@@ -22,6 +26,9 @@ interface PostContentProps {
   disableTopMargin: boolean;
   disableBottomMargin: boolean;
   maxWidth?: string;
+  isFollowing?: boolean;
+  followUser: (e: MouseEvent<HTMLButtonElement>) => void;
+  unfollowUser: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 const PostContent = ({
   post,
@@ -36,6 +43,9 @@ const PostContent = ({
   disableTopMargin,
   disableBottomMargin,
   maxWidth,
+  isFollowing,
+  followUser,
+  unfollowUser,
 }: PostContentProps) => {
   const { user } = useAuth();
   const isComment = "parentID" in post;
@@ -58,6 +68,24 @@ const PostContent = ({
               {post.author}
             </p>
           </a>
+          <button
+            className="hover:scale-110"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isFollowing) {
+                unfollowUser(e);
+              } else {
+                followUser(e);
+              }
+            }}
+          >
+            {isFollowing ? (
+              <MinusCircleIcon className="size-6" />
+            ) : (
+              <PlusCircleIcon className="size-6" />
+            )}
+          </button>
+
           <p>·</p>
           <p>{formatTimestamp(post.createdAt)}</p>
         </div>

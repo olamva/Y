@@ -290,11 +290,11 @@ export const resolvers: IResolvers = {
         throw new UserInputError('You cannot follow yourself');
       }
 
-      if (personToFollow?.followers.includes(context.user.id)) {
+      if (user.following.includes(personToFollow.id)) {
         throw new UserInputError('You are already following this user');
       }
 
-      personToFollow.followers.push(context.user.id);
+      personToFollow.followers.push(user.id);
 
       user.following.push(personToFollow.id);
 
@@ -320,15 +320,13 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (!personToUnfollow.followers.includes(context.user.id)) {
+      if (!user.following.includes(personToUnfollow.id)) {
         throw new UserInputError('You are not following this user');
       }
 
-      personToUnfollow.followers = personToUnfollow.followers.filter(
-        (followerId) => followerId.toString() !== context.user.id
-      );
+      user.following = user.following.filter((id) => id !== personToUnfollow.id);
 
-      user.following = user.following.filter((followingId) => followingId.toString() !== personToUnfollow.id);
+      personToUnfollow.followers = personToUnfollow.followers.filter((id) => id !== user.id);
 
       await personToUnfollow.save();
       await user.save();
@@ -345,6 +343,14 @@ export const resolvers: IResolvers = {
         return 'Post';
       }
       return null;
+    },
+  },
+  User: {
+    followers: async (parent) => {
+      return await User.find({ _id: { $in: parent.followers } });
+    },
+    following: async (parent) => {
+      return await User.find({ _id: { $in: parent.following } });
     },
   },
 };

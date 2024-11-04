@@ -17,8 +17,8 @@ const UserSchema = new Schema<UserType>({
   password: { type: String, required: true },
   postIds: { type: [String], default: [] },
   likedPostIds: { type: [String], default: [] },
-  followers: { type: [String], default: [] },
-  following: { type: [String], default: [] },
+  followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+  following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
   commentIds: { type: [String], default: [] },
 });
 
