@@ -145,7 +145,7 @@ const Profile = ({ username }: Props) => {
       </section>
       <section>
         <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-center justify-around sm:flex-row">
             <button
               onClick={() => openModal("Followers")}
               className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
@@ -157,7 +157,7 @@ const Profile = ({ username }: Props) => {
               </span>
               <span className="text-sm">Followers</span>
             </button>
-            <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
+
             <button
               onClick={() => openModal("Following")}
               className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
