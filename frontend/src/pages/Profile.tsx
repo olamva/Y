@@ -20,9 +20,10 @@ type ViewState = "posts" | "likes" | "comments";
 
 interface Props {
   username?: string;
+  isMe?: boolean;
 }
 
-const Profile = ({ username }: Props) => {
+const Profile = ({ username, isMe }: Props) => {
   const { username: paramUsername } = useParams<{ username: string }>();
   if (!username) {
     username = paramUsername;
@@ -131,10 +132,12 @@ const Profile = ({ username }: Props) => {
               <span className="font-sans">@</span>
               {user?.username || "Unknown User"}
             </h1>
-            <FollowButton
-              targetUsername={user?.username || ""}
-              className="size-6"
-            />
+            {!isMe && (
+              <FollowButton
+                targetUsername={user?.username || ""}
+                className="size-6"
+              />
+            )}
           </div>
         </div>
       </section>
