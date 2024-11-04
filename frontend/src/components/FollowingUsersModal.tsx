@@ -1,14 +1,16 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { UserType } from "@/lib/types";
+import Avatar from "./Avatar";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode;
+  users: UserType[];
 }
 
-const FollowingUsersModal = ({ isOpen, onClose, title, children }: Props) => {
+const FollowingUsersModal = ({ isOpen, onClose, title, users }: Props) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,7 +58,21 @@ const FollowingUsersModal = ({ isOpen, onClose, title, children }: Props) => {
             <X className="h-6 w-6" />
           </button>
         </div>
-        {children}
+        {users && (
+          <ul className="space-y-2">
+            {users.map((user) => (
+              <li key={user.id} className="flex items-center space-x-2">
+                <a
+                  href={`/project2/user/${user.username}`}
+                  className="flex items-center space-x-2"
+                >
+                  <Avatar username={user.username} />
+                  <span>{user.username}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

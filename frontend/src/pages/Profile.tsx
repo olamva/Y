@@ -30,11 +30,10 @@ const Profile = ({ username }: Props) => {
   const [currentView, setCurrentView] = useState<ViewState>("posts");
   const [modalContent, setModalContent] = useState<{
     title: string;
-    users: UserType[];
   } | null>(null);
 
-  const openModal = (title: string, users: UserType[]) => {
-    setModalContent({ title, users });
+  const openModal = (title: string) => {
+    setModalContent({ title });
   };
 
   const closeModal = () => {
@@ -140,11 +139,11 @@ const Profile = ({ username }: Props) => {
         </div>
       </section>
       <section>
-        <div className="mb-8 rounded-lg bg-gradient-to-r from-purple-400 to-pink-500 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl">
-          <div className="flex items-center justify-between text-white">
+        <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
+          <div className="flex items-center justify-between">
             <button
-              onClick={() => openModal("Followers", user?.followers)}
-              className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-white hover:bg-opacity-20"
+              onClick={() => openModal("Followers")}
+              className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
               aria-label={`View ${user?.followers.length} followers`}
             >
               <UserIcon className="h-5 w-5" />
@@ -153,10 +152,10 @@ const Profile = ({ username }: Props) => {
               </span>
               <span className="text-sm">Followers</span>
             </button>
-            <div className="h-8 w-px bg-white/30" />
+            <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
             <button
-              onClick={() => openModal("Following", user?.following)}
-              className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-white hover:bg-opacity-20"
+              onClick={() => openModal("Following")}
+              className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
               aria-label={`View ${user?.following.length} following`}
             >
               <UsersIcon className="h-5 w-5" />
@@ -249,23 +248,14 @@ const Profile = ({ username }: Props) => {
         isOpen={!!modalContent}
         onClose={closeModal}
         title={modalContent?.title || ""}
-      >
-        {modalContent && (
-          <ul className="space-y-2">
-            {modalContent.users.map((user) => (
-              <li key={user.id} className="flex items-center space-x-2">
-                <a
-                  href={`/project2/user/${user.username}`}
-                  className="flex items-center space-x-2"
-                >
-                  <Avatar username={user.username} />
-                  <span>{user?.username}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </FollowingUsersModal>
+        users={
+          modalContent?.title === "Followers"
+            ? (user?.followers ?? [])
+            : modalContent?.title === "Following"
+              ? (user?.following ?? [])
+              : []
+        }
+      ></FollowingUsersModal>
     </div>
   );
 };

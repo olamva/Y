@@ -1,5 +1,9 @@
 import { useAuth } from "@/components/AuthContext";
-import { FOLLOW_USER_MUTATION, UNFOLLOW_USER_MUTATION } from "@/queries/user";
+import {
+  FOLLOW_USER_MUTATION,
+  GET_USER_QUERY,
+  UNFOLLOW_USER_MUTATION,
+} from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -22,6 +26,9 @@ const FollowButton = ({ targetUsername, className }: FollowButtonProps) => {
 
   const [followUserMutation] = useMutation(FOLLOW_USER_MUTATION, {
     variables: { username: targetUsername },
+    refetchQueries: [
+      { query: GET_USER_QUERY, variables: { username: targetUsername } },
+    ],
     onCompleted: () => {
       setIsFollowing(true);
       toast.success(`You are now following ${targetUsername}`);
@@ -34,6 +41,9 @@ const FollowButton = ({ targetUsername, className }: FollowButtonProps) => {
 
   const [unfollowUserMutation] = useMutation(UNFOLLOW_USER_MUTATION, {
     variables: { username: targetUsername },
+    refetchQueries: [
+      { query: GET_USER_QUERY, variables: { username: targetUsername } },
+    ],
     onCompleted: () => {
       setIsFollowing(false);
       toast.success(`You have unfollowed ${targetUsername}`);
