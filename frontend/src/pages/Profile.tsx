@@ -112,14 +112,14 @@ const Profile = ({ username }: Props) => {
             disableHover
           />
 
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-2">
             <h1 className="font-mono text-lg">
               <span className="font-sans">@</span>
               {user?.username || "Unknown User"}
             </h1>
             <FollowButton
               targetUsername={user?.username || ""}
-              className="size-8"
+              className="size-6"
             />
           </div>
         </div>

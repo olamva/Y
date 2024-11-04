@@ -324,7 +324,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('You are not following this user');
       }
 
-      user.following = user.following.filter((id) => id !== personToUnfollow.id);
+      user.following = user.following.filter((id) => String(id) !== String(personToUnfollow.id));
 
       personToUnfollow.followers = personToUnfollow.followers.filter((id) => id !== user.id);
 
