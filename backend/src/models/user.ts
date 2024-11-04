@@ -7,6 +7,8 @@ export interface UserType extends Document {
   postIds: string[];
   likedPostIds: string[];
   commentIds: string[];
+  followers: string[];
+  following: string[];
   comparePassword: (candidatePassword: string) => Promise<boolean>;
 }
 
@@ -15,6 +17,8 @@ const UserSchema = new Schema<UserType>({
   password: { type: String, required: true },
   postIds: { type: [String], default: [] },
   likedPostIds: { type: [String], default: [] },
+  followers: { type: [String], default: [] },
+  following: { type: [String], default: [] },
   commentIds: { type: [String], default: [] },
 });
 

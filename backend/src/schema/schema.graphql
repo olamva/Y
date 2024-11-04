@@ -35,6 +35,8 @@ type User {
   postIds: [ID!]!
   likedPostIds: [ID!]!
   commentIds: [ID!]!
+  following: [String!]!
+  followers: [String!]!
 }
 
 type Mutation {
@@ -44,6 +46,8 @@ type Mutation {
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!
   unlikePost(postID: ID!): Post!
+  followUser(username: String!): User!
+  unfollowUser(username: String!): User!
   register(username: String!, password: String!): String!
   login(username: String!, password: String!): String!
 }

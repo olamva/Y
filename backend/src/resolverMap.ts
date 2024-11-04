@@ -277,6 +277,64 @@ export const resolvers: IResolvers = {
 
       return post;
     },
+    followUser: async (_, { username }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to follow a user');
+      }
+      const personToFollow = await User.findOne({ username });
+      const user = await User.findById(context.user.id);
+      if (!personToFollow || !user) {
+        throw new UserInputError('User not found');
+      }
+      if (context.user.username === username) {
+        throw new UserInputError('You cannot follow yourself');
+      }
+
+      if (personToFollow?.followers.includes(context.user.id)) {
+        throw new UserInputError('You are already following this user');
+      }
+
+      personToFollow.followers.push(context.user.id);
+
+      user.following.push(personToFollow.id);
+
+      await personToFollow.save();
+
+      await user.save();
+
+      return personToFollow;
+    },
+    unfollowUser: async (_, { username }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unfollow a user');
+      }
+
+      if (context.user.username === username) {
+        throw new UserInputError('You cannot unfollow yourself');
+      }
+
+      const personToUnfollow = await User.findOne({ username });
+      const user = await User.findById(context.user.id);
+
+      if (!personToUnfollow || !user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (!personToUnfollow.followers.includes(context.user.id)) {
+        throw new UserInputError('You are not following this user');
+      }
+
+      personToUnfollow.followers = personToUnfollow.followers.filter(
+        (followerId) => followerId.toString() !== context.user.id
+      );
+
+      user.following = user.following.filter((followingId) => followingId.toString() !== personToUnfollow.id);
+
+      await personToUnfollow.save();
+      await user.save();
+
+      return personToUnfollow;
+    },
   },
   SearchResult: {
     __resolveType(obj: any) {
