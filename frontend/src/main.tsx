@@ -7,12 +7,12 @@ import { client } from "@/lib/apolloClient";
 import PostPage from "@/pages/PostPage.tsx";
 import Profile from "@/pages/Profile";
 import SearchPage from "@/pages/Search.tsx";
-import UserPage from "@/pages/UserPage";
 import { ApolloProvider } from "@apollo/client";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LoginForm from "./components/LoginForm";
 
 const router = createBrowserRouter([
   {
@@ -20,12 +20,24 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
+    path: "/project2/login",
+    element: <LoginForm view="login" />,
+  },
+  {
+    path: "/project2/register",
+    element: <LoginForm view="register" />,
+  },
+  {
+    path: "/project2/user",
+    element: <Profile />,
+  },
+  {
     path: "/project2/user/:username",
     element: <Profile />,
   },
   {
-    path: "/project2/user",
-    element: <UserPage />,
+    path: "/project2/user/:username/:view",
+    element: <Profile />,
   },
   {
     path: "/project2/search/",
