@@ -106,51 +106,54 @@ const HomePage = () => {
   if (networkStatus === NetworkStatus.loading)
     return <p className="mt-4 text-center">Loading...</p>;
 
-  if (error)
+  if (error || usersError)
     return (
       <p className="mt-4 text-center text-red-500">
-        Error loading posts: {error.message}
+        Error loading posts:{" "}
+        {(error?.message ?? usersError?.message) || "Unknown error"}
       </p>
     );
 
   return (
-    <div className="mx-auto grid w-full max-w-screen-xl grid-cols-4 gap-4">
-      <div className="col-start-1 row-span-5 row-start-1"></div>
+    <div className="mx-auto grid w-full max-w-screen-xl grid-cols-1 gap-4 px-5 py-5 lg:grid-cols-4">
+      <aside className="hidden lg:col-start-1 lg:row-span-5 lg:row-start-1 lg:flex"></aside>
 
-      <main className="col-span-2 col-start-2 row-span-5">
-        <form
-          className="flex w-full max-w-xl items-center gap-2"
-          onSubmit={handleAddPost}
-        >
-          <CreatePostField
-            placeholder="What's on your mind?"
-            value={postBody}
-            setValue={setPostBody}
-            loading={createLoading}
-            className={
-              postBody && user
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-            }
-          />
-        </form>
+      <main className="col-span-1 col-start-1 lg:col-span-2 lg:col-start-2 lg:row-span-5">
+        <div className="mx-auto w-full max-w-xl">
+          <form
+            className="flex w-full items-center gap-2"
+            onSubmit={handleAddPost}
+          >
+            <CreatePostField
+              placeholder="What's on your mind?"
+              value={postBody}
+              setValue={setPostBody}
+              loading={createLoading}
+              className={
+                postBody && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              }
+            />
+          </form>
 
-        <Divider />
+          <Divider />
 
-        {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
+          {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
 
-        {!hasMore && (
-          <p className="mt-4 text-gray-500 dark:text-gray-400">
-            You've reached the end of the posts.
-          </p>
-        )}
+          {!hasMore && (
+            <p className="mt-4 text-gray-500 dark:text-gray-400">
+              You've reached the end of the posts.
+            </p>
+          )}
 
-        {!loading && data?.getPosts.length === 0 && (
-          <p className="mt-4">No posts available.</p>
-        )}
+          {!loading && data?.getPosts.length === 0 && (
+            <p className="mt-4">No posts available.</p>
+          )}
+        </div>
       </main>
 
-      <aside className="col-start-4 hidden py-8 md:flex">
+      <aside className="hidden lg:col-start-4 lg:flex lg:py-8">
         <div className="flex w-full flex-col gap-5">
           <h1 className="text-3xl">People to follow</h1>
           {usersData?.getUsers.map((recommendedUser) => (
