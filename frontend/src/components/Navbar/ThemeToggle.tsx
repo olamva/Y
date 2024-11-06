@@ -1,8 +1,5 @@
-import {
-  MoonIcon as MoonIconSolid,
-  SunIcon as SunIconSolid,
-} from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 
 const ThemeToggle = () => {
   const [theme, setTheme] = useState(() => {
@@ -28,13 +25,29 @@ const ThemeToggle = () => {
 
   return (
     <>
-      <div className="hidden size-6 md:block">
-        <button className="group rounded-full" onClick={toggleTheme}>
-          {theme === "dark" ? (
-            <MoonIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
-          ) : (
-            <SunIconSolid className="size-6 transition-transform duration-300 ease-in-out group-hover:scale-110" />
-          )}
+      <div className="hidden md:block">
+        <button
+          onClick={toggleTheme}
+          className={`mx-4 h-10 w-16 rounded-full p-1 transition-colors duration-300 focus:outline-none ${
+            theme === "dark" ? "bg-gray-900" : "bg-gray-300"
+          }`}
+          aria-label={
+            theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
+          }
+        >
+          <div
+            className={`flex h-8 w-8 transform items-center justify-center rounded-full transition-transform duration-300 ${
+              theme === "dark"
+                ? "translate-x-6 bg-gray-800"
+                : "translate-x-0 bg-white"
+            }`}
+          >
+            {theme === "dark" ? (
+              <Moon className="h-5 w-5 text-yellow-300" />
+            ) : (
+              <Sun className="h-5 w-5 text-yellow-500" />
+            )}
+          </div>
         </button>
       </div>
       <div className="md:hidden">
@@ -43,11 +56,11 @@ const ThemeToggle = () => {
           onClick={toggleTheme}
         >
           {theme === "dark" ? (
-            <SunIconSolid className="size-5" />
+            <Sun className="h-5 w-5" />
           ) : (
-            <MoonIconSolid className="size-5" />
+            <Moon className="h-5 w-5" />
           )}
-          {theme === "dark" ? <p>Lightmode</p> : <p>Darkmode</p>}
+          {theme === "dark" ? <p>Light Mode</p> : <p>Dark Mode</p>}
         </button>
       </div>
     </>

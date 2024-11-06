@@ -32,7 +32,7 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-md md:justify-end">
+        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg md:justify-end">
           <form onSubmit={navigateSearch}>
             <input
               type="search"
@@ -47,7 +47,11 @@ const Navbar = () => {
           <div className="hidden items-center gap-2 md:flex">
             <ThemeToggle />
             <div className="flex items-center gap-2">
-              {user && <Avatar username={user.username} />}
+              {user && (
+                <div className="mr-2">
+                  <Avatar username={user.username} large={false} />{" "}
+                </div>
+              )}
               {user ? (
                 <button
                   onClick={logout}
