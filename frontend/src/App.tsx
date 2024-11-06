@@ -7,6 +7,8 @@ import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Divider from "./components/ui/Divider";
+import Avatar from "./components/Avatar";
+import FollowButton from "./components/FollowButton";
 
 const PAGE_SIZE = 10;
 
@@ -105,36 +107,57 @@ const HomePage = () => {
     );
 
   return (
-    <main className="flex w-full flex-col items-center p-4">
-      <form
-        className="flex w-full max-w-xl items-center gap-2"
-        onSubmit={handleAddPost}
-      >
-        <CreatePostField
-          placeholder="What's on your mind?"
-          value={postBody}
-          setValue={setPostBody}
-          loading={createLoading}
-          className={
-            postBody && user
-              ? "bg-indigo-600 hover:bg-indigo-700"
-              : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-          }
-        />
-      </form>
+    <div className="mx-auto grid w-full max-w-screen-xl grid-cols-4 gap-4">
+      <div className="col-start-1 row-span-5 row-start-1"></div>
 
-      <Divider />
+      <main className="col-span-2 col-start-2 row-span-5">
+        <form
+          className="flex w-full max-w-xl items-center gap-2"
+          onSubmit={handleAddPost}
+        >
+          <CreatePostField
+            placeholder="What's on your mind?"
+            value={postBody}
+            setValue={setPostBody}
+            loading={createLoading}
+            className={
+              postBody && user
+                ? "bg-indigo-600 hover:bg-indigo-700"
+                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+            }
+          />
+        </form>
 
-      {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
-      {!hasMore && (
-        <p className="mt-4 text-gray-500 dark:text-gray-400">
-          You've reached the end of the posts.
-        </p>
-      )}
-      {!loading && data?.getPosts.length === 0 && (
-        <p className="mt-4">No posts available.</p>
-      )}
-    </main>
+        <Divider />
+
+        {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
+
+        {!hasMore && (
+          <p className="mt-4 text-gray-500 dark:text-gray-400">
+            You've reached the end of the posts.
+          </p>
+        )}
+
+        {!loading && data?.getPosts.length === 0 && (
+          <p className="mt-4">No posts available.</p>
+        )}
+      </main>
+
+      <aside className="col-start-4 hidden py-8 md:flex">
+        <div className="flex w-full flex-col gap-5">
+          <h1 className="text-3xl">People to follow</h1>
+          {user && (
+            <div className="w-full rounded-lg bg-gray-900/50 px-2 py-6">
+              <div className="flex flex-row items-center gap-2">
+                <Avatar username={user.username} />
+                <h1>{user.username}</h1>
+                <FollowButton targetUsername={user.username} />
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
+    </div>
   );
 };
 
