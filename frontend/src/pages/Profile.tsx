@@ -135,10 +135,7 @@ const Profile = ({ username }: Props) => {
               {user?.username || "Unknown User"}
             </h1>
             {currentUser?.username !== user.username && (
-              <FollowButton
-                targetUsername={user?.username || ""}
-                className="size-6"
-              />
+              <FollowButton targetUsername={user?.username || ""} />
             )}
           </div>
         </div>

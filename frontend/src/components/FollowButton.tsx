@@ -7,15 +7,14 @@ import {
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { UserPlus, Check } from "lucide-react";
 import { MouseEvent } from "react";
 
 interface FollowButtonProps {
   targetUsername: string;
-  className: string;
 }
 
-const FollowButton = ({ targetUsername, className }: FollowButtonProps) => {
+const FollowButton = ({ targetUsername }: FollowButtonProps) => {
   const { user, refetchUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
 
@@ -76,7 +75,11 @@ const FollowButton = ({ targetUsername, className }: FollowButtonProps) => {
 
   return (
     <button
-      className="hover:scale-110"
+      role="button"
+      className="inline-flex cursor-pointer select-none items-center"
+      tabIndex={0}
+      aria-pressed={isFollowing}
+      aria-label={isFollowing ? "Unfollow" : "Follow"}
       onClick={(e) => {
         if (isFollowing) {
           handleUnfollow(e);
@@ -86,9 +89,19 @@ const FollowButton = ({ targetUsername, className }: FollowButtonProps) => {
       }}
     >
       {isFollowing ? (
-        <MinusCircleIcon className={className} />
+        <>
+          <Check className="mr-1 h-4 w-4 text-green-500" />
+          <span className="text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700">
+            Following
+          </span>
+        </>
       ) : (
-        <PlusCircleIcon className={className} />
+        <>
+          <UserPlus className="mr-1 h-4 w-4 text-blue-500" />
+          <span className="text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700">
+            Follow
+          </span>
+        </>
       )}
     </button>
   );
