@@ -1,14 +1,14 @@
 import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
+import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { HeartIcon, TrashIcon } from "lucide-react";
-import { MouseEvent, TouchEvent } from "react";
-import FollowButton from "@/components/FollowButton";
+import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { MouseEvent, TouchEvent, useState } from "react";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -41,6 +41,16 @@ const PostContent = ({
 }: PostContentProps) => {
   const { user } = useAuth();
   const isComment = "parentID" in post;
+  const [showOriginal, setShowOriginal] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const toggleEditView = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowOriginal((prev) => !prev);
+    if (showOriginal) setIsHovering(false);
+  };
+
   return (
     <article
       className={`${
@@ -61,36 +71,91 @@ const PostContent = ({
         }
       }}
     >
-      <header className="relative flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Avatar username={post.author} />
-          <a href={`/project2/user/${post.author}`}>
-            <p className="font-mono underline-offset-4 hover:underline">
-              <span className="font-sans">@</span>
-              {post.author}
-            </p>
-          </a>
-          {post.author !== user?.username && (
-            <FollowButton targetUsername={post.author} />
-          )}
-          <p>·</p>
-          <p>{formatTimestamp(post.createdAt)}</p>
-        </div>
+      <header className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Avatar username={post.author} />
+            <a href={`/project2/user/${post.author}`}>
+              <p className="font-mono underline-offset-4 hover:underline">
+                <span className="font-sans">@</span>
+                {post.author}
+              </p>
+            </a>
+            {post.author !== user?.username && (
+              <FollowButton targetUsername={post.author} />
+            )}
+            <p>·</p>
+            <p>{formatTimestamp(post.createdAt)}</p>
+            {post.originalBody && (
+              <div className="ml-2 hidden sm:block">
+                <button
+                  className="text-sm text-gray-600 underline-offset-4 hover:text-gray-500 hover:underline dark:text-gray-200 dark:hover:text-gray-300"
+                  onClick={toggleEditView}
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  {showOriginal ? (
+                    <p className="font-bold">Show newest version</p>
+                  ) : isHovering ? (
+                    <p>Show original</p>
+                  ) : (
+                    <p>(Edited)</p>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
 
-        {user &&
-          (user.username === post.author || user.username === "admin") && (
+          <div className="flex gap-2">
+            {user && user.username === post.author && (
+              <button
+                className="text-gray-500 outline-none hover:text-blue-500"
+                aria-label="Edit post"
+                onClick={(e: MouseEvent | TouchEvent) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = `/project2/post/${post.id}/edit`;
+                }}
+              >
+                <PencilIcon className="size-5" />
+              </button>
+            )}
+            {user &&
+              (user.username === post.author || user.username === "admin") && (
+                <button
+                  onClick={handleDelete}
+                  className="text-gray-500 outline-none hover:text-red-500"
+                  aria-label="Delete post"
+                  disabled={deleteLoading}
+                >
+                  <TrashIcon className="size-5" />
+                </button>
+              )}
+          </div>
+        </div>
+        <div className="flex sm:hidden">
+          {post.originalBody && (
             <button
-              onClick={handleDelete}
-              className="text-gray-500 outline-none hover:text-red-500"
-              aria-label="Delete post"
-              disabled={deleteLoading}
+              className="text-sm text-gray-600 underline-offset-4 hover:text-gray-500 hover:underline dark:text-gray-200 dark:hover:text-gray-300"
+              onClick={toggleEditView}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
             >
-              <TrashIcon className="h-5 w-5" />
+              {showOriginal ? (
+                <p className="font-bold">Show newest version</p>
+              ) : isHovering ? (
+                <p>Show original</p>
+              ) : (
+                <p>(Edited)</p>
+              )}
             </button>
           )}
+        </div>
       </header>
 
-      <PostBody text={post.body} />
+      <PostBody
+        text={showOriginal ? (post.originalBody ?? post.body) : post.body}
+      />
 
       {/* TODO: comment liking and replying  */}
       {!isComment && (

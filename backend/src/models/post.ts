@@ -1,7 +1,8 @@
-import { Schema, model, Document } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 
 export interface PostType extends Document {
   body: string;
+  originalBody?: string;
   author: string;
   amtLikes: number;
   amtComments: number;
@@ -10,6 +11,7 @@ export interface PostType extends Document {
 
 const PostSchema = new Schema<PostType>({
   body: { type: String, required: true },
+  originalBody: { type: String, default: undefined },
   author: { type: String, required: true },
   amtLikes: { type: Number, default: 0 },
   amtComments: { type: Number, default: 0 },
