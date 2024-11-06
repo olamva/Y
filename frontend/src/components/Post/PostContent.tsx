@@ -87,7 +87,7 @@ const PostContent = ({
             <p>·</p>
             <p>{formatTimestamp(post.createdAt)}</p>
             {post.originalBody && (
-              <div className="hidden ml-2 sm:block">
+              <div className="ml-2 hidden sm:block">
                 <button
                   className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
                   onClick={toggleEditView}
