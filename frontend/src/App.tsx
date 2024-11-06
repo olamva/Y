@@ -160,6 +160,7 @@ const HomePage = () => {
           <h1 className="text-3xl">People to follow</h1>
           {usersData?.getUsers.map((recommendedUser) => (
             <a
+              key={recommendedUser.id}
               href={`/project2/user/${recommendedUser.username}`}
               className="bg-white-100 w-full rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
             >
