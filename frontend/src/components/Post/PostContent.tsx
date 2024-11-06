@@ -107,7 +107,7 @@ const PostContent = ({
           </div>
 
           <div className="flex gap-2">
-            {user && user.username === post.author && (
+            {user && user.username === post.author && !isComment && (
               <button
                 className="text-gray-500 outline-none hover:text-blue-500"
                 aria-label="Edit post"
