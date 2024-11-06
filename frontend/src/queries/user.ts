@@ -32,6 +32,26 @@ export const GET_USER_QUERY = gql`
   }
 `;
 
+export const GET_USERS = gql`
+  query GetUsers($page: Int!) {
+    getUsers(page: $page) {
+      id
+      username
+      postIds
+      likedPostIds
+      commentIds
+      followers {
+        id
+        username
+      }
+      following {
+        id
+        username
+      }
+    }
+  }
+`;
+
 export const FOLLOW_USER_MUTATION = gql`
   mutation FollowUser($username: String!) {
     followUser(username: $username) {

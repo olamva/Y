@@ -18,6 +18,19 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching posts');
       }
     },
+    getUsers: async (_, { page }) => {
+      const USERS_PER_PAGE = 10;
+      const skip = (page - 1) * USERS_PER_PAGE;
+
+      try {
+        return await User.find({ username: { $nin: ['admin', 'fredrik'] } })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(USERS_PER_PAGE);
+      } catch (err) {
+        throw new Error('Error fetching users');
+      }
+    },
     getPost: async (_, { id }) => {
       try {
         return await Post.findById(id);
@@ -54,6 +67,7 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments by IDs');
       }
     },
+
     async searchAll(_: any, { query }: { query: string }) {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');

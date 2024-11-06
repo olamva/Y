@@ -1,12 +1,16 @@
 import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
-import { PostType } from "@/lib/types";
+import { PostType, UserType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Divider from "./components/ui/Divider";
+import Avatar from "./components/Avatar";
+import FollowButton from "./components/FollowButton";
+import { GET_USERS } from "./queries/user";
+// import { Users } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -22,6 +26,12 @@ const HomePage = () => {
     variables: { page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
+  });
+
+  const { data: usersData, error: usersError } = useQuery<{
+    getUsers: UserType[];
+  }>(GET_USERS, {
+    variables: { page: 1, limit: 1 },
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
@@ -97,44 +107,83 @@ const HomePage = () => {
   if (networkStatus === NetworkStatus.loading)
     return <p className="mt-4 text-center">Loading...</p>;
 
-  if (error)
+  if (error || usersError)
     return (
       <p className="mt-4 text-center text-red-500">
-        Error loading posts: {error.message}
+        Error loading posts:{" "}
+        {(error?.message ?? usersError?.message) || "Unknown error"}
       </p>
     );
 
   return (
-    <main className="flex w-full flex-col items-center p-4">
-      <form
-        className="flex w-full max-w-xl items-center gap-2"
-        onSubmit={handleAddPost}
-      >
-        <CreatePostField
-          placeholder="What's on your mind?"
-          value={postBody}
-          setValue={setPostBody}
-          loading={createLoading}
-          className={
-            postBody && user
-              ? "bg-indigo-600 hover:bg-indigo-700"
-              : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-          }
-        />
-      </form>
+    <div className="mx-auto grid w-full max-w-screen-xl grid-cols-1 gap-4 px-5 py-5 lg:grid-cols-4">
+      <aside className="hidden lg:col-start-1 lg:row-span-5 lg:row-start-1 lg:flex"></aside>
 
-      <Divider />
+      <main className="col-span-1 col-start-1 lg:col-span-2 lg:col-start-2 lg:row-span-5">
+        <div className="mx-auto w-full max-w-xl">
+          <form
+            className="flex w-full items-center gap-2"
+            onSubmit={handleAddPost}
+          >
+            <CreatePostField
+              placeholder="What's on your mind?"
+              value={postBody}
+              setValue={setPostBody}
+              loading={createLoading}
+              className={
+                postBody && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              }
+            />
+          </form>
 
-      {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
-      {!hasMore && (
-        <p className="mt-4 text-gray-500 dark:text-gray-400">
-          You've reached the end of the posts.
-        </p>
-      )}
-      {!loading && data?.getPosts.length === 0 && (
-        <p className="mt-4">No posts available.</p>
-      )}
-    </main>
+          <Divider />
+          <div className="flex flex-col gap-4">
+            {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
+          </div>
+
+          {!hasMore && (
+            <p className="mt-4 text-gray-500 dark:text-gray-400">
+              You've reached the end of the posts.
+            </p>
+          )}
+
+          {!loading && data?.getPosts.length === 0 && (
+            <p className="mt-4">No posts available.</p>
+          )}
+        </div>
+      </main>
+
+      <aside className="hidden lg:col-start-4 lg:flex lg:py-8">
+        <div className="flex w-full flex-col gap-5">
+          <h1 className="text-3xl">People to follow</h1>
+          {usersData?.getUsers.map((recommendedUser) => (
+            <a
+              key={recommendedUser.id}
+              href={`/project2/user/${recommendedUser.username}`}
+              className="bg-white-100 w-full rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
+            >
+              <div className="flex flex-row items-center gap-2">
+                <Avatar username={recommendedUser.username} href={false} />
+                <h1>{recommendedUser.username}</h1>
+                {user?.username !== recommendedUser.username && (
+                  <FollowButton targetUsername={recommendedUser.username} />
+                )}
+              </div>
+            </a>
+          ))}
+          {/* TODO make a search user page */}
+          {/* <a
+            href={`/project2/users`}
+            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <Users className="mr-2 h-5 w-5" aria-hidden="true" />
+            <span>View All Users</span>
+          </a> */}
+        </div>
+      </aside>
+    </div>
   );
 };
 
