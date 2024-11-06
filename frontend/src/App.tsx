@@ -165,7 +165,7 @@ const HomePage = () => {
               className="bg-white-100 w-full rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
             >
               <div className="flex flex-row items-center gap-2">
-                <Avatar username={recommendedUser.username} />
+                <Avatar username={recommendedUser.username} href={false} />
                 <h1>{recommendedUser.username}</h1>
                 {user?.username !== recommendedUser.username && (
                   <FollowButton targetUsername={recommendedUser.username} />
