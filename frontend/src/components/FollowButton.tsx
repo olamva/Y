@@ -5,10 +5,9 @@ import {
   UNFOLLOW_USER_MUTATION,
 } from "@/queries/user";
 import { useMutation } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { Check, UserPlus, X } from "lucide-react";
+import { MouseEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { UserPlus, Check, X } from "lucide-react";
-import { MouseEvent } from "react";
 
 interface FollowButtonProps {
   targetUsername: string;
@@ -88,6 +87,7 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
           handleUnfollow(e);
         } else {
           handleFollow(e);
+          setIsHovering(false);
         }
       }}
       onMouseEnter={() => setIsHovering(true)}
