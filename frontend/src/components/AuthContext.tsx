@@ -1,6 +1,6 @@
 import { UserType } from "@/lib/types";
 import { GET_USER_QUERY } from "@/queries/user";
-import { useLazyQuery } from "@apollo/client";
+import { ApolloQueryResult, useLazyQuery } from "@apollo/client";
 import { jwtDecode } from "jwt-decode";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -9,6 +9,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   token: string | null;
   user: UserType | null;
+  refetchUser: () => Promise<ApolloQueryResult<{ getUser: UserType }>>;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -29,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserType | null>(null);
 
-  const [fetchUser] = useLazyQuery(GET_USER_QUERY, {
+  const [fetchUser, { refetch: refetchUser }] = useLazyQuery(GET_USER_QUERY, {
     onCompleted: (data) => {
       if (data && data.getUser) {
         setUser(data.getUser);
@@ -82,7 +83,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, token, user, login, logout, refetchUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

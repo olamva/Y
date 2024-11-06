@@ -15,10 +15,53 @@ export const REGISTER_MUTATION = gql`
 export const GET_USER_QUERY = gql`
   query GetUser($username: String!) {
     getUser(username: $username) {
+      id
       username
       postIds
       likedPostIds
       commentIds
+      followers {
+        id
+        username
+      }
+      following {
+        id
+        username
+      }
+    }
+  }
+`;
+
+export const FOLLOW_USER_MUTATION = gql`
+  mutation FollowUser($username: String!) {
+    followUser(username: $username) {
+      id
+      username
+      followers {
+        id
+        username
+      }
+      following {
+        id
+        username
+      }
+    }
+  }
+`;
+
+export const UNFOLLOW_USER_MUTATION = gql`
+  mutation UnfollowUser($username: String!) {
+    unfollowUser(username: $username) {
+      id
+      username
+      followers {
+        id
+        username
+      }
+      following {
+        id
+        username
+      }
     }
   }
 `;

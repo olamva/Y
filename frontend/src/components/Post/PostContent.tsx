@@ -8,6 +8,7 @@ import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent } from "react";
+import FollowButton from "@/components/FollowButton";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -23,6 +24,7 @@ interface PostContentProps {
   disableBottomMargin: boolean;
   maxWidth?: string;
 }
+
 const PostContent = ({
   post,
   toggleLike,
@@ -41,11 +43,21 @@ const PostContent = ({
   const isComment = "parentID" in post;
   return (
     <article
-      className={`${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${maxWidth !== undefined ? maxWidth : "max-w-xl"} rounded-md border-2 p-4 ${isComment ? "" : "pb-2"} text-black shadow-md dark:text-white ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`${
+        disableBottomMargin ? "" : "mb-2"
+      } ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${
+        maxWidth !== undefined ? maxWidth : "max-w-xl"
+      } rounded-md border-2 p-4 ${
+        isComment ? "" : "pb-2"
+      } text-black shadow-md dark:text-white ${
+        doesntRedirect ? "cursor-text" : "cursor-pointer"
+      } ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/post/${isComment ? post.parentID : post.id}`;
+          document.location.href = `/project2/post/${
+            isComment ? post.parentID : post.id
+          }`;
         }
       }}
     >
@@ -58,6 +70,9 @@ const PostContent = ({
               {post.author}
             </p>
           </a>
+          {post.author !== user?.username && (
+            <FollowButton targetUsername={post.author} />
+          )}
           <p>·</p>
           <p>{formatTimestamp(post.createdAt)}</p>
         </div>

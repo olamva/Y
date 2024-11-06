@@ -4,9 +4,13 @@ import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const LoginForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
+interface LoginFormProps {
+  view: "login" | "register";
+}
+const LoginForm = ({ view }: LoginFormProps) => {
+  const currentView = view ?? "login";
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -14,6 +18,7 @@ const LoginForm = () => {
   });
   const [errors, setErrors] = useState<{ confirmPassword?: string }>({});
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [loginMutation, { loading: loginLoading }] =
     useMutation(LOGIN_MUTATION);
@@ -37,6 +42,7 @@ const LoginForm = () => {
       if (data.login) {
         login(data.login);
         toast.success("Logged in successfully!");
+        navigate(`/project2/user/${formData.username}`);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -64,6 +70,7 @@ const LoginForm = () => {
       if (data.register) {
         login(data.register); // Update AuthContext
         toast.success("Registered and logged in successfully!");
+        navigate(`/project2/user/${formData.username}`);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -82,10 +89,10 @@ const LoginForm = () => {
       <div className="flex w-full justify-center">
         <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
           <h3 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
-            {isLogin ? "Login" : "Register"}
+            {currentView.charAt(0).toUpperCase() + currentView.slice(1)}
           </h3>
           <form
-            onSubmit={isLogin ? handleLogin : handleRegister}
+            onSubmit={currentView === "login" ? handleLogin : handleRegister}
             className="space-y-4"
           >
             <FormField
@@ -104,7 +111,7 @@ const LoginForm = () => {
               value={formData.password}
               onChange={handleInputChange}
             />
-            {!isLogin && (
+            {currentView === "register" && (
               <FormField
                 label="Confirm Password"
                 id="confirmPassword"
@@ -122,7 +129,7 @@ const LoginForm = () => {
                 "cursor-not-allowed opacity-50"
               }`}
             >
-              {isLogin
+              {currentView === "login"
                 ? loginLoading
                   ? "Logging in..."
                   : "Login"
@@ -133,10 +140,15 @@ const LoginForm = () => {
           </form>
           <div className="mt-4 text-center">
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                window.location.href =
+                  currentView === "login"
+                    ? "/project2/register"
+                    : "/project2/login";
+              }}
               className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
             >
-              {isLogin
+              {currentView === "login"
                 ? "Need an account? Register"
                 : "Already have an account? Login"}
             </button>

@@ -15,7 +15,7 @@ const Navbar = () => {
   };
 
   const login = () => {
-    window.location.href = "/project2/user";
+    window.location.href = "/project2/login";
   };
 
   return (

@@ -17,14 +17,18 @@ export const DropdownMenu = () => {
   const routes = [
     {
       name: user ? "Profile" : "Login",
-      href: "/project2/user",
+      href: `/project2/${user ? "user" : "login"}`,
       icon: user ? (
         <UserIcon className="size-5" />
       ) : (
         <LogInIcon className="size-5" />
       ),
     },
-    { name: "Homepage", href: "/", icon: <HomeIcon className="size-5" /> },
+    {
+      name: "Homepage",
+      href: "/project2",
+      icon: <HomeIcon className="size-5" />,
+    },
   ];
 
   const toggleMenu = () => {
