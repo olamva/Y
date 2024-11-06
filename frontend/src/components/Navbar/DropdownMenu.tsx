@@ -24,7 +24,11 @@ export const DropdownMenu = () => {
         <LogInIcon className="size-5" />
       ),
     },
-    { name: "Homepage", href: "/", icon: <HomeIcon className="size-5" /> },
+    {
+      name: "Homepage",
+      href: "/project2",
+      icon: <HomeIcon className="size-5" />,
+    },
   ];
 
   const toggleMenu = () => {

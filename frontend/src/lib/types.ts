@@ -23,4 +23,6 @@ export type UserType = {
   postIds: string[];
   likedPostIds: string[];
   commentIds: string[];
+  followers: UserType[];
+  following: UserType[];
 };

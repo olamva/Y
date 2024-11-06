@@ -12,6 +12,7 @@ interface PostProps {
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
 }
+
 const Post = ({
   post,
   doesntRedirect,
