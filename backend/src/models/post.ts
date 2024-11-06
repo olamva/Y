@@ -7,6 +7,7 @@ export interface PostType extends Document {
   amtLikes: number;
   amtComments: number;
   createdAt: Date;
+  imageHref?: string;
 }
 
 const PostSchema = new Schema<PostType>({
@@ -16,6 +17,7 @@ const PostSchema = new Schema<PostType>({
   amtLikes: { type: Number, default: 0 },
   amtComments: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
+  imageHref: { type: String, default: undefined },
 });
 
 export const Post = model<PostType>('Post', PostSchema);

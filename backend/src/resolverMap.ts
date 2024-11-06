@@ -4,8 +4,11 @@ import { signToken } from './auth';
 import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
+import { uploadFile } from './uploadFile';
+import { GraphQLUpload } from 'graphql-upload-minimal';
 
 export const resolvers: IResolvers = {
+  Upload: GraphQLUpload,
   Query: {
     getPosts: async (_, { page }) => {
       const POSTS_PER_PAGE = 10;
@@ -99,7 +102,7 @@ export const resolvers: IResolvers = {
   },
 
   Mutation: {
-    createPost: async (_, { body }, context) => {
+    createPost: async (_, { body, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a post');
       }
@@ -113,18 +116,30 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Post body exceeds 281 characters');
       }
 
-      try {
-        const newPost = new Post({ body, author: user.username });
-        const savedComment = await newPost.save();
+      let imageUrl = null;
 
-        user.postIds.push(savedComment.id);
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
+      try {
+        const newPost = new Post({ body, author: user.username, imageUrl });
+        const savedPost = await newPost.save();
+
+        user.postIds.push(savedPost.id);
         await user.save();
 
-        return savedComment;
+        return savedPost;
       } catch (err) {
         throw new Error('Error creating post');
       }
     },
+
     editPost: async (_, { id, body }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to edit a post');

@@ -11,6 +11,7 @@ type Query {
 }
 
 union SearchResult = User | Post
+scalar Upload
 
 type Post {
   id: ID!
@@ -42,7 +43,7 @@ type User {
 }
 
 type Mutation {
-  createPost(body: String!): Post!
+  createPost(body: String!, file: Upload): Post!
   editPost(id: ID!, body: String!): Post!
   createComment(body: String!, parentID: ID!): Comment!
   deletePost(id: ID!): Post!

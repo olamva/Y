@@ -43,8 +43,8 @@ export const GET_POSTS_BY_IDS = gql`
 `;
 
 export const CREATE_POST = gql`
-  mutation CreatePost($body: String!) {
-    createPost(body: $body) {
+  mutation CreatePost($body: String!, $file: Upload) {
+    createPost(body: $body, file: $file) {
       id
       body
       author

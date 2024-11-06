@@ -37,16 +37,15 @@ const HomePage = () => {
 
   const [createPost, { loading: createLoading }] = useMutation<
     { createPost: PostType },
-    { body: string }
+    { body: string; file: File | null }
   >(CREATE_POST, {
-    variables: { body: postBody },
-
     onError: (err) => {
       console.error("Error creating post:", err);
       toast.error(`Error adding post: ${err.message}`);
     },
     onCompleted: () => {
       setPostBody("");
+      setFile(null);
       toast.success("Post added successfully!");
     },
     refetchQueries: [
@@ -62,7 +61,12 @@ const HomePage = () => {
     }
 
     try {
-      await createPost();
+      await createPost({
+        variables: {
+          body: postBody,
+          file: file,
+        },
+      });
     } catch (error) {
       toast.error(`Error adding post: ${(error as Error).message}`);
     }
