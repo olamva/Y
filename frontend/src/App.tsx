@@ -116,11 +116,11 @@ const HomePage = () => {
     );
 
   return (
-    <div className="mx-auto grid w-full max-w-screen-xl grid-cols-1 gap-4 px-5 py-5 lg:grid-cols-4">
-      <aside className="hidden lg:col-start-1 lg:row-span-5 lg:row-start-1 lg:flex"></aside>
+    <div className="max-w-screen-3xl mx-auto flex w-full justify-center lg:justify-evenly lg:gap-4 px-5 py-5">
+      <aside className="hidden w-full max-w-64 py-8 lg:flex"></aside>
 
-      <main className="col-span-1 col-start-1 lg:col-span-2 lg:col-start-2 lg:row-span-5">
-        <div className="mx-auto w-full max-w-xl">
+      <main className="w-fit justify-self-center">
+        <div className="w-full max-w-xl">
           <form
             className="flex w-full items-center gap-2"
             onSubmit={handleAddPost}
@@ -155,8 +155,8 @@ const HomePage = () => {
         </div>
       </main>
 
-      <aside className="hidden lg:col-start-4 lg:flex lg:py-8">
-        <div className="flex w-full flex-col gap-5">
+      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+        <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl">People to follow</h1>
           {usersData?.getUsers.map((recommendedUser) => (
             <a
