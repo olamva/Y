@@ -38,7 +38,7 @@ const ThemeToggle = () => {
           <div
             className={`flex h-8 w-8 transform items-center justify-center rounded-full transition-transform duration-300 ${
               theme === "dark"
-                ? "translate-x-8 bg-gray-800"
+                ? "translate-x-6 bg-gray-800"
                 : "translate-x-0 bg-white"
             }`}
           >
@@ -56,9 +56,9 @@ const ThemeToggle = () => {
           onClick={toggleTheme}
         >
           {theme === "dark" ? (
-            <Sun className="h-5 w-5 text-yellow-500" />
+            <Sun className="h-5 w-5" />
           ) : (
-            <Moon className="h-5 w-5 text-yellow-300" />
+            <Moon className="h-5 w-5" />
           )}
           {theme === "dark" ? <p>Light Mode</p> : <p>Dark Mode</p>}
         </button>
