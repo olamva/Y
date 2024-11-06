@@ -70,7 +70,9 @@ const PostContent = ({
               {post.author}
             </p>
           </a>
-          <FollowButton targetUsername={post.author} className="size-6" />
+          {post.author !== user?.username && (
+            <FollowButton targetUsername={post.author} className="size-6" />
+          )}
           <p>·</p>
           <p>{formatTimestamp(post.createdAt)}</p>
         </div>
