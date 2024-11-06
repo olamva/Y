@@ -72,7 +72,8 @@ const FollowingUsersModal = ({ isOpen, onClose, title, users }: Props) => {
               </li>
             ))}
           </ul>
-        )}
+        )}{" "}
+        {users.length === 0 && <p>None</p>}
       </div>
     </div>
   );
