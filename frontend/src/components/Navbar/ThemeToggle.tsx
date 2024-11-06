@@ -29,7 +29,7 @@ const ThemeToggle = () => {
         <button
           onClick={toggleTheme}
           className={`mx-4 h-10 w-16 rounded-full p-1 transition-colors duration-300 focus:outline-none ${
-            theme === "dark" ? "bg-blue-600" : "bg-gray-300"
+            theme === "dark" ? "bg-gray-900" : "bg-gray-300"
           }`}
           aria-label={
             theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
