@@ -89,7 +89,7 @@ const PostContent = ({
             {post.originalBody && (
               <div className="ml-2 hidden sm:block">
                 <button
-                  className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
+                  className="text-sm text-gray-600 underline-offset-4 hover:text-gray-500 hover:underline dark:text-gray-200 dark:hover:text-gray-300"
                   onClick={toggleEditView}
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
@@ -136,7 +136,7 @@ const PostContent = ({
         <div className="flex sm:hidden">
           {post.originalBody && (
             <button
-              className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
+              className="text-sm text-gray-600 underline-offset-4 hover:text-gray-500 hover:underline dark:text-gray-200 dark:hover:text-gray-300"
               onClick={toggleEditView}
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
