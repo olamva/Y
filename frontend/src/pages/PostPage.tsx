@@ -6,15 +6,20 @@ import { Button } from "@/components/ui/button";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
-import { GET_POST } from "@/queries/posts";
+import { EDIT_POST, GET_POST } from "@/queries/posts";
 import { useMutation, useQuery } from "@apollo/client";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 const PostPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, edit } = useParams<{ id: string; edit?: string }>();
+  const editing = edit === "edit";
+  if (!editing && edit) {
+    window.location.href = `/project2/post/${id}`;
+  }
+  const [editBody, setEditBody] = useState("");
   const [comment, setComment] = useState("");
   const user = useAuth();
 
@@ -38,6 +43,12 @@ const PostPage = () => {
     notifyOnNetworkStatusChange: true,
   });
 
+  useEffect(() => {
+    if (postData?.getPost && !postLoading) {
+      setEditBody(postData.getPost.body);
+    }
+  }, [postData, postLoading]);
+
   const [createComment, { loading: createLoading, error: createError }] =
     useMutation<
       { createComment: CommentType },
@@ -53,7 +64,23 @@ const PostPage = () => {
       },
     });
 
-  const handleAddComment = async (e: React.FormEvent) => {
+  const [editPost, { loading: editLoading }] = useMutation<
+    { createPost: PostType },
+    { id: string; body: string }
+  >(EDIT_POST, {
+    variables: { id: postData?.getPost.id || "", body: editBody },
+
+    onError: (err) => {
+      console.error("Error editing post:", err);
+      toast.error(`Error editing post: ${err.message}`);
+    },
+    onCompleted: () => {
+      toast.success("Post edited successfully!");
+      window.location.href = `/project2/post/${id}`;
+    },
+  });
+
+  const handleAddComment = async (e: FormEvent) => {
     e.preventDefault();
     if (comment.trim() === "") return;
 
@@ -72,6 +99,25 @@ const PostPage = () => {
       }
     } finally {
       toast.success("Comment added");
+    }
+  };
+
+  const handleEditPost = async (e: FormEvent) => {
+    e.preventDefault();
+    if (editBody.trim() === "") {
+      toast.error("Post content cannot be empty.");
+      return;
+    }
+
+    if (editBody === postData?.getPost.body) {
+      toast.error("Post content is the same as before.");
+      return;
+    }
+
+    try {
+      await editPost();
+    } catch (error) {
+      toast.error(`Error adding post: ${(error as Error).message}`);
     }
   };
 
@@ -99,29 +145,50 @@ const PostPage = () => {
         </Button>
       </header>
       <main className="flex flex-col items-center px-4 pt-5">
-        <Post post={postData.getPost} doesntRedirect />
+        {editing ? (
+          <form
+            className="flex w-full max-w-xl items-center gap-2"
+            onSubmit={handleEditPost}
+          >
+            <CreatePostField
+              placeholder="What else is on your mind?"
+              value={editBody}
+              setValue={setEditBody}
+              loading={editLoading}
+              className={
+                editBody !== postData.getPost.body && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              }
+            />
+          </form>
+        ) : (
+          <Post post={postData.getPost} doesntRedirect />
+        )}
         <Divider />
-        <form
-          className="flex w-full flex-col items-center gap-2"
-          onSubmit={handleAddComment}
-        >
-          <CreatePostField
-            placeholder="Write your reply..."
-            value={comment}
-            setValue={setComment}
-            loading={createLoading}
-            className={
-              comment && user
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-            }
-          />
-          {createError && (
-            <p className="text-red-500">
-              Error adding comment: {createError.message}
-            </p>
-          )}
-        </form>
+        {!editing && (
+          <form
+            className="flex w-full flex-col items-center gap-2"
+            onSubmit={handleAddComment}
+          >
+            <CreatePostField
+              placeholder="Write your reply..."
+              value={comment}
+              setValue={setComment}
+              loading={createLoading}
+              className={
+                comment && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              }
+            />
+            {createError && (
+              <p className="text-red-500">
+                Error adding comment: {createError.message}
+              </p>
+            )}
+          </form>
+        )}
 
         {commentsLoading ? (
           <p>Loading comments...</p>
