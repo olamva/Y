@@ -1,13 +1,13 @@
 interface AvatarProps {
   username: string;
   large?: boolean;
-  href?: boolean;
+  noHref?: boolean;
   disableHover?: boolean;
 }
 
-const Avatar = ({ username, large, disableHover, href }: AvatarProps) => {
-  const Tag = href ? "a" : "div";
-  const tagProps = href ? { href: `/project2/user/${username}` } : {};
+const Avatar = ({ username, large, disableHover, noHref }: AvatarProps) => {
+  const Tag = noHref ? "div" : "a";
+  const tagProps = noHref ? {} : { href: `/project2/user/${username}` };
 
   return (
     <figure>
