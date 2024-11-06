@@ -71,66 +71,85 @@ const PostContent = ({
         }
       }}
     >
-      <header className="relative flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Avatar username={post.author} />
-          <a href={`/project2/user/${post.author}`}>
-            <p className="font-mono underline-offset-4 hover:underline">
-              <span className="font-sans">@</span>
-              {post.author}
-            </p>
-          </a>
-          {post.author !== user?.username && (
-            <FollowButton targetUsername={post.author} />
-          )}
-          <p>·</p>
-          <p>{formatTimestamp(post.createdAt)}</p>
-          {post.originalBody && (
-            <>
-              <p>·</p>
-              <button
-                className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
-                onClick={toggleEditView}
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                {showOriginal ? (
-                  <p className="font-bold">Show newest version</p>
-                ) : isHovering ? (
-                  <p>Show original</p>
-                ) : (
-                  <p>(Edited)</p>
-                )}
-              </button>
-            </>
-          )}
-        </div>
+      <header className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Avatar username={post.author} />
+            <a href={`/project2/user/${post.author}`}>
+              <p className="font-mono underline-offset-4 hover:underline">
+                <span className="font-sans">@</span>
+                {post.author}
+              </p>
+            </a>
+            {post.author !== user?.username && (
+              <FollowButton targetUsername={post.author} />
+            )}
+            <p>·</p>
+            <p>{formatTimestamp(post.createdAt)}</p>
+            {post.originalBody && (
+              <div className="hidden ml-2 sm:block">
+                <button
+                  className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
+                  onClick={toggleEditView}
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  {showOriginal ? (
+                    <p className="font-bold">Show newest version</p>
+                  ) : isHovering ? (
+                    <p>Show original</p>
+                  ) : (
+                    <p>(Edited)</p>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
 
-        <div className="flex gap-2">
-          {user && user.username === post.author && (
-            <button
-              className="text-gray-500 outline-none hover:text-blue-500"
-              aria-label="Edit post"
-              onClick={(e: MouseEvent | TouchEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                window.location.href = `/project2/post/${post.id}/edit`;
-              }}
-            >
-              <PencilIcon className="size-5" />
-            </button>
-          )}
-          {user &&
-            (user.username === post.author || user.username === "admin") && (
+          <div className="flex gap-2">
+            {user && user.username === post.author && (
               <button
-                onClick={handleDelete}
-                className="text-gray-500 outline-none hover:text-red-500"
-                aria-label="Delete post"
-                disabled={deleteLoading}
+                className="text-gray-500 outline-none hover:text-blue-500"
+                aria-label="Edit post"
+                onClick={(e: MouseEvent | TouchEvent) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = `/project2/post/${post.id}/edit`;
+                }}
               >
-                <TrashIcon className="size-5" />
+                <PencilIcon className="size-5" />
               </button>
             )}
+            {user &&
+              (user.username === post.author || user.username === "admin") && (
+                <button
+                  onClick={handleDelete}
+                  className="text-gray-500 outline-none hover:text-red-500"
+                  aria-label="Delete post"
+                  disabled={deleteLoading}
+                >
+                  <TrashIcon className="size-5" />
+                </button>
+              )}
+          </div>
+        </div>
+        <div className="flex sm:hidden">
+          {post.originalBody && (
+            <button
+              className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
+              onClick={toggleEditView}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              {showOriginal ? (
+                <p className="font-bold">Show newest version</p>
+              ) : isHovering ? (
+                <p>Show original</p>
+              ) : (
+                <p>(Edited)</p>
+              )}
+            </button>
+          )}
         </div>
       </header>
 

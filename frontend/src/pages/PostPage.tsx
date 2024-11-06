@@ -109,6 +109,11 @@ const PostPage = () => {
       return;
     }
 
+    if (editBody === postData?.getPost.body) {
+      toast.error("Post content is the same as before.");
+      return;
+    }
+
     try {
       await editPost();
     } catch (error) {
@@ -150,6 +155,11 @@ const PostPage = () => {
               value={editBody}
               setValue={setEditBody}
               loading={editLoading}
+              className={
+                editBody !== postData.getPost.body && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              }
             />
           </form>
         ) : (
