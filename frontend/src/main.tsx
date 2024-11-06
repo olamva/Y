@@ -44,7 +44,7 @@ const router = createBrowserRouter([
     element: <SearchPage />,
   },
   {
-    path: "/project2/post/:id",
+    path: "/project2/post/:id/:edit?",
     element: <PostPage />,
   },
 ]);

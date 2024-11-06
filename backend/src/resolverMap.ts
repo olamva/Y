@@ -1,10 +1,9 @@
+import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
+import { signToken } from './auth';
+import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
-import { Comment } from './models/comment';
-import bcrypt from 'bcryptjs';
-import { IResolvers } from '@graphql-tools/utils';
-import { signToken } from './auth';
 
 export const resolvers: IResolvers = {
   Query: {
@@ -111,6 +110,34 @@ export const resolvers: IResolvers = {
       } catch (err) {
         throw new Error('Error creating post');
       }
+    },
+    editPost: async (_, { id, body }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to edit a post');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const post = await Post.findById(id);
+      if (!post) {
+        throw new UserInputError('Post not found');
+      }
+
+      if (post.author !== user.username) {
+        throw new AuthenticationError('You are not authorized to edit this post');
+      }
+
+      if (body.length > 281) {
+        throw new UserInputError('Post body exceeds 281 characters');
+      }
+
+      post.body = body;
+      await post.save();
+
+      return post;
     },
     register: async (_, { username, password }) => {
       const existingUser = await User.findOne({ username });

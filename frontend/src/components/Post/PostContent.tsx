@@ -6,7 +6,7 @@ import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { HeartIcon, TrashIcon } from "lucide-react";
+import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent } from "react";
 import FollowButton from "@/components/FollowButton";
 
@@ -77,17 +77,30 @@ const PostContent = ({
           <p>{formatTimestamp(post.createdAt)}</p>
         </div>
 
-        {user &&
-          (user.username === post.author || user.username === "admin") && (
+        <div className="flex gap-2">
+          {user && user.username === post.author && (
             <button
-              onClick={handleDelete}
-              className="text-gray-500 outline-none hover:text-red-500"
-              aria-label="Delete post"
-              disabled={deleteLoading}
+              className="text-gray-500 outline-none hover:text-blue-500"
+              aria-label="Edit post"
+              onClick={() =>
+                (window.location.href = `/project2/post/${post.id}/edit`)
+              }
             >
-              <TrashIcon className="h-5 w-5" />
+              <PencilIcon className="size-5" />
             </button>
           )}
+          {user &&
+            (user.username === post.author || user.username === "admin") && (
+              <button
+                onClick={handleDelete}
+                className="text-gray-500 outline-none hover:text-red-500"
+                aria-label="Delete post"
+                disabled={deleteLoading}
+              >
+                <TrashIcon className="size-5" />
+              </button>
+            )}
+        </div>
       </header>
 
       <PostBody text={post.body} />

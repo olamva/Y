@@ -53,6 +53,19 @@ export const CREATE_POST = gql`
   }
 `;
 
+export const EDIT_POST = gql`
+  mutation EditPost($id: ID!, $body: String!) {
+    editPost(id: $id, body: $body) {
+      id
+      body
+      author
+      amtLikes
+      amtComments
+      createdAt
+    }
+  }
+`;
+
 export const DELETE_POST = gql`
   mutation DeletePost($id: ID!) {
     deletePost(id: $id) {
