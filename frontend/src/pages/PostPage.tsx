@@ -156,27 +156,29 @@ const PostPage = () => {
           <Post post={postData.getPost} doesntRedirect />
         )}
         <Divider />
-        <form
-          className="flex w-full flex-col items-center gap-2"
-          onSubmit={handleAddComment}
-        >
-          <CreatePostField
-            placeholder="Write your reply..."
-            value={comment}
-            setValue={setComment}
-            loading={createLoading}
-            className={
-              comment && user
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-            }
-          />
-          {createError && (
-            <p className="text-red-500">
-              Error adding comment: {createError.message}
-            </p>
-          )}
-        </form>
+        {!editing && (
+          <form
+            className="flex w-full flex-col items-center gap-2"
+            onSubmit={handleAddComment}
+          >
+            <CreatePostField
+              placeholder="Write your reply..."
+              value={comment}
+              setValue={setComment}
+              loading={createLoading}
+              className={
+                comment && user
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              }
+            />
+            {createError && (
+              <p className="text-red-500">
+                Error adding comment: {createError.message}
+              </p>
+            )}
+          </form>
+        )}
 
         {commentsLoading ? (
           <p>Loading comments...</p>

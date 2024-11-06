@@ -82,9 +82,11 @@ const PostContent = ({
             <button
               className="text-gray-500 outline-none hover:text-blue-500"
               aria-label="Edit post"
-              onClick={() =>
-                (window.location.href = `/project2/post/${post.id}/edit`)
-              }
+              onClick={(e: MouseEvent | TouchEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = `/project2/post/${post.id}/edit`;
+              }}
             >
               <PencilIcon className="size-5" />
             </button>
