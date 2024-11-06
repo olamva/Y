@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
-import { PostType } from "@/lib/types";
+import { PostType, UserType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import Divider from "./components/ui/Divider";
 import Avatar from "./components/Avatar";
 import FollowButton from "./components/FollowButton";
+import { GET_USERS } from "./queries/user";
 
 const PAGE_SIZE = 10;
 
@@ -24,6 +25,12 @@ const HomePage = () => {
     variables: { page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
+  });
+
+  const { data: usersData, error: usersError } = useQuery<{
+    getUsers: UserType[];
+  }>(GET_USERS, {
+    variables: { page: 1, limit: 1 },
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
@@ -146,15 +153,20 @@ const HomePage = () => {
       <aside className="col-start-4 hidden py-8 md:flex">
         <div className="flex w-full flex-col gap-5">
           <h1 className="text-3xl">People to follow</h1>
-          {user && (
-            <div className="w-full rounded-lg bg-gray-900/50 px-2 py-6">
+          {usersData?.getUsers.map((recommendedUser) => (
+            <a
+              href={`/project2/user/${recommendedUser.username}`}
+              className="w-full rounded-lg bg-gray-900/50 px-2 py-6 hover:scale-105"
+            >
               <div className="flex flex-row items-center gap-2">
-                <Avatar username={user.username} />
-                <h1>{user.username}</h1>
-                <FollowButton targetUsername={user.username} />
+                <Avatar username={recommendedUser.username} />
+                <h1>{recommendedUser.username}</h1>
+                {user?.username !== recommendedUser.username && (
+                  <FollowButton targetUsername={recommendedUser.username} />
+                )}
               </div>
-            </div>
-          )}
+            </a>
+          ))}
         </div>
       </aside>
     </div>

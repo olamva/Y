@@ -3,6 +3,7 @@ type Query {
   getPost(id: ID!): Post
   getComments(postID: ID!): [Comment!]!
   getUser(username: String!): User
+  getUsers(page: Int!): [User!]!
   searchAll(query: String!): [SearchResult!]!
   searchUsers(query: String!): [User!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
