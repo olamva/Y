@@ -21,7 +21,7 @@ const Profile = () => {
     username: string;
     view: ViewState;
   }>();
-  const { user: loggedInUser, isLoggedIn } = useAuth();
+  const { user: loggedInUser } = useAuth();
   const navigate = useNavigate();
 
   const username = paramUsername ?? loggedInUser?.username;
@@ -120,7 +120,7 @@ const Profile = () => {
           </h2>
         </div>
       )}
-      {isLoggedIn ? (
+      {username ? (
         <>
           <section className="relative mb-36 p-6">
             <img
