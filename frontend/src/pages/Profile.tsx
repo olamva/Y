@@ -27,7 +27,6 @@ const Profile = () => {
   const username = paramUsername ?? loggedInUser?.username;
 
   if (!paramUsername && username) {
-    console.log("Redirecting to", username);
     window.location.href = `/project2/user/${username}`;
   }
 
@@ -51,7 +50,6 @@ const Profile = () => {
     variables: { username },
     skip: !username,
   });
-  console.log(isLoggedIn);
 
   const user: UserType | undefined = userData?.getUser;
 
