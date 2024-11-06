@@ -133,6 +133,8 @@ export const resolvers: IResolvers = {
       if (body.length > 281) {
         throw new UserInputError('Post body exceeds 281 characters');
       }
+      if (!post.originalBody) post.originalBody = post.body;
+      if (post.originalBody === body) post.originalBody = undefined;
 
       post.body = body;
       await post.save();

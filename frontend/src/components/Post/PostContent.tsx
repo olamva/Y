@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
+import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
@@ -7,8 +8,7 @@ import { ApolloError } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
-import { MouseEvent, TouchEvent } from "react";
-import FollowButton from "@/components/FollowButton";
+import { MouseEvent, TouchEvent, useState } from "react";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -41,6 +41,16 @@ const PostContent = ({
 }: PostContentProps) => {
   const { user } = useAuth();
   const isComment = "parentID" in post;
+  const [showOriginal, setShowOriginal] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const toggleEditView = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowOriginal((prev) => !prev);
+    if (showOriginal) setIsHovering(false);
+  };
+
   return (
     <article
       className={`${
@@ -75,6 +85,25 @@ const PostContent = ({
           )}
           <p>·</p>
           <p>{formatTimestamp(post.createdAt)}</p>
+          {post.originalBody && (
+            <>
+              <p>·</p>
+              <button
+                className="text-sm text-gray-200 underline-offset-4 hover:text-gray-300 hover:underline"
+                onClick={toggleEditView}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+              >
+                {showOriginal ? (
+                  <p className="font-bold">Show newest version</p>
+                ) : isHovering ? (
+                  <p>Show original</p>
+                ) : (
+                  <p>(Edited)</p>
+                )}
+              </button>
+            </>
+          )}
         </div>
 
         <div className="flex gap-2">
@@ -105,7 +134,9 @@ const PostContent = ({
         </div>
       </header>
 
-      <PostBody text={post.body} />
+      <PostBody
+        text={showOriginal ? (post.originalBody ?? post.body) : post.body}
+      />
 
       {/* TODO: comment liking and replying  */}
       {!isComment && (

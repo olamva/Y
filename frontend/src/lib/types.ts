@@ -1,6 +1,7 @@
 type ContentType = {
   id: string;
   body: string;
+  originalBody?: string;
   author: string;
   amtLikes: number;
   amtComments: number;

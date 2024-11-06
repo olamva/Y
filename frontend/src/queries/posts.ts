@@ -5,6 +5,7 @@ export const GET_POSTS = gql`
     getPosts(page: $page) {
       id
       body
+      originalBody
       author
       amtLikes
       amtComments
@@ -18,6 +19,7 @@ export const GET_POST = gql`
     getPost(id: $id) {
       id
       body
+      originalBody
       author
       amtLikes
       amtComments
@@ -31,6 +33,7 @@ export const GET_POSTS_BY_IDS = gql`
     getPostsByIds(ids: $ids) {
       id
       body
+      originalBody
       author
       amtLikes
       amtComments
@@ -58,6 +61,7 @@ export const EDIT_POST = gql`
     editPost(id: $id, body: $body) {
       id
       body
+      originalBody
       author
       amtLikes
       amtComments
