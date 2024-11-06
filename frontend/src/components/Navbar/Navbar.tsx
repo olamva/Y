@@ -49,7 +49,7 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               {user && (
                 <div className="mr-2">
-                  <Avatar username={user.username} navbar large={false} />{" "}
+                  <Avatar username={user.username} large={false} />{" "}
                 </div>
               )}
               {user ? (
