@@ -1,4 +1,3 @@
-import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
@@ -13,10 +12,10 @@ import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
+import { useAuth } from "@/components/AuthContext";
 import FollowButton from "@/components/FollowButton";
 import { UserIcon, UsersIcon } from "lucide-react";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
-import { useAuth } from "@/components/AuthContext";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -27,6 +26,17 @@ const Profile = () => {
   }>();
   const { user: loggedInUser, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const [modalContent, setModalContent] = useState<{
+    title: string;
+  } | null>(null);
+
+  const openModal = (title: string) => {
+    setModalContent({ title });
+  };
+
+  const closeModal = () => {
+    setModalContent(null);
+  };
 
   const username = paramUsername ?? loggedInUser?.username;
 
@@ -127,7 +137,7 @@ const Profile = () => {
       )}
       {isLoggedIn ? (
         <>
-          <section className="relative mb-36 p-6">
+          <section className="relative mb-36 py-6">
             <img
               src={CoverPhoto}
               alt="Cover photo"
@@ -139,13 +149,46 @@ const Profile = () => {
                 large
                 disableHover
               />
-              <h1 className="ml-3 mt-3 font-mono text-lg">
-                <span className="font-sans">@</span>
-                {user?.username || "Unknown User"}
-              </h1>
+              <div className="flex items-center justify-center gap-2">
+                <h1 className="font-mono text-lg">
+                  <span className="font-sans">@</span>
+                  {user?.username || "Unknown User"}
+                </h1>
+
+                {loggedInUser?.username !== username && (
+                  <FollowButton targetUsername={username || ""} />
+                )}
+              </div>
             </div>
           </section>
           <section>
+            <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
+              <div className="flex flex-col items-center justify-around sm:flex-row">
+                <button
+                  onClick={() => openModal("Followers")}
+                  className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
+                  aria-label={`View ${user?.followers.length} followers`}
+                >
+                  <UserIcon className="h-5 w-5" />
+                  <span className="text-lg font-semibold">
+                    {user?.followers.length}
+                  </span>
+                  <span className="text-sm">Followers</span>
+                </button>
+
+                <button
+                  onClick={() => openModal("Following")}
+                  className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
+                  aria-label={`View ${user?.following.length} following`}
+                >
+                  <UsersIcon className="h-5 w-5" />
+                  <span className="text-lg font-semibold">
+                    {user?.following.length}
+                  </span>
+                  <span className="text-sm">Following</span>
+                </button>
+              </div>
+            </div>
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => handleViewChange(value)}
@@ -225,6 +268,18 @@ const Profile = () => {
               )}
             </div>
           </section>
+          <FollowingUsersModal
+            isOpen={!!modalContent}
+            onClose={closeModal}
+            title={modalContent?.title || ""}
+            users={
+              modalContent?.title === "Followers"
+                ? (user?.followers ?? [])
+                : modalContent?.title === "Following"
+                  ? (user?.following ?? [])
+                  : []
+            }
+          ></FollowingUsersModal>
         </>
       ) : (
         <div className="flex w-full flex-col items-center gap-4">
