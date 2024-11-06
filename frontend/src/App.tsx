@@ -138,8 +138,9 @@ const HomePage = () => {
           </form>
 
           <Divider />
-
-          {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
+          <div className="flex flex-col gap-4">
+            {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
+          </div>
 
           {!hasMore && (
             <p className="mt-4 text-gray-500 dark:text-gray-400">
