@@ -159,7 +159,7 @@ const HomePage = () => {
           {usersData?.getUsers.map((recommendedUser) => (
             <a
               href={`/project2/user/${recommendedUser.username}`}
-              className="w-full rounded-lg bg-gray-900/50 px-2 py-6 hover:scale-105"
+              className="bg-white-100 w-full rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
             >
               <div className="flex flex-row items-center gap-2">
                 <Avatar username={recommendedUser.username} />
