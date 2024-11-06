@@ -7,7 +7,7 @@ import {
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { UserPlus, Check } from "lucide-react";
+import { UserPlus, Check, X } from "lucide-react";
 import { MouseEvent } from "react";
 
 interface FollowButtonProps {
@@ -17,6 +17,7 @@ interface FollowButtonProps {
 const FollowButton = ({ targetUsername }: FollowButtonProps) => {
   const { user, refetchUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const followingUsernames = user?.following?.map((u) => u.username) ?? [];
@@ -79,7 +80,9 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
       className="inline-flex cursor-pointer select-none items-center"
       tabIndex={0}
       aria-pressed={isFollowing}
-      aria-label={isFollowing ? "Unfollow" : "Follow"}
+      aria-label={
+        isFollowing ? (isHovering ? "Unfollow" : "Following") : "Follow"
+      }
       onClick={(e) => {
         if (isFollowing) {
           handleUnfollow(e);
@@ -87,19 +90,28 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
           handleFollow(e);
         }
       }}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
-      {isFollowing ? (
-        <>
-          <Check className="mr-1 h-4 w-4 text-green-500" />
-          <span className="text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700">
-            Following
-          </span>
-        </>
-      ) : (
+      {!isFollowing ? (
         <>
           <UserPlus className="mr-1 h-4 w-4 text-blue-500" />
           <span className="text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700">
             Follow
+          </span>
+        </>
+      ) : isHovering ? (
+        <>
+          <X className="mr-1 h-4 w-4 text-red-500" />
+          <span className="text-sm font-medium text-red-500 transition-colors duration-200 hover:text-red-700">
+            Unfollow
+          </span>
+        </>
+      ) : (
+        <>
+          <Check className="mr-1 h-4 w-4 text-green-500" />
+          <span className="text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700">
+            Following
           </span>
         </>
       )}
