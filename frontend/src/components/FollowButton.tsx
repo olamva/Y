@@ -96,21 +96,21 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
       {!isFollowing ? (
         <>
           <UserPlus className="mr-1 h-4 w-4 text-blue-500" />
-          <span className="text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700">
+          <span className="hidden text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700 sm:flex">
             Follow
           </span>
         </>
       ) : isHovering ? (
         <>
           <X className="mr-1 h-4 w-4 text-red-500" />
-          <span className="text-sm font-medium text-red-500 transition-colors duration-200 hover:text-red-700">
+          <span className="hidden text-sm font-medium text-red-500 transition-colors duration-200 hover:text-red-700 sm:flex">
             Unfollow
           </span>
         </>
       ) : (
         <>
           <Check className="mr-1 h-4 w-4 text-green-500" />
-          <span className="text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700">
+          <span className="hidden text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700 sm:flex">
             Following
           </span>
         </>
