@@ -141,9 +141,10 @@ const LoginForm = ({ view }: LoginFormProps) => {
           <div className="mt-4 text-center">
             <button
               onClick={() => {
-                currentView === "login"
-                  ? (window.location.href = "/project2/register")
-                  : (window.location.href = "/project2/login");
+                window.location.href =
+                  currentView === "login"
+                    ? "/project2/register"
+                    : "/project2/login";
               }}
               className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
             >
