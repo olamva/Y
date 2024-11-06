@@ -10,7 +10,7 @@ import Divider from "./components/ui/Divider";
 import Avatar from "./components/Avatar";
 import FollowButton from "./components/FollowButton";
 import { GET_USERS } from "./queries/user";
-import { Users } from "lucide-react";
+// import { Users } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
@@ -173,13 +173,13 @@ const HomePage = () => {
             </a>
           ))}
           {/* TODO make a search user page */}
-          <a
+          {/* <a
             href={`/project2/users`}
             className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             <Users className="mr-2 h-5 w-5" aria-hidden="true" />
             <span>View All Users</span>
-          </a>
+          </a> */}
         </div>
       </aside>
     </div>
