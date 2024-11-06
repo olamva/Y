@@ -1,6 +1,7 @@
 import TextInput from "@/form/TextInput";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { MouseEvent, useRef } from "react";
+import { ImageIcon, XIcon } from "lucide-react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 
 const MAX_CHARS = 281;
 
@@ -8,6 +9,8 @@ interface CreatePostFieldProps {
   placeholder: string;
   value: string;
   setValue: (value: string) => void;
+  file: File | null;
+  setFile: (file: File | null) => void;
   loading: boolean;
   className?: string;
 }
@@ -15,16 +18,38 @@ const CreatePostField = ({
   placeholder,
   value,
   setValue,
+  file,
+  setFile,
   loading,
   className,
 }: CreatePostFieldProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleDivClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target !== textInputRef.current) {
       textInputRef.current?.focus();
     }
   };
+
+  const imagePreviewRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (file) {
+      const newImagePreview = URL.createObjectURL(file);
+      setImagePreview(newImagePreview);
+      if (imagePreviewRef.current) {
+        URL.revokeObjectURL(imagePreviewRef.current);
+      }
+      imagePreviewRef.current = newImagePreview;
+    } else {
+      if (imagePreviewRef.current) {
+        URL.revokeObjectURL(imagePreviewRef.current);
+        imagePreviewRef.current = null;
+      }
+      setImagePreview(null);
+    }
+  }, [file]);
 
   const percentage = (value.length / MAX_CHARS) * 100;
 
@@ -33,15 +58,52 @@ const CreatePostField = ({
       className="my-2 flex w-full max-w-xl cursor-text flex-col rounded-md border-gray-900 bg-gray-200 p-2 shadow-sm dark:border-gray-300 dark:bg-gray-700"
       onClick={handleDivClick}
     >
-      <TextInput
-        ref={textInputRef}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={placeholder}
-        maxChars={MAX_CHARS}
-      />
+      <div className="flex flex-col">
+        <TextInput
+          ref={textInputRef}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+          placeholder={placeholder}
+          maxChars={MAX_CHARS}
+        />
+        {imagePreview && (
+          <div className="relative inline-block">
+            <img
+              src={imagePreview}
+              alt="image preview"
+              className="h-auto w-full p-5"
+            />
+            <button
+              onClick={() => {
+                setFile(null);
+              }}
+              className="absolute right-5 top-5"
+            >
+              <XIcon className="size-8 text-red-500 hover:text-red-700" />
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="flex justify-end gap-2">
         <div className="flex items-center">
+          <label htmlFor="image-upload" className="cursor-pointer">
+            <ImageIcon className="text-blue-500 hover:text-blue-700" />
+          </label>
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setFile(e.target.files[0]);
+              }
+            }}
+            style={{ display: "none" }}
+          />
+
           <span
             className="mr-2 select-none text-sm text-black dark:text-gray-500"
             aria-live="polite"

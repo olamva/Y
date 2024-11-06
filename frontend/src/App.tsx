@@ -19,6 +19,7 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
+  const [file, setFile] = useState<File | null>(null);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getPosts: PostType[];
@@ -129,6 +130,8 @@ const HomePage = () => {
               placeholder="What's on your mind?"
               value={postBody}
               setValue={setPostBody}
+              file={file}
+              setFile={setFile}
               loading={createLoading}
               className={
                 postBody && user
