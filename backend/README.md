@@ -130,6 +130,18 @@ Retrieves multiple posts by their IDs.
 
 ---
 
+### `getComment(id: ID!): Comment!`
+
+Retrieves a comment by its ID.
+
+- **Parameters:**
+  - `id` (ID!): A comment ID.
+- **Returns:** A `Comment` object.
+
+---
+
+---
+
 ### `getCommentsByIds(ids: [ID!]!): [Comment!]!`
 
 Retrieves multiple comments by their IDs.
@@ -153,13 +165,14 @@ Creates a new post.
 
 ---
 
-### `createComment(body: String!, parentID: ID!): Comment!`
+### `createComment(body: String!, parentID: ID!, parentType: String!): Comment!`
 
 Creates a new comment on a post.
 
 - **Parameters:**
   - `body` (String!): The content of the comment.
   - `parentID` (ID!): The ID of the parent post.
+  - `parentType` (String!): The type of the parent post ('Post' or 'Comment').
 - **Requires Authentication:** Yes
 - **Returns:** The created `Comment` object.
 
@@ -176,12 +189,14 @@ Deletes a post and all associated comments.
 
 ---
 
-### `deleteComment(id: ID!): Comment!`
+### `deleteComment(id: ID!, parentID: ID!, parentType: String!): Comment!`
 
 Deletes a comment.
 
 - **Parameters:**
   - `id` (ID!): The ID of the comment to delete.
+  - `parentID` (ID!): The ID of the parent post.
+  - `parentType` (String!): The type of the parent post ('Post' or 'Comment').
 - **Requires Authentication:** Yes (User must be the author)
 - **Returns:** The deleted `Comment` object.
 
@@ -244,12 +259,14 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 - **searchAll**: Performs a search across both posts and users based on the query string.
 - **searchUsers**: Searches for users matching the query string.
 - **getPostsByIds**: Retrieves multiple posts based on an array of IDs.
+- **getComment**: Retrieves a single comment by its ID.
 - **getCommentsByIds**: Retrieves multiple comments based on an array of IDs.
 
 ### Mutation Resolvers
 
 - **createPost**: Creates a new post authored by the authenticated user and updates the user's `postIds` array.
 - **editPost**: Edits an existing post (if the user is the author).
+- **editComment**: Edits an existing comment (if the user is the author).
 - **createComment**: Creates a new comment on a specified post, increments `amtComments` on the parent post, and updates the user's `commentIds` array.
 - **deletePost**: Deletes a post (if the user is the author) and associated comments.
 - **deleteComment**: Deletes a comment (if the user is the author) and decrements `amtComments` on the parent post.

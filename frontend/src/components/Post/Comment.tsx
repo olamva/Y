@@ -14,14 +14,16 @@ interface CommentProps {
   comment: CommentType;
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
-  redirects?: boolean;
+  doesntRedirect?: boolean;
+  redirectToParentOnDelete?: boolean;
   maxWidth?: string;
 }
 const Comment = ({
   comment,
   disableTopMargin = false,
   disableBottomMargin = false,
-  redirects = false,
+  doesntRedirect = false,
+  redirectToParentOnDelete = false,
   maxWidth,
 }: CommentProps) => {
   const { user } = useAuth();
@@ -31,7 +33,11 @@ const Comment = ({
 
   const [deleteComment, { loading: deleteLoading, error: deleteError }] =
     useMutation(DELETE_COMMENT, {
-      variables: { id: comment.id },
+      variables: {
+        id: comment.id,
+        parentID: comment.parentID,
+        parentType: comment.parentType,
+      },
       update: (cache, { data }) => {
         if (!data) return;
         const deletedComment = data.deleteComment;
@@ -63,6 +69,10 @@ const Comment = ({
 
     try {
       await deleteComment();
+      if (redirectToParentOnDelete) {
+        alert("redirectin");
+        window.location.href = `/project2/${comment.parentType}/${comment.parentID}`;
+      }
     } catch (error) {
       toast.error(`Error deleting comment: ${(error as Error).message}`);
     }
@@ -117,7 +127,7 @@ const Comment = ({
       deleteLoading={deleteLoading}
       deleteError={deleteError}
       className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
-      doesntRedirect={!redirects}
+      doesntRedirect={doesntRedirect}
       disableTopMargin={disableTopMargin}
       disableBottomMargin={disableBottomMargin}
       maxWidth={maxWidth}

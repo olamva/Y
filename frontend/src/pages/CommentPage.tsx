@@ -3,10 +3,16 @@ import BackButton from "@/components/BackButton";
 import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
+import PostWithReply from "@/components/Post/PostWithReply";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
-import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
-import { EDIT_POST, GET_POST } from "@/queries/posts";
+import {
+  CREATE_COMMENT,
+  EDIT_COMMENT,
+  GET_COMMENT,
+  GET_COMMENTS,
+} from "@/queries/comments";
+import { GET_POST } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,7 +20,7 @@ import { useParams } from "react-router-dom";
 
 const COMMENT_PAGE_SIZE = 10;
 
-const PostPage = () => {
+const CommentPage = () => {
   const { id, edit } = useParams<{
     id: string;
     edit?: string;
@@ -38,22 +44,56 @@ const PostPage = () => {
     loading: postLoading,
     error: postError,
     refetch: refetchPost,
-  } = useQuery<{ getPost: PostType }>(GET_POST, {
+  } = useQuery<{ getComment: CommentType }>(GET_COMMENT, {
     variables: { id },
     notifyOnNetworkStatusChange: true,
   });
 
-  const post = postData?.getPost;
+  const reply = postData?.getComment;
+
+  let parentPostData:
+    | { getPost?: PostType; getComment?: CommentType }
+    | undefined;
+  let parentPostLoading: boolean | undefined;
+  let parentPostError: Error | undefined;
+
+  if (reply?.parentType === "post") {
+    const {
+      data: tempPostData,
+      loading: tempPostLoading,
+      error: tempPostError,
+    } = useQuery<{ getPost: PostType }>(GET_POST, {
+      variables: { id: reply.parentID },
+    });
+
+    parentPostData = tempPostData;
+    parentPostLoading = tempPostLoading;
+    parentPostError = tempPostError;
+  } else {
+    const {
+      data: tempCommentData,
+      loading: tempCommentLoading,
+      error: tempCommentError,
+    } = useQuery<{ getComment: CommentType }>(GET_COMMENT, {
+      variables: { id: reply?.parentID },
+    });
+
+    parentPostData = tempCommentData;
+    parentPostLoading = tempCommentLoading;
+    parentPostError = tempCommentError;
+  }
+
+  const parentPost = parentPostData?.getPost || parentPostData?.getComment;
 
   useEffect(() => {
-    if (!user || !post || !editing) return;
-    if (user.username !== post?.author) {
-      window.location.href = `/project2/post/${id}`;
+    if (!user || !reply || !editing) return;
+    if (user.username !== reply?.author) {
+      window.location.href = `/project2/reply/${id}`;
     }
-  }, [user, editing, id, post]);
+  }, [user, editing, id, reply]);
 
   if (!editing && edit) {
-    window.location.href = `/project2/post/${id}`;
+    window.location.href = `/project2/reply/${id}`;
   }
 
   const {
@@ -91,10 +131,10 @@ const PostPage = () => {
   }, [fetchMoreComments, hasMore, commentsLoading, page]);
 
   useEffect(() => {
-    if (post && !postLoading) {
-      setEditBody(post.body);
+    if (reply && !postLoading) {
+      setEditBody(reply.body);
     }
-  }, [post, postLoading]);
+  }, [reply, postLoading]);
 
   const [createComment, { loading: createLoading, error: createError }] =
     useMutation<
@@ -119,13 +159,13 @@ const PostPage = () => {
       },
     });
 
-  const [editPost, { loading: editLoading }] = useMutation<
-    { editPost: PostType },
+  const [editComment, { loading: editLoading }] = useMutation<
+    { editComment: CommentType },
     { id: string; body: string; file: File | null }
-  >(EDIT_POST, {
+  >(EDIT_COMMENT, {
     onCompleted: () => {
-      toast.success("Post edited successfully!");
-      window.location.href = `/project2/post/${id}`;
+      toast.success("Comment edited successfully!");
+      window.location.href = `/project2/reply/${id}`;
     },
     onError: (err) => {
       console.error("Error editing post:", err);
@@ -142,7 +182,7 @@ const PostPage = () => {
         variables: {
           body: comment,
           parentID: id!,
-          parentType: "post",
+          parentType: "reply",
           file: commentFile,
         },
       });
@@ -151,24 +191,24 @@ const PostPage = () => {
     }
   };
 
-  const handleEditPost = async (e: FormEvent) => {
+  const handleEditReply = async (e: FormEvent) => {
     e.preventDefault();
     if (editBody.trim() === "") {
-      toast.error("Post content cannot be empty.");
+      toast.error("Reply content cannot be empty.");
       return;
     }
 
     if (!postData) return;
 
-    if (editBody === post?.body && !file) {
+    if (editBody === reply?.body && !file) {
       toast.error("No changes detected.");
       return;
     }
 
     try {
-      await editPost({
+      await editComment({
         variables: {
-          id: post?.id || "",
+          id: reply?.id || "",
           body: editBody,
           file: file,
         },
@@ -193,27 +233,35 @@ const PostPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [commentsLoading, page, hasMore, commentsNetworkStatus, loadMoreComments]);
 
-  if (postLoading) {
+  if (postLoading || parentPostLoading) {
     return <p>Loading...</p>;
   }
   if (postError) {
     return <p>Error loading post: {postError.message}</p>;
   }
 
-  if (!post) {
-    return <h1>Post not found</h1>;
+  if (parentPostError) {
+    return <p>Error loading parent post: {parentPostError.message}</p>;
+  }
+
+  if (!reply) {
+    return <h1>Reply not found</h1>;
   }
 
   return (
     <div className="w-full">
       <BackButton
-        overrideRedirect={editing ? `/project2/post/${post.id}` : `/project2/`}
+        overrideRedirect={
+          editing
+            ? `/project2/reply/${reply.id}`
+            : `/project2/${reply.parentType}/${reply.parentID}`
+        }
       />
       <main className="flex flex-col items-center px-4 pt-5">
         {editing ? (
           <form
             className="flex w-full max-w-xl flex-col items-start gap-4"
-            onSubmit={handleEditPost}
+            onSubmit={handleEditReply}
           >
             <CreatePostField
               placeholder="What else is on your mind?"
@@ -223,17 +271,25 @@ const PostPage = () => {
               file={file}
               setFile={setFile}
               existingImageURL={
-                post.imageUrl ? `${BACKEND_URL}${post.imageUrl}` : undefined
+                reply.imageUrl ? `${BACKEND_URL}${reply.imageUrl}` : undefined
               }
               className={
-                (editBody !== post.body || file) && user
+                (editBody !== reply.body || file) && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
                   : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }
             />
           </form>
+        ) : "parentID" in reply ? (
+          parentPost && (
+            <PostWithReply
+              replyDoesntRedirect
+              post={parentPost}
+              reply={reply}
+            />
+          )
         ) : (
-          <Post post={post} doesntRedirect />
+          <Post post={reply} doesntRedirect />
         )}
         <Divider />
         {!editing && (
@@ -289,4 +345,4 @@ const PostPage = () => {
   );
 };
 
-export default PostPage;
+export default CommentPage;

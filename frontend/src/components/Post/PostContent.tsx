@@ -39,7 +39,6 @@ const PostContent = ({
   disableTopMargin,
   disableBottomMargin,
 }: PostContentProps) => {
-  console.log(post.amtComments);
   const { user } = useAuth();
   const isComment = "parentID" in post;
   const [showOriginal, setShowOriginal] = useState(false);
@@ -60,9 +59,7 @@ const PostContent = ({
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/post/${
-            isComment ? post.parentID : post.id
-          }`;
+          document.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}`;
         }
       }}
     >
@@ -109,7 +106,7 @@ const PostContent = ({
                 onClick={(e: MouseEvent | TouchEvent) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  window.location.href = `/project2/post/${post.id}/edit`;
+                  window.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}/edit`;
                 }}
               >
                 <PencilIcon className="size-5" />

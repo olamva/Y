@@ -7,6 +7,7 @@ type Query {
   searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!): [User!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
+  getComment(id: ID!): Comment
   getCommentsByIds(ids: [ID!]!): [Comment!]!
 }
 
@@ -28,6 +29,7 @@ type Comment {
   body: String!
   author: String!
   parentID: ID!
+  parentType: String!
   amtLikes: Int!
   amtComments: Int!
   createdAt: String!
@@ -48,9 +50,10 @@ type User {
 type Mutation {
   createPost(body: String!, file: Upload): Post!
   editPost(id: ID!, body: String!, file: Upload): Post!
-  createComment(body: String!, parentID: ID!, file: Upload): Comment!
+  editComment(id: ID!, body: String!, file: Upload): Comment!
+  createComment(body: String!, parentID: ID!, parentType: String!, file: Upload): Comment!
   deletePost(id: ID!): Post!
-  deleteComment(id: ID!): Comment!
+  deleteComment(id: ID!, parentID: ID!, parentType: String!): Comment!
   likePost(postID: ID!): Post!
   unlikePost(postID: ID!): Post!
   likeComment(id: ID!): Comment!

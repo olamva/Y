@@ -64,13 +64,6 @@ export const EDIT_POST = gql`
   mutation EditPost($id: ID!, $body: String!, $file: Upload) {
     editPost(id: $id, body: $body, file: $file) {
       id
-      body
-      originalBody
-      author
-      amtLikes
-      amtComments
-      imageUrl
-      createdAt
     }
   }
 `;

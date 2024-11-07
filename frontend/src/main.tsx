@@ -1,9 +1,11 @@
 import HomePage from "@/App.tsx";
 import { AuthProvider } from "@/components/AuthContext";
 import Footer from "@/components/Footer";
+import LoginForm from "@/components/LoginForm";
 import Navbar from "@/components/Navbar/Navbar.tsx";
 import "@/globals.css";
 import client from "@/lib/apolloClient";
+import CommentPage from "@/pages/CommentPage";
 import PostPage from "@/pages/PostPage.tsx";
 import Profile from "@/pages/Profile";
 import SearchPage from "@/pages/Search.tsx";
@@ -12,7 +14,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginForm from "./components/LoginForm";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
     path: "/project2/post/:id/:edit?",
     element: <PostPage />,
   },
+  {
+    path: "/project2/reply/:id/:edit?",
+    element: <CommentPage />,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
@@ -54,7 +59,7 @@ createRoot(document.getElementById("root")!).render(
     <ApolloProvider client={client}>
       <AuthProvider>
         <Toaster />
-        <div className="flex min-h-svh flex-col min-w-fit bg-gray-100 dark:bg-gray-800">
+        <div className="flex min-h-svh min-w-fit flex-col bg-gray-100 dark:bg-gray-800">
           <Navbar />
           <div className="mb-4 flex flex-grow items-start">
             <RouterProvider router={router} />

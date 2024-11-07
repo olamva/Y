@@ -5,6 +5,23 @@ export const GET_COMMENTS = gql`
     getComments(postID: $postID, page: $page) {
       id
       parentID
+      parentType
+      body
+      author
+      amtLikes
+      amtComments
+      createdAt
+      imageUrl
+    }
+  }
+`;
+
+export const GET_COMMENT = gql`
+  query GetComment($id: ID!) {
+    getComment(id: $id) {
+      id
+      parentID
+      parentType
       body
       author
       amtLikes
@@ -20,6 +37,7 @@ export const GET_COMMENTS_BY_IDS = gql`
     getCommentsByIds(ids: $ids) {
       id
       parentID
+      parentType
       body
       author
       amtLikes
@@ -31,10 +49,21 @@ export const GET_COMMENTS_BY_IDS = gql`
 `;
 
 export const CREATE_COMMENT = gql`
-  mutation CreateComment($body: String!, $parentID: ID!, $file: Upload) {
-    createComment(body: $body, parentID: $parentID, file: $file) {
+  mutation CreateComment(
+    $body: String!
+    $parentID: ID!
+    $parentType: String!
+    $file: Upload
+  ) {
+    createComment(
+      body: $body
+      parentID: $parentID
+      parentType: $parentType
+      file: $file
+    ) {
       id
       parentID
+      parentType
       body
       author
       createdAt
@@ -44,11 +73,20 @@ export const CREATE_COMMENT = gql`
 `;
 
 export const DELETE_COMMENT = gql`
-  mutation DeleteComment($id: ID!) {
-    deleteComment(id: $id) {
+  mutation DeleteComment($id: ID!, $parentID: ID!, $parentType: String!) {
+    deleteComment(id: $id, parentID: $parentID, parentType: $parentType) {
       id
       parentID
+      parentType
       __typename
+    }
+  }
+`;
+
+export const EDIT_COMMENT = gql`
+  mutation EditComment($id: ID!, $body: String!, $file: Upload) {
+    editComment(id: $id, body: $body, file: $file) {
+      id
     }
   }
 `;

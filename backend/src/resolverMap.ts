@@ -68,6 +68,14 @@ export const resolvers: IResolvers = {
       }
     },
 
+    getComment: async (_, { id }) => {
+      try {
+        return await Comment.findById(id);
+      } catch (err) {
+        throw new Error('Error fetching comment by ID');
+      }
+    },
+
     getCommentsByIds: async (_, { ids }) => {
       try {
         return await Comment.find({ _id: { $in: ids } }).sort({ createdAt: -1 });
@@ -194,6 +202,53 @@ export const resolvers: IResolvers = {
 
       return post;
     },
+    editComment: async (_, { id, body, file }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to edit a post');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const comment = await Comment.findById(id);
+      if (!comment) {
+        throw new UserInputError('Comment not found');
+      }
+
+      if (comment.author !== user.username) {
+        throw new AuthenticationError('You are not authorized to edit this comment');
+      }
+
+      if (body.length > 281) {
+        throw new UserInputError('Comment body exceeds 281 characters');
+      }
+
+      let imageUrl: string | undefined = undefined;
+
+      if (!file && comment.imageUrl) {
+        imageUrl = comment.imageUrl;
+      }
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
+      if (!comment.originalBody) comment.originalBody = comment.body;
+      if (comment.originalBody === body) comment.originalBody = undefined;
+
+      comment.body = body;
+      comment.imageUrl = imageUrl;
+      await comment.save();
+
+      return comment;
+    },
     register: async (_, { username, password }) => {
       const existingUser = await User.findOne({ username });
       if (existingUser) {
@@ -226,7 +281,7 @@ export const resolvers: IResolvers = {
       return token;
     },
 
-    createComment: async (_, { body, parentID, file }, context) => {
+    createComment: async (_, { body, parentID, parentType, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a comment');
       }
@@ -253,9 +308,10 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        const newComment = new Comment({ body, author: user.username, parentID: parentID, imageUrl });
+        const newComment = new Comment({ body, author: user.username, parentID, parentType, imageUrl });
         const savedComment = await newComment.save();
-        await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+        if (parentType === 'post') await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+        else await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
 
         user.commentIds.push(savedComment.id);
         await user.save();
@@ -300,7 +356,7 @@ export const resolvers: IResolvers = {
         throw new Error(`Error deleting post and its comments: ${(err as Error).message}`);
       }
     },
-    deleteComment: async (_, { id }, context) => {
+    deleteComment: async (_, { id, parentID, parentType }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to delete a comment');
       }
@@ -327,8 +383,8 @@ export const resolvers: IResolvers = {
             console.warn(`Failed to delete file: ${deleteResult.message}`);
           }
         }
-
-        await Post.findByIdAndUpdate(deletedComment.parentID, { $inc: { amtComments: -1 } });
+        if (parentType === 'post') await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+        else await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
 
         return deletedComment;
       } catch (err) {
