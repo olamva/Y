@@ -172,7 +172,7 @@ const EditProfile = ({ user }: Props) => {
 
             <div
               ref={modalRef}
-              className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all dark:bg-gray-800 sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
+              className="inline-block w-full max-w-2xl transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all dark:bg-gray-800 sm:my-8 sm:align-middle"
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-headline"
