@@ -178,6 +178,7 @@ export const resolvers: IResolvers = {
       await user.save();
       return user;
     },
+
     changeBackgroundPicture: async (_, { file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to change profile picture');

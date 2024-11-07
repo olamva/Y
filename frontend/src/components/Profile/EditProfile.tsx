@@ -6,6 +6,7 @@ import { useMutation } from "@apollo/client";
 import { CHANGE_PROFILE_PICTURE } from "@/queries/user";
 import toast from "react-hot-toast";
 import { useAuth } from "../AuthContext";
+import { XIcon } from "lucide-react";
 
 interface Props {
   user: UserType;
@@ -59,10 +60,22 @@ const EditProfile = ({ user }: Props) => {
       await changeProfilePicture({ variables: { file } });
       toast.success("Profile picture updated!");
       setIsOpen(false);
-      refetchUser(); // Refetch to update context
+      refetchUser();
     } catch (err) {
       console.error("Error updating profile picture:", err);
       toast.error("Failed to update profile picture.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await changeProfilePicture({ variables: { file: null } });
+      toast.success("Profile picture deleted!");
+      setIsOpen(false);
+      refetchUser();
+    } catch (err) {
+      console.error("Error deleting profile picture:", err);
+      toast.error("Failed to delete profile picture.");
     }
   };
 
@@ -138,15 +151,25 @@ const EditProfile = ({ user }: Props) => {
                       </label>
                       <div className="mt-1 flex items-center">
                         {preview || user.profilePicture ? (
-                          <img
-                            src={
-                              preview || `${BACKEND_URL}${user.profilePicture}`
-                            }
-                            alt="Profile"
-                            width={100}
-                            height={100}
-                            className="rounded-full"
-                          />
+                          <div className="relative">
+                            <img
+                              src={
+                                preview ||
+                                `${BACKEND_URL}${user.profilePicture}`
+                              }
+                              alt="Profile"
+                              width={100}
+                              height={100}
+                              className="rounded-full"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleDelete}
+                              className="absolute right-0 top-0"
+                            >
+                              <XIcon className="size-8 text-red-500 hover:text-red-700" />
+                            </button>
+                          </div>
                         ) : (
                           <div className="size-24 rounded-full bg-gray-200"></div>
                         )}

@@ -91,7 +91,7 @@ export const UNFOLLOW_USER_MUTATION = gql`
 `;
 
 export const CHANGE_PROFILE_PICTURE = gql`
-  mutation ChangeProfilePicture($file: Upload!) {
+  mutation ChangeProfilePicture($file: Upload) {
     changeProfilePicture(file: $file) {
       id
       profilePicture
