@@ -31,6 +31,7 @@ type Comment {
   parentID: ID!
   amtLikes: Int!
   createdAt: String!
+  imageUrl: String
 }
 
 type User {
@@ -46,7 +47,7 @@ type User {
 type Mutation {
   createPost(body: String!, file: Upload): Post!
   editPost(id: ID!, body: String!): Post!
-  createComment(body: String!, parentID: ID!): Comment!
+  createComment(body: String!, parentID: ID!, file: Upload): Comment!
   deletePost(id: ID!): Post!
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!

@@ -202,7 +202,7 @@ export const resolvers: IResolvers = {
       return token;
     },
 
-    createComment: async (_, { body, parentID }, context) => {
+    createComment: async (_, { body, parentID, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a comment');
       }
@@ -217,8 +217,19 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Post body exceeds 281 characters');
       }
 
+      let imageUrl = null;
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
       try {
-        const newComment = new Comment({ body, author: user.username, parentID: parentID });
+        const newComment = new Comment({ body, author: user.username, parentID: parentID, imageUrl });
         const savedComment = await newComment.save();
         await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
 
