@@ -9,6 +9,8 @@ export interface UserType extends Document {
   commentIds: string[];
   followers: Types.ObjectId[];
   following: Types.ObjectId[];
+  profilePicture?: string;
+  backgroundPicture?: string;
   comparePassword: (candidatePassword: string) => Promise<boolean>;
 }
 
@@ -20,6 +22,8 @@ const UserSchema = new Schema<UserType>({
   followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
   following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
   commentIds: { type: [String], default: [] },
+  profilePicture: { type: String, default: undefined },
+  backgroundPicture: { type: String, default: undefined },
 });
 
 UserSchema.pre('save', async function (next) {

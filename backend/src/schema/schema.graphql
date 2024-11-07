@@ -41,6 +41,8 @@ type User {
   commentIds: [ID!]!
   following: [User!]!
   followers: [User!]!
+  profilePicture: String
+  backgroundPicture: String
 }
 
 type Mutation {
@@ -55,4 +57,6 @@ type Mutation {
   unfollowUser(username: String!): User!
   register(username: String!, password: String!): String!
   login(username: String!, password: String!): String!
+  changeProfilePicture(file: Upload): User!
+  changeBackgroundPicture(file: Upload): User!
 }

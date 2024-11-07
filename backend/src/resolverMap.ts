@@ -146,6 +146,71 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating post');
       }
     },
+    changeProfilePicture: async (_, { file }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to change profile picture');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (user.profilePicture) {
+        const deleteResult = await deleteFile(user.profilePicture);
+        if (!deleteResult.success) {
+          console.warn(`Failed to delete file: ${deleteResult.message}`);
+        }
+      }
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          user.profilePicture = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      } else {
+        user.profilePicture = undefined;
+      }
+
+      await user.save();
+      return user;
+    },
+
+    changeBackgroundPicture: async (_, { file }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to change profile picture');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (user.backgroundPicture) {
+        const deleteResult = await deleteFile(user.backgroundPicture);
+        if (!deleteResult.success) {
+          console.warn(`Failed to delete file: ${deleteResult.message}`);
+        }
+      }
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          user.backgroundPicture = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      } else {
+        user.backgroundPicture = undefined;
+      }
+
+      await user.save();
+      return user;
+    },
 
     editPost: async (_, { id, body, file }, context) => {
       if (!context.user) {

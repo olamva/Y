@@ -7,7 +7,7 @@ import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Divider from "./components/ui/Divider";
-import Avatar from "./components/Avatar";
+import Avatar from "./components/Profile/Avatar";
 import FollowButton from "./components/FollowButton";
 import { GET_USERS } from "./queries/user";
 // import { Users } from "lucide-react";
@@ -177,7 +177,7 @@ const HomePage = () => {
               className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
             >
               <div className="flex w-fit flex-row items-center gap-2">
-                <Avatar username={recommendedUser.username} noHref />
+                <Avatar user={recommendedUser} noHref />
                 <h1>{recommendedUser.username}</h1>
               </div>
               {user?.username !== recommendedUser.username && (
