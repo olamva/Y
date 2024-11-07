@@ -49,6 +49,7 @@ JWT_SECRET=your_jwt_secret_key
 ### Running the server
 
 Start the development server with:
+
 ```bash
 npm run start:dev
 ```
@@ -254,6 +255,8 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 - **deleteComment**: Deletes a comment (if the user is the author) and decrements `amtComments` on the parent post.
 - **likePost**: Likes a post if not already liked, increments `amtLikes` on the post, and updates the user's `likedPostIds` array.
 - **unlikePost**: Unlikes a post if previously liked, decrements `amtLikes` on the post, and updates the user's `likedPostIds` array.
+- **likeComment**: Likes a comment if not already liked and updates the user's `likedCommentIds` array.
+- **unlikeComment**: Unlikes a comment if previously liked and updates the user's `likedCommentIds` array.
 - **register**: Registers a new user with a unique username and hashed password, returns a JWT token.
 - **login**: Authenticates a user and returns a JWT token.
 

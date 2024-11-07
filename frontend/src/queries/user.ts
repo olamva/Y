@@ -19,6 +19,7 @@ export const GET_USER_QUERY = gql`
       username
       postIds
       likedPostIds
+      likedCommentIds
       commentIds
       followers {
         id
@@ -39,6 +40,7 @@ export const GET_USERS = gql`
       username
       postIds
       likedPostIds
+      likedCommentIds
       commentIds
       followers {
         id

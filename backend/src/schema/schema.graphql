@@ -29,6 +29,7 @@ type Comment {
   author: String!
   parentID: ID!
   amtLikes: Int!
+  amtComments: Int!
   createdAt: String!
   imageUrl: String
 }
@@ -38,6 +39,7 @@ type User {
   username: String!
   postIds: [ID!]!
   likedPostIds: [ID!]!
+  likedCommentIds: [ID!]!
   commentIds: [ID!]!
   following: [User!]!
   followers: [User!]!
@@ -51,6 +53,8 @@ type Mutation {
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!
   unlikePost(postID: ID!): Post!
+  likeComment(id: ID!): Comment!
+  unlikeComment(id: ID!): Comment!
   followUser(username: String!): User!
   unfollowUser(username: String!): User!
   register(username: String!, password: String!): String!

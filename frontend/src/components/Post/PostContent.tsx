@@ -12,17 +12,17 @@ import { MouseEvent, TouchEvent, useState } from "react";
 
 interface PostContentProps {
   post: PostType | CommentType;
-  toggleLike?: (e: MouseEvent<HTMLButtonElement>) => void;
-  isLiked?: boolean;
-  amtLikes?: number;
-  doesntRedirect?: boolean;
+  toggleLike: (e: MouseEvent<HTMLButtonElement>) => void;
+  isLiked: boolean;
+  amtLikes: number;
   handleDelete: (e: MouseEvent<HTMLButtonElement>) => Promise<void>;
   deleteLoading: boolean;
   deleteError: ApolloError | undefined;
+  maxWidth?: string;
   className?: string;
+  doesntRedirect?: boolean;
   disableTopMargin: boolean;
   disableBottomMargin: boolean;
-  maxWidth?: string;
 }
 
 const PostContent = ({
@@ -30,15 +30,16 @@ const PostContent = ({
   toggleLike,
   isLiked,
   amtLikes,
-  doesntRedirect,
   handleDelete,
   deleteLoading,
   deleteError,
+  maxWidth,
   className = "",
+  doesntRedirect,
   disableTopMargin,
   disableBottomMargin,
-  maxWidth,
 }: PostContentProps) => {
+  console.log(post.amtComments);
   const { user } = useAuth();
   const isComment = "parentID" in post;
   const [showOriginal, setShowOriginal] = useState(false);
@@ -55,15 +56,7 @@ const PostContent = ({
 
   return (
     <article
-      className={`${
-        disableBottomMargin ? "" : "mb-2"
-      } ${disableTopMargin ? "" : "mt-2"} flex w-full flex-col gap-2 ${
-        maxWidth !== undefined ? maxWidth : "max-w-xl"
-      } rounded-md border-2 p-4 ${
-        isComment ? "" : "pb-2"
-      } text-black shadow-md dark:text-white ${
-        doesntRedirect ? "cursor-text" : "cursor-pointer"
-      } ${className}`}
+      className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} ${maxWidth !== undefined ? maxWidth : "max-w-xl"} ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.stopPropagation();
         if (!doesntRedirect) {
@@ -109,7 +102,7 @@ const PostContent = ({
           </div>
 
           <div className="flex gap-2">
-            {user && user.username === post.author && !isComment && (
+            {user && user.username === post.author && (
               <button
                 className="text-gray-500 outline-none hover:text-blue-500"
                 aria-label="Edit post"
@@ -167,26 +160,23 @@ const PostContent = ({
         />
       )}
 
-      {/* TODO: comment liking and replying  */}
-      {!isComment && (
-        <footer className="flex w-full justify-around">
-          <button
-            className="group flex items-center gap-1 p-2"
-            onClick={toggleLike}
-          >
-            {isLiked ? (
-              <HeartFilledIcon className="size-6 text-red-600 group-hover:scale-110" />
-            ) : (
-              <HeartIcon className="size-6 group-hover:scale-110" />
-            )}
-            <span className="select-none">{amtLikes}</span>
-          </button>
-          <div className="flex items-center gap-1">
-            <ChatBubbleLeftIcon className="size-6" />
-            <span className="select-none">{post.amtComments}</span>
-          </div>
-        </footer>
-      )}
+      <footer className="flex w-full justify-around">
+        <button
+          className="group flex items-center gap-1 p-2"
+          onClick={toggleLike}
+        >
+          {isLiked ? (
+            <HeartFilledIcon className="size-6 text-red-600 group-hover:scale-110" />
+          ) : (
+            <HeartIcon className="size-6 group-hover:scale-110" />
+          )}
+          <span className="select-none">{amtLikes}</span>
+        </button>
+        <div className="flex items-center gap-1">
+          <ChatBubbleLeftIcon className="size-6" />
+          <span className="select-none">{post.amtComments}</span>
+        </div>
+      </footer>
 
       {deleteError && (
         <p className="mt-2 text-sm text-red-500">

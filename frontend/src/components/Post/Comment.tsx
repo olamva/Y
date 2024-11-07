@@ -1,8 +1,13 @@
+import { useAuth } from "@/components/AuthContext";
 import PostContent from "@/components/Post/PostContent";
 import { CommentType } from "@/lib/types";
-import { DELETE_COMMENT } from "@/queries/comments";
+import {
+  DELETE_COMMENT,
+  LIKE_COMMENT,
+  UNLIKE_COMMENT,
+} from "@/queries/comments";
 import { useMutation } from "@apollo/client";
-import { useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface CommentProps {
@@ -19,6 +24,9 @@ const Comment = ({
   redirects = false,
   maxWidth,
 }: CommentProps) => {
+  const { user } = useAuth();
+  const [isLiked, setIsLiked] = useState(false);
+  const [amtLikes, setAmtLikes] = useState(comment.amtLikes);
   const [isDeleted, setIsDeleted] = useState(false);
 
   const [deleteComment, { loading: deleteLoading, error: deleteError }] =
@@ -60,11 +68,51 @@ const Comment = ({
     }
   };
 
+  useEffect(() => {
+    setIsLiked(user?.likedCommentIds.includes(comment.id) ?? false);
+  }, [user?.likedCommentIds, comment.id]);
+
+  const [likeComment] = useMutation(LIKE_COMMENT, {
+    variables: { id: comment.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.likeComment.amtLikes);
+      setIsLiked(true);
+    },
+    onError: (error) => {
+      toast.error(`Error liking comment: ${error.message}`);
+    },
+  });
+
+  const [unlikeComment] = useMutation(UNLIKE_COMMENT, {
+    variables: { id: comment.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.unlikeComment.amtLikes);
+      setIsLiked(false);
+    },
+    onError: (error) => {
+      toast.error(`Error unliking comment: ${error.message}`);
+    },
+  });
+
+  const toggleLike = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (isLiked) {
+      unlikeComment();
+    } else {
+      likeComment();
+    }
+  };
+
   if (isDeleted) return null;
 
   return (
     <PostContent
       post={comment}
+      isLiked={isLiked}
+      amtLikes={amtLikes}
+      toggleLike={toggleLike}
       handleDelete={handleDelete}
       deleteLoading={deleteLoading}
       deleteError={deleteError}

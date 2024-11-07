@@ -117,7 +117,7 @@ const Profile = () => {
 
   return (
     <div className="w-full px-5">
-      <BackButton />
+      <BackButton overrideRedirect />
       {loggedInUser && loggedInUser.username === username && (
         <div className="pt-5 text-center">
           <h2 className="mt-2 text-3xl font-bold">

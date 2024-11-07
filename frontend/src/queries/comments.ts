@@ -8,6 +8,7 @@ export const GET_COMMENTS = gql`
       body
       author
       amtLikes
+      amtComments
       createdAt
       imageUrl
     }
@@ -22,6 +23,7 @@ export const GET_COMMENTS_BY_IDS = gql`
       body
       author
       amtLikes
+      amtComments
       createdAt
       imageUrl
     }
@@ -47,6 +49,24 @@ export const DELETE_COMMENT = gql`
       id
       parentID
       __typename
+    }
+  }
+`;
+
+export const LIKE_COMMENT = gql`
+  mutation LikeComment($id: ID!) {
+    likeComment(id: $id) {
+      id
+      amtLikes
+    }
+  }
+`;
+
+export const UNLIKE_COMMENT = gql`
+  mutation UnlikePost($id: ID!) {
+    unlikePost(id: $id) {
+      id
+      amtLikes
     }
   }
 `;

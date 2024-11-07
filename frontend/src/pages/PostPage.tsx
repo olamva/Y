@@ -192,7 +192,7 @@ const PostPage = () => {
 
   return (
     <div className="w-full">
-      <BackButton overrideRedirect />
+      <BackButton overrideRedirect={!editing} />
       <main className="flex flex-col items-center px-4 pt-5">
         {editing ? (
           <form
@@ -247,11 +247,10 @@ const PostPage = () => {
             Error adding comment: {createError.message}
           </p>
         )}
-        
+
         {commentsData?.getComments.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}
-
 
         {commentsError && (
           <p>Error loading comments: {commentsError.message}</p>

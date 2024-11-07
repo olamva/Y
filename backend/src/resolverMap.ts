@@ -1,11 +1,11 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
+import { GraphQLUpload } from 'graphql-upload-minimal';
 import { signToken } from './auth';
 import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
-import { GraphQLUpload } from 'graphql-upload-minimal';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
@@ -386,6 +386,58 @@ export const resolvers: IResolvers = {
 
       return post;
     },
+
+    likeComment: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to like a comment');
+      }
+
+      const comment = await Comment.findById(id);
+      if (!comment) {
+        throw new UserInputError('Comment not found');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (!user.likedCommentIds.includes(id)) {
+        comment.amtLikes += 1;
+        user.likedCommentIds.push(id);
+        await comment.save();
+        await user.save();
+      }
+
+      return comment;
+    },
+
+    unlikeComment: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unlike a comment');
+      }
+
+      const comment = await Comment.findById(id);
+      if (!comment) {
+        throw new UserInputError('Comment not found');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const likedIndex = user.likedCommentIds.indexOf(id);
+      if (likedIndex > -1) {
+        comment.amtLikes = Math.max(comment.amtLikes - 1, 0);
+        user.likedCommentIds.splice(likedIndex, 1);
+        await comment.save();
+        await user.save();
+      }
+
+      return comment;
+    },
+
     followUser: async (_, { username }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to follow a user');

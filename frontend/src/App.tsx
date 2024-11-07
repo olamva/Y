@@ -6,9 +6,9 @@ import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Divider from "./components/ui/Divider";
 import Avatar from "./components/Avatar";
 import FollowButton from "./components/FollowButton";
+import Divider from "./components/ui/Divider";
 import { GET_USERS } from "./queries/user";
 // import { Users } from "lucide-react";
 
@@ -32,7 +32,7 @@ const HomePage = () => {
   const { data: usersData, error: usersError } = useQuery<{
     getUsers: UserType[];
   }>(GET_USERS, {
-    variables: { page: 1, limit: 1 },
+    variables: { page: 1 },
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
@@ -53,9 +53,7 @@ const HomePage = () => {
       setFile(null);
       toast.success("Post added successfully!");
     },
-    refetchQueries: [
-      { query: GET_POSTS, variables: { page: 1, limit: PAGE_SIZE } },
-    ],
+    refetchQueries: [{ query: GET_POSTS, variables: { page: 1 } }],
   });
 
   const handleAddPost = async (e: React.FormEvent) => {
@@ -126,7 +124,7 @@ const HomePage = () => {
     );
 
   return (
-    <div className="max-w-screen-3xl mx-auto flex w-full justify-center lg:justify-evenly lg:gap-4 px-5 py-5">
+    <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
       <aside className="hidden w-full max-w-64 py-8 lg:flex"></aside>
 
       <main className="w-fit justify-self-center">

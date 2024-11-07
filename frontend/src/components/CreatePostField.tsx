@@ -97,7 +97,7 @@ const CreatePostField = ({
       <div className="flex justify-end gap-2">
         <div className="flex items-center gap-1">
           <label htmlFor="image-upload" className="cursor-pointer">
-            <ImageIcon className="text-blue-500 hover:text-blue-700" />
+            <ImageIcon className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500" />
           </label>
           <input
             id="image-upload"
@@ -108,11 +108,11 @@ const CreatePostField = ({
                 setFile(e.target.files[0]);
               }
             }}
-            style={{ display: "none" }}
+            className="hidden"
           />
 
           <span
-            className="select-none text-sm text-black ml-1 dark:text-gray-500"
+            className="ml-1 select-none text-sm text-black dark:text-gray-500"
             aria-live="polite"
           >
             {value.length}/{MAX_CHARS}
