@@ -28,8 +28,8 @@ export const GET_USER_QUERY = gql`
         id
         username
       }
-      profilePictureUrl
-      backgroundPictureUrl
+      profilePicture
+      backgroundPicture
     }
   }
 `;
@@ -50,8 +50,8 @@ export const GET_USERS = gql`
         id
         username
       }
-      profilePictureUrl
-      backgroundPictureUrl
+      profilePicture
+      backgroundPicture
     }
   }
 `;
@@ -86,6 +86,15 @@ export const UNFOLLOW_USER_MUTATION = gql`
         id
         username
       }
+    }
+  }
+`;
+
+export const CHANGE_PROFILE_PICTURE = gql`
+  mutation ChangeProfilePicture($file: Upload!) {
+    changeProfilePicture(file: $file) {
+      id
+      profilePicture
     }
   }
 `;

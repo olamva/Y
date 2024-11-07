@@ -1,5 +1,5 @@
 import { useAuth } from "@/components/AuthContext";
-import Avatar from "@/components/Avatar";
+import Avatar from "@/components/Profile/Avatar";
 import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
@@ -15,6 +15,7 @@ import { UserIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
+import EditProfile from "@/components/Profile/EditProfile";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -134,11 +135,7 @@ const Profile = () => {
               className="h-56 w-full object-cover"
             />
             <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
-              <Avatar
-                username={user?.username || "unknown"}
-                large
-                disableHover
-              />
+              <Avatar user={user} large disableHover />
               <div className="flex items-center justify-center gap-2">
                 <h1 className="font-mono text-lg">
                   <span className="font-sans">@</span>
@@ -150,7 +147,11 @@ const Profile = () => {
                 )}
               </div>
             </div>
-            <div></div>
+            {loggedInUser && loggedInUser.username === username && (
+              <div className="absolute right-[10%] top-[105%]">
+                <EditProfile user={user} />
+              </div>
+            )}
           </section>
           <section>
             <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">

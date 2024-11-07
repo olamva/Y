@@ -41,8 +41,8 @@ type User {
   commentIds: [ID!]!
   following: [User!]!
   followers: [User!]!
-  profilePictureUrl: String
-  backgroundPictureUrl: String
+  profilePicture: String
+  backgroundPicture: String
 }
 
 type Mutation {
