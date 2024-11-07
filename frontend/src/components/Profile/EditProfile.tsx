@@ -1,9 +1,10 @@
-"use client";
-
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { UserType } from "@/lib/types";
 import { useMutation } from "@apollo/client";
-import { CHANGE_PROFILE_PICTURE } from "@/queries/user";
+import {
+  CHANGE_PROFILE_PICTURE,
+  CHANGE_BACKGROUND_PICTURE,
+} from "@/queries/user";
 import toast from "react-hot-toast";
 import { useAuth } from "../AuthContext";
 import { XIcon } from "lucide-react";
@@ -15,8 +16,14 @@ interface Props {
 const EditProfile = ({ user }: Props) => {
   const { refetchUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+
+  const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+
+  const [backgroundFile, setBackgroundFile] = useState<File | null>(null);
+  const [backgroundPreview, setBackgroundPreview] = useState<string | null>(
+    null,
+  );
 
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -24,16 +31,30 @@ const EditProfile = ({ user }: Props) => {
   const BACKEND_URL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
-  const [changeProfilePicture, { error }] = useMutation(CHANGE_PROFILE_PICTURE);
+  const [changeProfilePicture, { error: profileError }] = useMutation(
+    CHANGE_PROFILE_PICTURE,
+  );
+  const [changeBackgroundPicture, { error: backgroundError }] = useMutation(
+    CHANGE_BACKGROUND_PICTURE,
+  );
 
   useEffect(() => {
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
+    if (profileFile) {
+      const objectUrl = URL.createObjectURL(profileFile);
+      setProfilePreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
     }
-    setPreview(null);
-  }, [file]);
+    setProfilePreview(null);
+  }, [profileFile]);
+
+  useEffect(() => {
+    if (backgroundFile) {
+      const objectUrl = URL.createObjectURL(backgroundFile);
+      setBackgroundPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+    setBackgroundPreview(null);
+  }, [backgroundFile]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -54,20 +75,31 @@ const EditProfile = ({ user }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+
+    const promises = [];
+
+    if (profileFile) {
+      promises.push(changeProfilePicture({ variables: { file: profileFile } }));
+    }
+
+    if (backgroundFile) {
+      promises.push(
+        changeBackgroundPicture({ variables: { file: backgroundFile } }),
+      );
+    }
 
     try {
-      await changeProfilePicture({ variables: { file } });
-      toast.success("Profile picture updated!");
+      await Promise.all(promises);
+      toast.success("Profile updated successfully!");
       setIsOpen(false);
       refetchUser();
     } catch (err) {
-      console.error("Error updating profile picture:", err);
-      toast.error("Failed to update profile picture.");
+      console.error("Error updating profile:", err);
+      toast.error("Failed to update profile.");
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteProfile = async () => {
     try {
       await changeProfilePicture({ variables: { file: null } });
       toast.success("Profile picture deleted!");
@@ -79,11 +111,25 @@ const EditProfile = ({ user }: Props) => {
     }
   };
 
+  const handleDeleteBackground = async () => {
+    try {
+      await changeBackgroundPicture({ variables: { file: null } });
+      toast.success("Background picture deleted!");
+      setIsOpen(false);
+      refetchUser();
+    } catch (err) {
+      console.error("Error deleting background picture:", err);
+      toast.error("Failed to delete background picture.");
+    }
+  };
+
   const handleTabKey = (e: React.KeyboardEvent) => {
     if (e.key === "Tab") {
       const focusableElements = modalRef.current?.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       ) as NodeListOf<HTMLElement>;
+      if (!focusableElements || focusableElements.length === 0) return;
+
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -142,7 +188,7 @@ const EditProfile = ({ user }: Props) => {
                 </h3>
                 <div className="mt-2">
                   <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
+                    <div className="mb-6">
                       <label
                         htmlFor="profile-picture"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -150,11 +196,11 @@ const EditProfile = ({ user }: Props) => {
                         Profile Picture
                       </label>
                       <div className="mt-1 flex items-center">
-                        {preview || user.profilePicture ? (
+                        {profilePreview || user.profilePicture ? (
                           <div className="relative">
                             <img
                               src={
-                                preview ||
+                                profilePreview ||
                                 `${BACKEND_URL}${user.profilePicture}`
                               }
                               alt="Profile"
@@ -164,39 +210,92 @@ const EditProfile = ({ user }: Props) => {
                             />
                             <button
                               type="button"
-                              onClick={handleDelete}
-                              className="absolute right-0 top-0"
+                              onClick={handleDeleteProfile}
+                              className="absolute -right-2 -top-2 rounded-full bg-white p-1 shadow hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
                             >
-                              <XIcon className="size-8 text-red-500 hover:text-red-700" />
+                              <XIcon className="h-4 w-4 text-red-500 hover:text-red-700" />
                             </button>
                           </div>
                         ) : (
-                          <div className="flex size-24 items-center justify-center rounded-full bg-gray-200 text-center dark:bg-gray-600">
-                            <p className="text-sm font-medium">
+                          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 text-center dark:bg-gray-600">
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               No profile picture
                             </p>
                           </div>
                         )}
                         <label
-                          htmlFor="image-upload"
-                          className="ml-5 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                          htmlFor="profile-image-upload"
+                          className="ml-5 cursor-pointer rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                         >
                           Change
                         </label>
                         <input
-                          id="image-upload"
+                          id="profile-image-upload"
                           type="file"
                           accept="image/*"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
-                              setFile(e.target.files[0]);
+                              setProfileFile(e.target.files[0]);
                             }
                           }}
                           style={{ display: "none" }}
                         />
                       </div>
                     </div>
-
+                    <div className="mb-6">
+                      <label
+                        htmlFor="background-picture"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        Background Picture
+                      </label>
+                      <div className="mt-1 flex items-center">
+                        {backgroundPreview || user.backgroundPicture ? (
+                          <div className="relative">
+                            <img
+                              src={
+                                backgroundPreview ||
+                                `${BACKEND_URL}${user.backgroundPicture}`
+                              }
+                              alt="Background"
+                              width={200}
+                              height={100}
+                              className="rounded-md object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleDeleteBackground}
+                              className="absolute -right-2 -top-2 rounded-full bg-white p-1 shadow hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+                            >
+                              <XIcon className="h-4 w-4 text-red-500 hover:text-red-700" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex h-24 w-48 items-center justify-center rounded-md bg-gray-200 text-center dark:bg-gray-600">
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              No background picture
+                            </p>
+                          </div>
+                        )}
+                        <label
+                          htmlFor="background-image-upload"
+                          className="ml-5 cursor-pointer rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                        >
+                          Change
+                        </label>
+                        <input
+                          id="background-image-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              setBackgroundFile(e.target.files[0]);
+                            }
+                          }}
+                          style={{ display: "none" }}
+                        />
+                      </div>
+                    </div>
                     <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                       <button
                         type="submit"
@@ -213,9 +312,10 @@ const EditProfile = ({ user }: Props) => {
                         Cancel
                       </button>
                     </div>
-                    {error && (
-                      <p className="mt-2 text-red-500">
-                        Error: {error.message}
+                    {(profileError || backgroundError) && (
+                      <p className="mt-4 text-red-500">
+                        Error:{" "}
+                        {profileError?.message || backgroundError?.message}
                       </p>
                     )}
                   </form>

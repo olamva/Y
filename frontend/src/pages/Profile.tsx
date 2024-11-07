@@ -39,6 +39,8 @@ const Profile = () => {
   };
 
   const username = paramUsername ?? loggedInUser?.username;
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
   if (!paramUsername && username) {
     window.location.href = `/project2/user/${username}`;
@@ -130,7 +132,11 @@ const Profile = () => {
         <>
           <section className="relative mb-36 py-6">
             <img
-              src={CoverPhoto}
+              src={
+                user.backgroundPicture
+                  ? `${BACKEND_URL}${user.backgroundPicture}`
+                  : CoverPhoto
+              }
               alt="Cover photo"
               className="h-56 w-full object-cover"
             />

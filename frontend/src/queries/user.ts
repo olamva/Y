@@ -98,3 +98,12 @@ export const CHANGE_PROFILE_PICTURE = gql`
     }
   }
 `;
+
+export const CHANGE_BACKGROUND_PICTURE = gql`
+  mutation ChangeBackgroundPicture($file: Upload) {
+    changeBackgroundPicture(file: $file) {
+      id
+      backgroundPicture
+    }
+  }
+`;
