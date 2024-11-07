@@ -61,8 +61,8 @@ export const CREATE_POST = gql`
 `;
 
 export const EDIT_POST = gql`
-  mutation EditPost($id: ID!, $body: String!) {
-    editPost(id: $id, body: $body) {
+  mutation EditPost($id: ID!, $body: String!, $file: Upload) {
+    editPost(id: $id, body: $body, file: $file) {
       id
       body
       originalBody

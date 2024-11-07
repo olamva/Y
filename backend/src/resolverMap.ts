@@ -140,7 +140,7 @@ export const resolvers: IResolvers = {
       }
     },
 
-    editPost: async (_, { id, body }, context) => {
+    editPost: async (_, { id, body, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to edit a post');
       }
@@ -162,10 +162,23 @@ export const resolvers: IResolvers = {
       if (body.length > 281) {
         throw new UserInputError('Post body exceeds 281 characters');
       }
+
+      let imageUrl: string | undefined = undefined;
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
       if (!post.originalBody) post.originalBody = post.body;
       if (post.originalBody === body) post.originalBody = undefined;
 
       post.body = body;
+      post.imageUrl = imageUrl;
       await post.save();
 
       return post;
