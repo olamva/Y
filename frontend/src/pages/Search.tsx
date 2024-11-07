@@ -61,7 +61,7 @@ const SearchPage = () => {
     } catch (error) {
       toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
-  }, [fetchMore, hasMore, postsLoading, page]);
+  }, [fetchMore, hasMore, postsLoading, page, searchQuery]);
 
   useEffect(() => {
     const handleScroll = () => {
