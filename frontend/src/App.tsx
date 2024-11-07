@@ -39,6 +39,11 @@ const HomePage = () => {
     { createPost: PostType },
     { body: string; file: File | null }
   >(CREATE_POST, {
+    context: {
+      headers: {
+        "x-apollo-operation-name": "createPost",
+      },
+    },
     onError: (err) => {
       console.error("Error creating post:", err);
       toast.error(`Error adding post: ${err.message}`);

@@ -3,7 +3,7 @@ import { AuthProvider } from "@/components/AuthContext";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar.tsx";
 import "@/globals.css";
-import { client } from "@/lib/apolloClient";
+import client from "@/lib/apolloClient";
 import PostPage from "@/pages/PostPage.tsx";
 import Profile from "@/pages/Profile";
 import SearchPage from "@/pages/Search.tsx";

@@ -43,6 +43,8 @@ const PostContent = ({
   const isComment = "parentID" in post;
   const [showOriginal, setShowOriginal] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
   const toggleEditView = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -156,6 +158,14 @@ const PostContent = ({
       <PostBody
         text={showOriginal ? (post.originalBody ?? post.body) : post.body}
       />
+
+      {post.imageUrl && (
+        <img
+          src={`${BACKEND_URL}${post.imageUrl}`}
+          alt="Post"
+          className="h-auto w-full object-cover"
+        />
+      )}
 
       {/* TODO: comment liking and replying  */}
       {!isComment && (

@@ -9,6 +9,7 @@ export const GET_POSTS = gql`
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
     }
   }
@@ -23,6 +24,7 @@ export const GET_POST = gql`
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
     }
   }
@@ -38,6 +40,7 @@ export const GET_POSTS_BY_IDS = gql`
       amtLikes
       amtComments
       createdAt
+      imageUrl
     }
   }
 `;
@@ -50,6 +53,7 @@ export const CREATE_POST = gql`
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
       __typename
     }
@@ -65,6 +69,7 @@ export const EDIT_POST = gql`
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
     }
   }
