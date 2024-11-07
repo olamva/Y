@@ -150,6 +150,7 @@ const Profile = () => {
                 )}
               </div>
             </div>
+            <div></div>
           </section>
           <section>
             <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">

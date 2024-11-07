@@ -28,6 +28,8 @@ export const GET_USER_QUERY = gql`
         id
         username
       }
+      profilePictureUrl
+      backgroundPictureUrl
     }
   }
 `;
@@ -48,6 +50,8 @@ export const GET_USERS = gql`
         id
         username
       }
+      profilePictureUrl
+      backgroundPictureUrl
     }
   }
 `;
