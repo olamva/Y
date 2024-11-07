@@ -320,6 +320,14 @@ export const resolvers: IResolvers = {
         if (!deletedComment) {
           throw new Error('Comment not found');
         }
+
+        if (deletedComment.imageUrl) {
+          const deleteResult = await deleteFile(deletedComment.imageUrl);
+          if (!deleteResult.success) {
+            console.warn(`Failed to delete file: ${deleteResult.message}`);
+          }
+        }
+
         await Post.findByIdAndUpdate(deletedComment.parentID, { $inc: { amtComments: -1 } });
 
         return deletedComment;
