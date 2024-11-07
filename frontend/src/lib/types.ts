@@ -5,6 +5,7 @@ type ContentType = {
   author: string;
   amtLikes: number;
   amtComments: number;
+  imageUrl?: string;
   createdAt: string;
 };
 

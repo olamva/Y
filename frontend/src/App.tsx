@@ -19,6 +19,7 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
+  const [file, setFile] = useState<File | null>(null);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getPosts: PostType[];
@@ -36,16 +37,20 @@ const HomePage = () => {
 
   const [createPost, { loading: createLoading }] = useMutation<
     { createPost: PostType },
-    { body: string }
+    { body: string; file: File | null }
   >(CREATE_POST, {
-    variables: { body: postBody },
-
+    context: {
+      headers: {
+        "x-apollo-operation-name": "createPost",
+      },
+    },
     onError: (err) => {
       console.error("Error creating post:", err);
       toast.error(`Error adding post: ${err.message}`);
     },
     onCompleted: () => {
       setPostBody("");
+      setFile(null);
       toast.success("Post added successfully!");
     },
     refetchQueries: [
@@ -61,7 +66,12 @@ const HomePage = () => {
     }
 
     try {
-      await createPost();
+      await createPost({
+        variables: {
+          body: postBody,
+          file: file,
+        },
+      });
     } catch (error) {
       toast.error(`Error adding post: ${(error as Error).message}`);
     }
@@ -129,6 +139,8 @@ const HomePage = () => {
               placeholder="What's on your mind?"
               value={postBody}
               setValue={setPostBody}
+              file={file}
+              setFile={setFile}
               loading={createLoading}
               className={
                 postBody && user

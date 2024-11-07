@@ -10,6 +10,8 @@ type Query {
   getCommentsByIds(ids: [ID!]!): [Comment!]!
 }
 
+scalar Upload
+
 type Post {
   id: ID!
   body: String!
@@ -18,6 +20,7 @@ type Post {
   amtLikes: Int!
   amtComments: Int!
   createdAt: String!
+  imageUrl: String
 }
 
 type Comment {
@@ -27,6 +30,7 @@ type Comment {
   parentID: ID!
   amtLikes: Int!
   createdAt: String!
+  imageUrl: String
 }
 
 type User {
@@ -40,9 +44,9 @@ type User {
 }
 
 type Mutation {
-  createPost(body: String!): Post!
-  editPost(id: ID!, body: String!): Post!
-  createComment(body: String!, parentID: ID!): Comment!
+  createPost(body: String!, file: Upload): Post!
+  editPost(id: ID!, body: String!, file: Upload): Post!
+  createComment(body: String!, parentID: ID!, file: Upload): Comment!
   deletePost(id: ID!): Post!
   deleteComment(id: ID!): Comment!
   likePost(postID: ID!): Post!

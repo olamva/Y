@@ -9,6 +9,7 @@ export const GET_POSTS = gql`
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
     }
   }
@@ -23,6 +24,7 @@ export const GET_POST = gql`
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
     }
   }
@@ -38,18 +40,20 @@ export const GET_POSTS_BY_IDS = gql`
       amtLikes
       amtComments
       createdAt
+      imageUrl
     }
   }
 `;
 
 export const CREATE_POST = gql`
-  mutation CreatePost($body: String!) {
-    createPost(body: $body) {
+  mutation CreatePost($body: String!, $file: Upload) {
+    createPost(body: $body, file: $file) {
       id
       body
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
       __typename
     }
@@ -57,14 +61,15 @@ export const CREATE_POST = gql`
 `;
 
 export const EDIT_POST = gql`
-  mutation EditPost($id: ID!, $body: String!) {
-    editPost(id: $id, body: $body) {
+  mutation EditPost($id: ID!, $body: String!, $file: Upload) {
+    editPost(id: $id, body: $body, file: $file) {
       id
       body
       originalBody
       author
       amtLikes
       amtComments
+      imageUrl
       createdAt
     }
   }

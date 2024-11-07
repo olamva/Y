@@ -11,6 +11,8 @@ import { verifyToken } from './auth';
 import { createSchema } from './schema';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import http from 'http';
+import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload-minimal';
+import path from 'path';
 
 interface Context {
   user?: UserType;
@@ -22,6 +24,8 @@ async function startServer() {
 
   app.use(cors());
   app.use(compression());
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+  app.use('/graphql', graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }), json());
 
   const schema = await createSchema();
 
@@ -34,8 +38,6 @@ async function startServer() {
 
   app.use(
     '/graphql',
-    cors<cors.CorsRequest>(),
-    json(),
     expressMiddleware(server, {
       context: async ({ req }: { req: Request }): Promise<Context> => {
         const authHeader = req.headers.authorization || '';

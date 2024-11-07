@@ -9,6 +9,7 @@ export const GET_COMMENTS = gql`
       author
       amtLikes
       createdAt
+      imageUrl
     }
   }
 `;
@@ -22,18 +23,20 @@ export const GET_COMMENTS_BY_IDS = gql`
       author
       amtLikes
       createdAt
+      imageUrl
     }
   }
 `;
 
 export const CREATE_COMMENT = gql`
-  mutation CreateComment($body: String!, $parentID: ID!) {
-    createComment(body: $body, parentID: $parentID) {
+  mutation CreateComment($body: String!, $parentID: ID!, $file: Upload) {
+    createComment(body: $body, parentID: $parentID, file: $file) {
       id
       parentID
       body
       author
       createdAt
+      imageUrl
     }
   }
 `;

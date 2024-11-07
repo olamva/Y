@@ -24,6 +24,10 @@ const PostPage = () => {
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [file, setFile] = useState<File | null>(null);
+  const [commentFile, setCommentFile] = useState<File | null>(null);
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
   const {
     data: postData,
@@ -89,31 +93,32 @@ const PostPage = () => {
   const [createComment, { loading: createLoading, error: createError }] =
     useMutation<
       { createComment: CommentType },
-      { body: string; parentID: string }
+      { body: string; parentID: string; file: File | null }
     >(CREATE_COMMENT, {
       onCompleted: () => {
         setComment("");
+        setCommentFile(null);
         refetchComments();
         refetchPost();
+        toast.success("Comment added successfully!");
       },
       onError: (err) => {
         console.error("Error creating comment:", err);
+        toast.error(`Error adding comment: ${err.message}`);
       },
     });
 
   const [editPost, { loading: editLoading }] = useMutation<
-    { createPost: PostType },
-    { id: string; body: string }
+    { editPost: PostType },
+    { id: string; body: string; file: File | null }
   >(EDIT_POST, {
-    variables: { id: postData?.getPost.id || "", body: editBody },
-
-    onError: (err) => {
-      console.error("Error editing post:", err);
-      toast.error(`Error editing post: ${err.message}`);
-    },
     onCompleted: () => {
       toast.success("Post edited successfully!");
       window.location.href = `/project2/post/${id}`;
+    },
+    onError: (err) => {
+      console.error("Error editing post:", err);
+      toast.error(`Error editing post: ${err.message}`);
     },
   });
 
@@ -126,16 +131,11 @@ const PostPage = () => {
         variables: {
           body: comment,
           parentID: id!,
+          file: commentFile,
         },
       });
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`Error adding comment ${error.message}`);
-      } else {
-        toast.error("Error adding comment");
-      }
-    } finally {
-      toast.success("Comment added");
+      toast.error(`Error adding comment: ${(error as Error).message}`);
     }
   };
 
@@ -146,15 +146,21 @@ const PostPage = () => {
       return;
     }
 
-    if (editBody === postData?.getPost.body) {
-      toast.error("Post content is the same as before.");
+    if (editBody === postData?.getPost.body && !file) {
+      toast.error("No changes detected.");
       return;
     }
 
     try {
-      await editPost();
+      await editPost({
+        variables: {
+          id: postData?.getPost.id || "",
+          body: editBody,
+          file: file,
+        },
+      });
     } catch (error) {
-      toast.error(`Error adding post: ${(error as Error).message}`);
+      toast.error(`Error editing post: ${(error as Error).message}`);
     }
   };
 
@@ -190,7 +196,7 @@ const PostPage = () => {
       <main className="flex flex-col items-center px-4 pt-5">
         {editing ? (
           <form
-            className="flex w-full max-w-xl items-center gap-2"
+            className="flex w-full max-w-xl flex-col items-start gap-4"
             onSubmit={handleEditPost}
           >
             <CreatePostField
@@ -198,8 +204,15 @@ const PostPage = () => {
               value={editBody}
               setValue={setEditBody}
               loading={editLoading}
+              file={file}
+              setFile={setFile}
+              existingImageURL={
+                postData.getPost.imageUrl
+                  ? `${BACKEND_URL}${postData.getPost.imageUrl}`
+                  : undefined
+              }
               className={
-                editBody !== postData.getPost.body && user
+                (editBody !== postData.getPost.body || file) && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
                   : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }
@@ -211,7 +224,7 @@ const PostPage = () => {
         <Divider />
         {!editing && (
           <form
-            className="flex w-full flex-col items-center gap-2"
+            className="flex w-full max-w-xl flex-col items-center gap-2"
             onSubmit={handleAddComment}
           >
             <CreatePostField
@@ -219,23 +232,26 @@ const PostPage = () => {
               value={comment}
               setValue={setComment}
               loading={createLoading}
+              file={commentFile}
+              setFile={setCommentFile}
               className={
                 comment && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
                   : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }
             />
-            {createError && (
-              <p className="text-red-500">
-                Error adding comment: {createError.message}
-              </p>
-            )}
           </form>
         )}
-
+        {createError && (
+          <p className="text-red-500">
+            Error adding comment: {createError.message}
+          </p>
+        )}
+        
         {commentsData?.getComments.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}
+
 
         {commentsError && (
           <p>Error loading comments: {commentsError.message}</p>
