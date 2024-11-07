@@ -55,22 +55,23 @@ const PostPage = () => {
     }
   }, [postData, postLoading]);
 
-  const [createComment, { loading: createLoading }] = useMutation<
-    { createComment: CommentType },
-    { body: string; parentID: string; file: File | null }
-  >(CREATE_COMMENT, {
-    onCompleted: () => {
-      setComment("");
-      setCommentFile(null);
-      refetchComments();
-      refetchPost();
-      toast.success("Comment added successfully!");
-    },
-    onError: (err) => {
-      console.error("Error creating comment:", err);
-      toast.error(`Error adding comment: ${err.message}`);
-    },
-  });
+  const [createComment, { loading: createLoading, error: createError }] =
+    useMutation<
+      { createComment: CommentType },
+      { body: string; parentID: string; file: File | null }
+    >(CREATE_COMMENT, {
+      onCompleted: () => {
+        setComment("");
+        setCommentFile(null);
+        refetchComments();
+        refetchPost();
+        toast.success("Comment added successfully!");
+      },
+      onError: (err) => {
+        console.error("Error creating comment:", err);
+        toast.error(`Error adding comment: ${err.message}`);
+      },
+    });
 
   const [editPost, { loading: editLoading }] = useMutation<
     { editPost: PostType },
@@ -201,11 +202,11 @@ const PostPage = () => {
           </form>
         )}
 
-        {/* {createError && (
+        {createError && (
           <p className="text-red-500">
             Error adding comment: {createError.message}
           </p>
-        )} */}
+        )}
 
         {commentsLoading ? (
           <p>Loading comments...</p>
