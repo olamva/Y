@@ -31,6 +31,18 @@ const client = new ApolloClient({
               return [...existing, ...incoming];
             },
           },
+          getComments: {
+            keyArgs: false,
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming];
+            },
+          },
+          searchPosts: {
+            keyArgs: false,
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming];
+            },
+          },
         },
       },
     },

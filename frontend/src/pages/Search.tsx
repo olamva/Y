@@ -1,52 +1,92 @@
-import { useLocation } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { SEARCH_ALL } from "@/queries/search";
+import BackButton from "@/components/BackButton";
 import Post from "@/components/Post/Post";
-import { PostType, UserType } from "@/lib/types";
 import ProfileCard from "@/components/ProfileCard";
-import { useState } from "react";
+import { PostType, UserType } from "@/lib/types";
+import { SEARCH_POSTS, SEARCH_USERS } from "@/queries/search";
+import { NetworkStatus, useQuery } from "@apollo/client";
 import { FilterIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
-type SearchResult = PostType | UserType;
+const RESULTS_PAGE_SIZE = 10;
 
 const SearchPage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const searchQuery = params.get("q") || "";
   const [filterType, setFilterType] = useState<"all" | "post" | "user">("all");
 
-  const { data, loading, error } = useQuery<{ searchAll: SearchResult[] }>(
-    SEARCH_ALL,
-    {
-      variables: { query: searchQuery },
-      skip: !searchQuery,
-    },
-  );
+  const {
+    data: postsData,
+    loading: postsLoading,
+    error: postsError,
+    fetchMore,
+    networkStatus,
+  } = useQuery<{
+    searchPosts: PostType[];
+  }>(SEARCH_POSTS, {
+    variables: { query: searchQuery, page: 1 },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+  });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  const {
+    data: usersData,
+    loading: usersLoading,
+    error: usersError,
+  } = useQuery<{ searchUsers: UserType[] }>(SEARCH_USERS, {
+    variables: { query: searchQuery },
+    skip: !searchQuery,
+  });
 
-  const filteredResults =
-    data?.searchAll.filter((item) => {
-      if (filterType === "post") return item.__typename === "Post";
-      if (filterType === "user") return item.__typename === "User";
-      return true;
-    }) || [];
+  const loadMoreResults = useCallback(async () => {
+    if (!hasMore || postsLoading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMore({
+        variables: { query: searchQuery, page: page + 1 },
+      });
+
+      if (fetchMoreData?.searchPosts) {
+        if (fetchMoreData.searchPosts.length < RESULTS_PAGE_SIZE) {
+          setHasMore(false);
+        }
+        setPage((prev) => prev + 1);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  }, [fetchMore, hasMore, postsLoading, page, searchQuery]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 200 &&
+        networkStatus !== NetworkStatus.fetchMore &&
+        hasMore
+      ) {
+        loadMoreResults();
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [postsLoading, page, hasMore, networkStatus, loadMoreResults]);
+
+  if (usersLoading) {
+    return <p>Loading...</p>;
+  }
+  if (postsError) return <p>Error: {postsError.message}</p>;
+  if (usersError) return <p>Error: {usersError.message}</p>;
 
   return (
     <div className="w-full">
-      <header>
-        <Button
-          className="m-2 flex gap-2 text-xl"
-          onClick={() => window.history.back()}
-          variant="ghost"
-        >
-          <ArrowUturnLeftIcon className="size-6" />
-          <p>Back</p>
-        </Button>
-      </header>
+      <BackButton />
       <main className="mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4">
         <h1 className="my-4 text-center text-2xl font-bold">
           Search results for: {searchQuery}
@@ -65,28 +105,44 @@ const SearchPage = () => {
             <option value="user">Users</option>
           </select>
         </div>
-        {filteredResults.length > 0 ? (
-          <div
-            className={`grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3`}
-          >
-            {filteredResults.map((item) =>
-              item.__typename === "Post" ? (
-                <div
-                  key={item.id}
-                  className="col-span-1 flex justify-center sm:col-span-2 lg:col-span-3"
-                >
-                  <Post post={item as PostType} />
-                </div>
-              ) : (
-                <div key={item.id} className="col-span-1 flex justify-center">
-                  <ProfileCard user={item} />
-                </div>
-              ),
-            )}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">No results found.</p>
+
+        {usersData && usersData?.searchUsers.length === 0 && (
+          <p className="text-center text-gray-500">No users found.</p>
         )}
+
+        {postsData && postsData?.searchPosts.length === 0 && (
+          <p className="text-center text-gray-500">No posts found.</p>
+        )}
+
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filterType !== "post" &&
+            usersData?.searchUsers.map((user) => (
+              <div key={user.id} className="col-span-1 flex justify-center">
+                <ProfileCard user={user} />
+              </div>
+            ))}
+
+          {filterType !== "user" &&
+            postsData?.searchPosts.map((post) => (
+              <div
+                key={post.id}
+                className="col-span-1 flex justify-center sm:col-span-2 lg:col-span-3"
+              >
+                <Post post={post} />
+              </div>
+            ))}
+
+          {postsLoading ||
+            (networkStatus === NetworkStatus.loading && (
+              <p>Loading results...</p>
+            ))}
+
+          {!hasMore && (
+            <p className="col-span-1 mt-4 justify-self-center text-gray-500 dark:text-gray-400 sm:col-span-2 lg:col-span-3">
+              You've reached the end of the search results.
+            </p>
+          )}
+        </div>
       </main>
     </div>
   );

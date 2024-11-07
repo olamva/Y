@@ -2,13 +2,15 @@ import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const params = new URLSearchParams(location.search);
+  const currentQuery = params.get("q") || "";
+  const [searchQuery, setSearchQuery] = useState(currentQuery);
   const { logout, user } = useAuth();
 
-  const navigateSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const navigateSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchQuery.trim() === "") return;
     window.location.href = `/project2/search?q=${encodeURIComponent(searchQuery)}`;

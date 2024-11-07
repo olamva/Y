@@ -47,9 +47,15 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching user');
       }
     },
-    getComments: async (_, { postID }) => {
+    getComments: async (_, { postID, page }) => {
+      const COMMENTS_PER_PAGE = 10;
+      const skip = (page - 1) * COMMENTS_PER_PAGE;
+
       try {
-        return await Comment.find({ parentID: postID }).sort({ createdAt: -1 });
+        return await Comment.find({ parentID: postID })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(COMMENTS_PER_PAGE);
       } catch (err) {
         throw new Error('Error fetching comments');
       }
@@ -70,34 +76,35 @@ export const resolvers: IResolvers = {
       }
     },
 
-    async searchAll(_: any, { query }: { query: string }) {
+    searchPosts: async (_: any, { query, page }: { query: string; page: string }) => {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }
+      const POSTS_PER_PAGE = 10;
+      const skip = (parseInt(page) - 1) * POSTS_PER_PAGE;
 
       try {
         const posts = await Post.find({
           $or: [{ body: { $regex: query, $options: 'i' } }, { author: { $regex: query, $options: 'i' } }],
-        });
+        })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(POSTS_PER_PAGE);
 
-        const users = await User.find({
-          username: { $regex: query, $options: 'i' },
-        });
-
-        return [...users, ...posts];
+        return posts;
       } catch (err) {
         throw new Error('Error performing search');
       }
     },
 
-    async searchUsers(_: any, { query }: { query: string }) {
+    searchUsers: async (_: any, { query }: { query: string }) => {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }
 
       return await User.find({
         username: { $regex: query, $options: 'i' },
-      });
+      }).sort({ createdAt: -1 });
     },
   },
 
@@ -313,6 +320,14 @@ export const resolvers: IResolvers = {
         if (!deletedComment) {
           throw new Error('Comment not found');
         }
+
+        if (deletedComment.imageUrl) {
+          const deleteResult = await deleteFile(deletedComment.imageUrl);
+          if (!deleteResult.success) {
+            console.warn(`Failed to delete file: ${deleteResult.message}`);
+          }
+        }
+
         await Post.findByIdAndUpdate(deletedComment.parentID, { $inc: { amtComments: -1 } });
 
         return deletedComment;
@@ -426,17 +441,6 @@ export const resolvers: IResolvers = {
       await user.save();
 
       return personToUnfollow;
-    },
-  },
-  SearchResult: {
-    __resolveType(obj: any) {
-      if (obj.username) {
-        return 'User';
-      }
-      if (obj.body) {
-        return 'Post';
-      }
-      return null;
     },
   },
   User: {

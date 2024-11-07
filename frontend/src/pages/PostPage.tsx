@@ -1,29 +1,29 @@
 import { useAuth } from "@/components/AuthContext";
+import BackButton from "@/components/BackButton";
 import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
-import { Button } from "@/components/ui/button";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { EDIT_POST, GET_POST } from "@/queries/posts";
-import { useMutation, useQuery } from "@apollo/client";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
-import { FormEvent, useEffect, useState } from "react";
+import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+
+const COMMENT_PAGE_SIZE = 10;
 
 const PostPage = () => {
   const { id, edit } = useParams<{ id: string; edit?: string }>();
   const editing = edit === "edit";
-  if (!editing && edit) {
-    window.location.href = `/project2/post/${id}`;
-  }
-
   const { user } = useAuth();
 
   const [editBody, setEditBody] = useState("");
   const [comment, setComment] = useState("");
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [commentFile, setCommentFile] = useState<File | null>(null);
   const BACKEND_URL =
@@ -39,15 +39,50 @@ const PostPage = () => {
     notifyOnNetworkStatusChange: true,
   });
 
+  useEffect(() => {
+    if (!user || !postData || !editing) return;
+    if (user.username !== postData.getPost.author) {
+      window.location.href = `/project2/post/${id}`;
+    }
+  }, [user, postData, editing, id]);
+
+  if (!editing && edit) {
+    window.location.href = `/project2/post/${id}`;
+  }
+
   const {
     data: commentsData,
     loading: commentsLoading,
     error: commentsError,
     refetch: refetchComments,
+    fetchMore: fetchMoreComments,
+    networkStatus: commentsNetworkStatus,
   } = useQuery<{ getComments: CommentType[] }>(GET_COMMENTS, {
-    variables: { postID: id },
+    variables: { postID: id, page: 1 },
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
   });
+
+  const loadMoreComments = useCallback(async () => {
+    if (!hasMore || commentsLoading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMoreComments({
+        variables: { page: page + 1 },
+      });
+
+      if (fetchMoreData?.getComments) {
+        if (fetchMoreData.getComments.length < COMMENT_PAGE_SIZE) {
+          setHasMore(false);
+        }
+        setPage((prev) => prev + 1);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  }, [fetchMoreComments, hasMore, commentsLoading, page]);
 
   useEffect(() => {
     if (postData?.getPost && !postLoading) {
@@ -129,6 +164,21 @@ const PostPage = () => {
     }
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 200 &&
+        commentsNetworkStatus !== NetworkStatus.fetchMore &&
+        hasMore
+      ) {
+        loadMoreComments();
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [commentsLoading, page, hasMore, commentsNetworkStatus, loadMoreComments]);
+
   if (postLoading) {
     return <p>Loading...</p>;
   }
@@ -142,16 +192,7 @@ const PostPage = () => {
 
   return (
     <div className="w-full">
-      <header>
-        <Button
-          className="m-2 flex gap-2 text-xl"
-          onClick={() => window.history.back()}
-          variant="ghost"
-        >
-          <ArrowUturnLeftIcon className="size-6" />
-          <p>Back</p>
-        </Button>
-      </header>
+      <BackButton overrideRedirect />
       <main className="flex flex-col items-center px-4 pt-5">
         {editing ? (
           <form
@@ -201,28 +242,34 @@ const PostPage = () => {
             />
           </form>
         )}
-
         {createError && (
           <p className="text-red-500">
             Error adding comment: {createError.message}
           </p>
         )}
+        
+        {commentsData?.getComments.map((comment) => (
+          <Comment key={comment.id} comment={comment} />
+        ))}
 
-        {commentsLoading ? (
-          <p>Loading comments...</p>
-        ) : commentsError ? (
+
+        {commentsError && (
           <p>Error loading comments: {commentsError.message}</p>
-        ) : (
-          <>
-            {commentsData?.getComments &&
-            commentsData.getComments.length > 0 ? (
-              commentsData.getComments.map((comment) => (
-                <Comment key={comment.id} comment={comment} />
-              ))
-            ) : (
-              <h1>No comments</h1>
-            )}
-          </>
+        )}
+
+        {commentsLoading ||
+          (commentsNetworkStatus === NetworkStatus.loading && (
+            <p>Loading comments...</p>
+          ))}
+
+        {!hasMore && (
+          <p className="mt-4 text-gray-500 dark:text-gray-400">
+            You've reached the end of the comments.
+          </p>
+        )}
+
+        {!commentsLoading && commentsData?.getComments.length === 0 && (
+          <p className="mt-4">No comments available.</p>
         )}
       </main>
     </div>

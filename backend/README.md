@@ -77,12 +77,13 @@ Retrieves a single post by its ID.
 
 ---
 
-### `getComments(postID: ID!): [Comment!]!`
+### `getComments(postID: ID!, page: Int!): [Comment!]!`
 
 Fetches comments associated with a specific post.
 
 - **Parameters:**
   - `postID` (ID!): The ID of the parent post.
+  - `page` (Int!): The page number to retrieve.
 - **Returns:** An array of `Comment` objects.
 
 ---
@@ -97,13 +98,14 @@ Retrieves a user by their username.
 
 ---
 
-### `searchAll(query: String!): [SearchResult!]!`
+### `searchPosts(query: String!, page: Int!): [Post!]!`
 
 Searches for posts and users matching the query.
 
 - **Parameters:**
   - `query` (String!): The search term.
-- **Returns:** An array of `SearchResult` union types (`User` or `Post`).
+  - `page` (Int!): The page number to retrieve for pagination.
+- **Returns:** An array of `Post` objects.
 
 ---
 

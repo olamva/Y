@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_COMMENTS = gql`
-  query GetComments($postID: ID!) {
-    getComments(postID: $postID) {
+  query GetComments($postID: ID!, $page: Int!) {
+    getComments(postID: $postID, page: $page) {
       id
       parentID
       body

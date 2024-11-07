@@ -1,16 +1,15 @@
 type Query {
   getPosts(page: Int!): [Post!]!
   getPost(id: ID!): Post
-  getComments(postID: ID!): [Comment!]!
+  getComments(postID: ID!, page: Int!): [Comment!]!
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!
-  searchAll(query: String!): [SearchResult!]!
+  searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!): [User!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
   getCommentsByIds(ids: [ID!]!): [Comment!]!
 }
 
-union SearchResult = User | Post
 scalar Upload
 
 type Post {
