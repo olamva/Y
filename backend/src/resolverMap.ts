@@ -4,7 +4,7 @@ import { signToken } from './auth';
 import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
-import { uploadFile } from './uploadFile';
+import { deleteFile, uploadFile } from './uploadFile';
 import { GraphQLUpload } from 'graphql-upload-minimal';
 
 export const resolvers: IResolvers = {
@@ -278,6 +278,14 @@ export const resolvers: IResolvers = {
         if (!deletedPost) {
           throw new Error('Post not found');
         }
+
+        if (deletedPost.imageUrl) {
+          const deleteResult = await deleteFile(deletedPost.imageUrl);
+          if (!deleteResult.success) {
+            console.warn(`Failed to delete file: ${deleteResult.message}`);
+          }
+        }
+
         await Comment.deleteMany({ parentID: id });
 
         return deletedPost;

@@ -27,3 +27,31 @@ export const uploadFile = async (
     out.on('error', (err) => reject(err));
   });
 };
+
+export const deleteFile = async (url: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const filename = path.basename(url);
+
+    const uploadsDir = path.join(__dirname, 'uploads');
+
+    const filepath = path.join(uploadsDir, filename);
+    if (!fs.existsSync(filepath)) {
+      return { success: false, message: 'File does not exist' };
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      fs.unlink(filepath, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+
+    return { success: true, message: 'File deleted successfully' };
+  } catch (err) {
+    console.error('Error deleting file:', err);
+    return { success: false, message: 'Error deleting file' };
+  }
+};
