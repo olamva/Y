@@ -2,8 +2,10 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
 import { setContext } from "@apollo/client/link/context";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+
 const uploadLink = createUploadLink({
-  uri: "http://localhost:3001/graphql",
+  uri: `${BACKEND_URL}/graphql`,
 });
 
 const authLink = setContext((_, { headers }) => {
