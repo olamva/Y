@@ -126,7 +126,7 @@ const HomePage = () => {
     );
 
   return (
-    <div className="max-w-screen-3xl mx-auto flex w-full justify-center lg:justify-evenly lg:gap-4 px-5 py-5">
+    <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
       <aside className="hidden w-full max-w-64 py-8 lg:flex"></aside>
 
       <main className="w-fit justify-self-center">
@@ -174,15 +174,15 @@ const HomePage = () => {
             <a
               key={recommendedUser.id}
               href={`/project2/user/${recommendedUser.username}`}
-              className="bg-white-100 w-full rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
+              className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
             >
-              <div className="flex flex-row items-center gap-2">
+              <div className="flex w-fit flex-row items-center gap-2">
                 <Avatar username={recommendedUser.username} noHref />
                 <h1>{recommendedUser.username}</h1>
-                {user?.username !== recommendedUser.username && (
-                  <FollowButton targetUsername={recommendedUser.username} />
-                )}
               </div>
+              {user?.username !== recommendedUser.username && (
+                <FollowButton targetUsername={recommendedUser.username} />
+              )}
             </a>
           ))}
           {/* TODO make a search user page */}
