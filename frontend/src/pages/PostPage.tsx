@@ -40,7 +40,7 @@ const PostPage = () => {
     if (user.username !== postData.getPost.author) {
       window.location.href = `/project2/post/${id}`;
     }
-  }, [user, postData, editing]);
+  }, [user, postData, editing, id]);
 
   if (!editing && edit) {
     window.location.href = `/project2/post/${id}`;
