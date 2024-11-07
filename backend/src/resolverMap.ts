@@ -165,6 +165,10 @@ export const resolvers: IResolvers = {
 
       let imageUrl: string | undefined = undefined;
 
+      if (!file && post.imageUrl) {
+        imageUrl = post.imageUrl;
+      }
+
       if (file) {
         try {
           const result = await uploadFile(file);
