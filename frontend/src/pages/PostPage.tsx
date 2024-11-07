@@ -247,11 +247,10 @@ const PostPage = () => {
             Error adding comment: {createError.message}
           </p>
         )}
-        
+
         {commentsData?.getComments.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}
-
 
         {commentsError && (
           <p>Error loading comments: {commentsError.message}</p>

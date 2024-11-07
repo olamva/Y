@@ -112,7 +112,7 @@ const CreatePostField = ({
           />
 
           <span
-            className="select-none text-sm text-black ml-1 dark:text-gray-500"
+            className="ml-1 select-none text-sm text-black dark:text-gray-500"
             aria-live="polite"
           >
             {value.length}/{MAX_CHARS}
