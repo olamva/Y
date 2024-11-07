@@ -4,8 +4,11 @@ import { signToken } from './auth';
 import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
+import { deleteFile, uploadFile } from './uploadFile';
+import { GraphQLUpload } from 'graphql-upload-minimal';
 
 export const resolvers: IResolvers = {
+  Upload: GraphQLUpload,
   Query: {
     getPosts: async (_, { page }) => {
       const POSTS_PER_PAGE = 10;
@@ -99,7 +102,7 @@ export const resolvers: IResolvers = {
   },
 
   Mutation: {
-    createPost: async (_, { body }, context) => {
+    createPost: async (_, { body, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a post');
       }
@@ -113,19 +116,31 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Post body exceeds 281 characters');
       }
 
-      try {
-        const newPost = new Post({ body, author: user.username });
-        const savedComment = await newPost.save();
+      let imageUrl = null;
 
-        user.postIds.push(savedComment.id);
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
+      try {
+        const newPost = new Post({ body, author: user.username, imageUrl });
+        const savedPost = await newPost.save();
+
+        user.postIds.push(savedPost.id);
         await user.save();
 
-        return savedComment;
+        return savedPost;
       } catch (err) {
         throw new Error('Error creating post');
       }
     },
-    editPost: async (_, { id, body }, context) => {
+
+    editPost: async (_, { id, body, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to edit a post');
       }
@@ -147,10 +162,27 @@ export const resolvers: IResolvers = {
       if (body.length > 281) {
         throw new UserInputError('Post body exceeds 281 characters');
       }
+
+      let imageUrl: string | undefined = undefined;
+
+      if (!file && post.imageUrl) {
+        imageUrl = post.imageUrl;
+      }
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
       if (!post.originalBody) post.originalBody = post.body;
       if (post.originalBody === body) post.originalBody = undefined;
 
       post.body = body;
+      post.imageUrl = imageUrl;
       await post.save();
 
       return post;
@@ -187,7 +219,7 @@ export const resolvers: IResolvers = {
       return token;
     },
 
-    createComment: async (_, { body, parentID }, context) => {
+    createComment: async (_, { body, parentID, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a comment');
       }
@@ -202,8 +234,19 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Post body exceeds 281 characters');
       }
 
+      let imageUrl = null;
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
       try {
-        const newComment = new Comment({ body, author: user.username, parentID: parentID });
+        const newComment = new Comment({ body, author: user.username, parentID: parentID, imageUrl });
         const savedComment = await newComment.save();
         await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
 
@@ -235,6 +278,14 @@ export const resolvers: IResolvers = {
         if (!deletedPost) {
           throw new Error('Post not found');
         }
+
+        if (deletedPost.imageUrl) {
+          const deleteResult = await deleteFile(deletedPost.imageUrl);
+          if (!deleteResult.success) {
+            console.warn(`Failed to delete file: ${deleteResult.message}`);
+          }
+        }
+
         await Comment.deleteMany({ parentID: id });
 
         return deletedPost;
