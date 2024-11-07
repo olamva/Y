@@ -21,6 +21,7 @@ type Post {
   amtLikes: Int!
   amtComments: Int!
   createdAt: String!
+  imageUrl: String
 }
 
 type Comment {
