@@ -26,6 +26,8 @@ const PostPage = () => {
   const [comment, setComment] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [commentFile, setCommentFile] = useState<File | null>(null);
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
   const {
     data: postData,
@@ -162,6 +164,11 @@ const PostPage = () => {
               loading={editLoading}
               file={file}
               setFile={setFile}
+              existingImageURL={
+                postData.getPost.imageUrl
+                  ? `${BACKEND_URL}${postData.getPost.imageUrl}`
+                  : undefined
+              }
               className={
                 (editBody !== postData.getPost.body || file) && user
                   ? "bg-indigo-600 hover:bg-indigo-700"

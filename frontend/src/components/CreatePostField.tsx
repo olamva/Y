@@ -13,6 +13,7 @@ interface CreatePostFieldProps {
   setFile: (file: File | null) => void;
   loading: boolean;
   className?: string;
+  existingImageURL?: string;
 }
 const CreatePostField = ({
   placeholder,
@@ -22,6 +23,7 @@ const CreatePostField = ({
   setFile,
   loading,
   className,
+  existingImageURL,
 }: CreatePostFieldProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -42,6 +44,8 @@ const CreatePostField = ({
         URL.revokeObjectURL(imagePreviewRef.current);
       }
       imagePreviewRef.current = newImagePreview;
+    } else if (existingImageURL) {
+      setImagePreview(existingImageURL);
     } else {
       if (imagePreviewRef.current) {
         URL.revokeObjectURL(imagePreviewRef.current);
@@ -49,7 +53,7 @@ const CreatePostField = ({
       }
       setImagePreview(null);
     }
-  }, [file]);
+  }, [file, existingImageURL]);
 
   const percentage = (value.length / MAX_CHARS) * 100;
 
@@ -75,14 +79,17 @@ const CreatePostField = ({
               alt="image preview"
               className="h-auto w-full p-5"
             />
-            <button
-              onClick={() => {
-                setFile(null);
-              }}
-              className="absolute right-5 top-5"
-            >
-              <XIcon className="size-8 text-red-500 hover:text-red-700" />
-            </button>
+            {!existingImageURL && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFile(null);
+                }}
+                className="absolute right-5 top-5"
+              >
+                <XIcon className="size-8 text-red-500 hover:text-red-700" />
+              </button>
+            )}
           </div>
         )}
       </div>
