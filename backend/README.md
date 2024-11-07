@@ -77,12 +77,13 @@ Retrieves a single post by its ID.
 
 ---
 
-### `getComments(postID: ID!): [Comment!]!`
+### `getComments(postID: ID!, page: Int!): [Comment!]!`
 
 Fetches comments associated with a specific post.
 
 - **Parameters:**
   - `postID` (ID!): The ID of the parent post.
+  - `page` (Int!): The page number to retrieve.
 - **Returns:** An array of `Comment` objects.
 
 ---

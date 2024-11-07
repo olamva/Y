@@ -1,13 +1,12 @@
-import { useLocation } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { SEARCH_ALL } from "@/queries/search";
+import BackButton from "@/components/BackButton";
 import Post from "@/components/Post/Post";
-import { PostType, UserType } from "@/lib/types";
 import ProfileCard from "@/components/ProfileCard";
-import { useState } from "react";
+import { PostType, UserType } from "@/lib/types";
+import { SEARCH_ALL } from "@/queries/search";
+import { useQuery } from "@apollo/client";
 import { FilterIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 type SearchResult = PostType | UserType;
 
@@ -37,16 +36,7 @@ const SearchPage = () => {
 
   return (
     <div className="w-full">
-      <header>
-        <Button
-          className="m-2 flex gap-2 text-xl"
-          onClick={() => window.history.back()}
-          variant="ghost"
-        >
-          <ArrowUturnLeftIcon className="size-6" />
-          <p>Back</p>
-        </Button>
-      </header>
+      <BackButton />
       <main className="mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4">
         <h1 className="my-4 text-center text-2xl font-bold">
           Search results for: {searchQuery}

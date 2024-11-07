@@ -1,7 +1,6 @@
 import PostContent from "@/components/Post/PostContent";
-import { CommentType, PostType } from "@/lib/types";
-import { DELETE_COMMENT, GET_COMMENTS } from "@/queries/comments";
-import { GET_POST } from "@/queries/posts";
+import { CommentType } from "@/lib/types";
+import { DELETE_COMMENT } from "@/queries/comments";
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -28,41 +27,16 @@ const Comment = ({
       update: (cache, { data }) => {
         if (!data) return;
         const deletedComment = data.deleteComment;
-        const existingComments = cache.readQuery<{
-          getComments: CommentType[];
-        }>({
-          query: GET_COMMENTS,
-          variables: { postID: deletedComment.parentID },
-        });
-
-        if (existingComments) {
-          cache.writeQuery({
-            query: GET_COMMENTS,
-            variables: { postID: deletedComment.parentID },
-            data: {
-              getComments: existingComments.getComments.filter(
-                (c) => c.id !== deletedComment.id,
-              ),
+        cache.modify({
+          fields: {
+            getComments(existingComments = [], { readField }) {
+              return existingComments.filter(
+                (c: { __ref: string }) =>
+                  deletedComment.id !== readField("id", c),
+              );
             },
-          });
-        }
-        const existingPost = cache.readQuery<{ getPost: PostType }>({
-          query: GET_POST,
-          variables: { id: deletedComment.parentID },
+          },
         });
-
-        if (existingPost && existingPost.getPost) {
-          cache.writeQuery({
-            query: GET_POST,
-            variables: { id: deletedComment.parentID },
-            data: {
-              getPost: {
-                ...existingPost.getPost,
-                amtComments: existingPost.getPost.amtComments - 1,
-              },
-            },
-          });
-        }
       },
       onError: (err) => {
         toast.error(`Error deleting comment: ${err.message}`);

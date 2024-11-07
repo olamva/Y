@@ -1,21 +1,20 @@
+import { useAuth } from "@/components/AuthContext";
 import Avatar from "@/components/Avatar";
+import BackButton from "@/components/BackButton";
+import FollowButton from "@/components/FollowButton";
+import FollowingUsersModal from "@/components/FollowingUsersModal";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
-import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { CommentType, PostType, UserType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_POSTS_BY_IDS } from "@/queries/posts";
 import { GET_USER_QUERY } from "@/queries/user";
 import { useQuery } from "@apollo/client";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { UserIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import { useAuth } from "@/components/AuthContext";
-import FollowButton from "@/components/FollowButton";
-import { UserIcon, UsersIcon } from "lucide-react";
-import FollowingUsersModal from "@/components/FollowingUsersModal";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -118,16 +117,7 @@ const Profile = () => {
 
   return (
     <div className="w-full px-5">
-      <header>
-        <Button
-          className="m-2 flex gap-2 text-xl"
-          onClick={() => window.history.back()}
-          variant="ghost"
-        >
-          <ArrowUturnLeftIcon className="h-6 w-6" />
-          <p>Back</p>
-        </Button>
-      </header>
+      <BackButton />
       {loggedInUser && loggedInUser.username === username && (
         <div className="pt-5 text-center">
           <h2 className="mt-2 text-3xl font-bold">

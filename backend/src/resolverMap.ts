@@ -44,9 +44,12 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching user');
       }
     },
-    getComments: async (_, { postID }) => {
+    getComments: async (_, { postID, page }) => {
+      const COMMENTS_PER_PAGE = 10;
+      const skip = (page - 1) * COMMENTS_PER_PAGE;
+
       try {
-        return await Comment.find({ parentID: postID }).sort({ createdAt: -1 });
+        return await Comment.find({ parentID: postID }).sort({ createdAt: -1 }).skip(skip).limit(COMMENTS_PER_PAGE);
       } catch (err) {
         throw new Error('Error fetching comments');
       }
