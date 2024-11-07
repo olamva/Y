@@ -4,13 +4,11 @@ type Query {
   getComments(postID: ID!, page: Int!): [Comment!]!
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!
-  searchAll(query: String!): [SearchResult!]!
+  searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!): [User!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
   getCommentsByIds(ids: [ID!]!): [Comment!]!
 }
-
-union SearchResult = User | Post
 
 type Post {
   id: ID!

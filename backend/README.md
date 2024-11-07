@@ -98,13 +98,14 @@ Retrieves a user by their username.
 
 ---
 
-### `searchAll(query: String!): [SearchResult!]!`
+### `searchPosts(query: String!, page: Int!): [Post!]!`
 
 Searches for posts and users matching the query.
 
 - **Parameters:**
   - `query` (String!): The search term.
-- **Returns:** An array of `SearchResult` union types (`User` or `Post`).
+  - `page` (Int!): The page number to retrieve for pagination.
+- **Returns:** An array of `Post` objects.
 
 ---
 

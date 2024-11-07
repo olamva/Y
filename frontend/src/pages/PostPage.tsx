@@ -54,8 +54,9 @@ const PostPage = () => {
     fetchMore: fetchMoreComments,
     networkStatus: commentsNetworkStatus,
   } = useQuery<{ getComments: CommentType[] }>(GET_COMMENTS, {
-    variables: { postID: id, page: page, limit: COMMENT_PAGE_SIZE },
+    variables: { postID: id, page: 1 },
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
   });
 
   const loadMoreComments = useCallback(async () => {
@@ -63,7 +64,7 @@ const PostPage = () => {
 
     try {
       const { data: fetchMoreData } = await fetchMoreComments({
-        variables: { page: page + 1, limit: COMMENT_PAGE_SIZE },
+        variables: { page: page + 1 },
       });
 
       if (fetchMoreData?.getComments) {
