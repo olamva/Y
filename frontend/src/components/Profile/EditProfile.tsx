@@ -5,12 +5,14 @@ import { UserType } from "@/lib/types";
 import { useMutation } from "@apollo/client";
 import { CHANGE_PROFILE_PICTURE } from "@/queries/user";
 import toast from "react-hot-toast";
+import { useAuth } from "../AuthContext";
 
 interface Props {
   user: UserType;
 }
 
 const EditProfile = ({ user }: Props) => {
+  const { refetchUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -57,8 +59,10 @@ const EditProfile = ({ user }: Props) => {
       await changeProfilePicture({ variables: { file } });
       toast.success("Profile picture updated!");
       setIsOpen(false);
+      refetchUser(); // Refetch to update context
     } catch (err) {
       console.error("Error updating profile picture:", err);
+      toast.error("Failed to update profile picture.");
     }
   };
 
