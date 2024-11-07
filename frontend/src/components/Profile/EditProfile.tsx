@@ -171,7 +171,11 @@ const EditProfile = ({ user }: Props) => {
                             </button>
                           </div>
                         ) : (
-                          <div className="size-24 rounded-full bg-gray-200"></div>
+                          <div className="flex size-24 items-center justify-center rounded-full bg-gray-200 text-center dark:bg-gray-600">
+                            <p className="text-sm font-medium">
+                              No profile picture
+                            </p>
+                          </div>
                         )}
                         <label
                           htmlFor="image-upload"
