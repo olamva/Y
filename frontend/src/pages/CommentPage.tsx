@@ -331,7 +331,7 @@ const CommentPage = () => {
             <p>Loading comments...</p>
           ))}
 
-        {!hasMore && (
+        {!hasMore && commentsData?.getComments.length !== 0 && (
           <p className="mt-4 text-gray-500 dark:text-gray-400">
             You've reached the end of the comments.
           </p>

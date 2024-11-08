@@ -127,42 +127,40 @@ const HomePage = () => {
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
       <aside className="hidden w-full max-w-64 py-8 lg:flex"></aside>
 
-      <main className="w-fit justify-self-center">
-        <div className="w-full max-w-xl">
-          <form
-            className="flex w-full items-center gap-2"
-            onSubmit={handleAddPost}
-          >
-            <CreatePostField
-              placeholder="What's on your mind?"
-              value={postBody}
-              setValue={setPostBody}
-              file={file}
-              setFile={setFile}
-              loading={createLoading}
-              className={
-                postBody && user
-                  ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
-              }
-            />
-          </form>
+      <main className="w-full max-w-xl">
+        <form
+          className="flex w-full items-center gap-2"
+          onSubmit={handleAddPost}
+        >
+          <CreatePostField
+            placeholder="What's on your mind?"
+            value={postBody}
+            setValue={setPostBody}
+            file={file}
+            setFile={setFile}
+            loading={createLoading}
+            className={
+              postBody && user
+                ? "bg-indigo-600 hover:bg-indigo-700"
+                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+            }
+          />
+        </form>
 
-          <Divider />
-          <div className="flex flex-col gap-4">
-            {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
-          </div>
-
-          {!hasMore && (
-            <p className="mt-4 text-gray-500 dark:text-gray-400">
-              You've reached the end of the posts.
-            </p>
-          )}
-
-          {!loading && data?.getPosts.length === 0 && (
-            <p className="mt-4">No posts available.</p>
-          )}
+        <Divider />
+        <div className="flex flex-col gap-4">
+          {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
         </div>
+
+        {!hasMore && (
+          <p className="mt-4 text-gray-500 dark:text-gray-400">
+            You've reached the end of the posts.
+          </p>
+        )}
+
+        {!loading && data?.getPosts.length === 0 && (
+          <p className="mt-4">No posts available.</p>
+        )}
       </main>
 
       <aside className="hidden w-full max-w-64 py-8 lg:flex">
