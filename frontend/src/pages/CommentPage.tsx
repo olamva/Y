@@ -281,7 +281,7 @@ const CommentPage = () => {
             />
           </form>
         ) : "parentID" in reply ? (
-          parentPost && (
+          (
             <PostWithReply
               replyDoesntRedirect
               post={parentPost}

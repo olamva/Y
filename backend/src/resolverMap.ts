@@ -323,7 +323,7 @@ export const resolvers: IResolvers = {
     },
     deletePost: async (_, { id }, context) => {
       if (!context.user) {
-        throw new AuthenticationError('You must be logged in to create a comment');
+        throw new AuthenticationError('You must be logged in to delete a post');
       }
 
       const user = await User.findById(context.user.id);
@@ -349,11 +349,9 @@ export const resolvers: IResolvers = {
           }
         }
 
-        await Comment.deleteMany({ parentID: id });
-
         return deletedPost;
       } catch (err) {
-        throw new Error(`Error deleting post and its comments: ${(err as Error).message}`);
+        throw new Error(`Error deleting post: ${(err as Error).message}`);
       }
     },
     deleteComment: async (_, { id, parentID, parentType }, context) => {

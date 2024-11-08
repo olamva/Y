@@ -242,11 +242,9 @@ const Profile = () => {
                     {comments.map((comment) => (
                       <PostWithReply
                         key={comment.id}
-                        post={
-                          parentPosts.find(
-                            (post) => post.id === comment.parentID,
-                          ) ?? parentPosts[0]
-                        }
+                        post={parentPosts.find(
+                          (post) => post.id === comment.parentID,
+                        )}
                         reply={comment}
                       />
                     ))}
