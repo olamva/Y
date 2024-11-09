@@ -70,7 +70,6 @@ const Comment = ({
     try {
       await deleteComment();
       if (redirectToParentOnDelete) {
-        alert("redirectin");
         window.location.href = `/project2/${comment.parentType}/${comment.parentID}`;
       }
     } catch (error) {

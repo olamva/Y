@@ -15,7 +15,7 @@ interface PostContentProps {
   toggleLike: (e: MouseEvent<HTMLButtonElement>) => void;
   isLiked: boolean;
   amtLikes: number;
-  handleDelete: (e: MouseEvent<HTMLButtonElement>) => Promise<void>;
+  handleDelete: (e: MouseEvent | TouchEvent) => Promise<void>;
   deleteLoading: boolean;
   deleteError: ApolloError | undefined;
   maxWidth?: string;
@@ -57,6 +57,7 @@ const PostContent = ({
     <article
       className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} ${maxWidth !== undefined ? maxWidth : "max-w-xl"} ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         if (!doesntRedirect) {
           document.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}`;
@@ -115,7 +116,11 @@ const PostContent = ({
             {user &&
               (user.username === post.author || user.username === "admin") && (
                 <button
-                  onClick={handleDelete}
+                  onClick={(e: MouseEvent | TouchEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDelete(e);
+                  }}
                   className="text-gray-500 outline-none hover:text-red-500"
                   aria-label="Delete post"
                   disabled={deleteLoading}
