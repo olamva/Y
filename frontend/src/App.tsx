@@ -1,16 +1,15 @@
 import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
+import FollowButton from "@/components/FollowButton";
 import Post from "@/components/Post/Post";
+import Avatar from "@/components/Profile/Avatar";
+import Divider from "@/components/ui/Divider";
 import { PostType, UserType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
+import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Divider from "./components/ui/Divider";
-import Avatar from "./components/Profile/Avatar";
-import FollowButton from "./components/FollowButton";
-import Divider from "./components/ui/Divider";
-import { GET_USERS } from "./queries/user";
 // import { Users } from "lucide-react";
 
 const PAGE_SIZE = 10;

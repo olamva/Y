@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+import Avatar from "@/components/Profile/Avatar";
 import { UserType } from "@/lib/types";
-import Avatar from "./Profile/Avatar";
+import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 interface Props {
   isOpen: boolean;
