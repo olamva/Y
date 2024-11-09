@@ -467,7 +467,6 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      // Check if the user is the author or admin
       if (!user.postIds.includes(id) && user.username !== 'admin') {
         throw new AuthenticationError('You are not authorized to delete this post');
       }
@@ -505,7 +504,6 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      // Check if the user is the author or admin
       if (!user.commentIds.includes(id) && user.username !== 'admin') {
         throw new AuthenticationError('You are not authorized to delete this comment');
       }
@@ -562,7 +560,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return await post.populate('author'); // Populate author field before returning
+      return await post.populate('author');
     },
 
     unlikePost: async (_, { postID }, context) => {
@@ -588,7 +586,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return await post.populate('author'); // Populate author field before returning
+      return await post.populate('author');
     },
 
     likeComment: async (_, { id }, context) => {
@@ -613,7 +611,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return await comment.populate('author'); // Populate author field before returning
+      return await comment.populate('author');
     },
 
     unlikeComment: async (_, { id }, context) => {
@@ -639,7 +637,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return await comment.populate('author'); // Populate author field before returning
+      return await comment.populate('author');
     },
 
     followUser: async (_, { username }, context) => {
