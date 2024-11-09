@@ -1,5 +1,5 @@
 import { useAuth } from "@/components/AuthContext";
-import Avatar from "@/components/Avatar";
+import Avatar from "@/components/Profile/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import { FormEvent, useState } from "react";
@@ -51,7 +51,7 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               {user && (
                 <div className="mr-2">
-                  <Avatar username={user.username} large={false} />{" "}
+                  <Avatar user={user} large={false} />{" "}
                 </div>
               )}
               {user ? (

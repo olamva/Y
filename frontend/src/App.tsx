@@ -6,7 +6,8 @@ import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Avatar from "./components/Avatar";
+import Divider from "./components/ui/Divider";
+import Avatar from "./components/Profile/Avatar";
 import FollowButton from "./components/FollowButton";
 import Divider from "./components/ui/Divider";
 import { GET_USERS } from "./queries/user";
@@ -170,15 +171,15 @@ const HomePage = () => {
             <a
               key={recommendedUser.id}
               href={`/project2/user/${recommendedUser.username}`}
-              className="bg-white-100 w-full rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
+              className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
             >
-              <div className="flex flex-row items-center gap-2">
-                <Avatar username={recommendedUser.username} noHref />
+              <div className="flex w-fit flex-row items-center gap-2">
+                <Avatar user={recommendedUser} noHref />
                 <h1>{recommendedUser.username}</h1>
-                {user?.username !== recommendedUser.username && (
-                  <FollowButton targetUsername={recommendedUser.username} />
-                )}
               </div>
+              {user?.username !== recommendedUser.username && (
+                <FollowButton targetUsername={recommendedUser.username} />
+              )}
             </a>
           ))}
           {/* TODO make a search user page */}

@@ -29,4 +29,6 @@ export type UserType = {
   commentIds: string[];
   followers: UserType[];
   following: UserType[];
+  profilePicture?: string;
+  backgroundPicture?: string;
 };

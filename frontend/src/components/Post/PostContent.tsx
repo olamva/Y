@@ -1,5 +1,5 @@
 import { useAuth } from "@/components/AuthContext";
-import Avatar from "@/components/Avatar";
+import Avatar from "@/components/Profile/Avatar";
 import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
 import { formatTimestamp } from "@/lib/dateUtils";

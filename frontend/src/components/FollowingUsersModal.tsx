@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { UserType } from "@/lib/types";
-import Avatar from "./Avatar";
+import Avatar from "./Profile/Avatar";
 
 interface Props {
   isOpen: boolean;
@@ -66,7 +66,7 @@ const FollowingUsersModal = ({ isOpen, onClose, title, users }: Props) => {
                   href={`/project2/user/${user.username}`}
                   className="flex items-center space-x-2 hover:scale-110"
                 >
-                  <Avatar username={user.username} />
+                  <Avatar user={user} />
                   <span>{user.username}</span>
                 </a>
               </li>
