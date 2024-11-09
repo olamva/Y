@@ -703,9 +703,9 @@ export const resolvers: IResolvers = {
     __resolveType(parent: { body?: string; author?: Types.ObjectId; parentID?: string }) {
       if (parent.body && parent.author) {
         if (parent.parentID) {
-          return 'Comment'; // Return 'Comment' type for comments
+          return 'Comment';
         }
-        return 'Post'; // Return 'Post' type for posts
+        return 'Post';
       }
       return null;
     },
@@ -713,10 +713,10 @@ export const resolvers: IResolvers = {
 
   User: {
     followers: async (parent) => {
-      return await User.find({ id: { $in: parent.followers } });
+      return await User.find({ _id: { $in: parent.followers } });
     },
     following: async (parent) => {
-      return await User.find({ id: { $in: parent.following } });
+      return await User.find({ _id: { $in: parent.following } });
     },
   },
 
