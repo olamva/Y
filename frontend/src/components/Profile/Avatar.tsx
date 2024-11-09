@@ -1,80 +1,80 @@
-import { useQuery } from "@apollo/client"; // Ensure you have Apollo Client set up
-import { UserType } from "@/lib/types";
-import { GET_USER_QUERY } from "@/queries/user";
+import { useState, useEffect } from "react";
 
 interface AvatarProps {
   large?: boolean;
   noHref?: boolean;
   disableHover?: boolean;
-  user?: UserType;
-  username?: string;
+  profilePic?: string;
+  username: string;
 }
 
 const Avatar = ({
-  user: propUser,
   large = false,
   disableHover = false,
   noHref = false,
+  profilePic,
   username,
 }: AvatarProps) => {
-  const { data, loading, error } = useQuery(GET_USER_QUERY, {
-    variables: { username },
-    skip: !!propUser || !username,
-  });
-
-  const fetchedUser: UserType | undefined = data?.getUser;
-  const user = propUser || fetchedUser;
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    console.error("Error fetching user:", error);
-    return <div>Error loading avatar</div>;
-  }
-
-  if (!user) {
-    return (
-      <div
-        className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-all ${
-          disableHover ? "" : "hover:scale-105"
-        } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${
-          large ? "size-24 md:size-36" : "size-8"
-        }`}
-      >
-        <p className={large ? "text-4xl md:text-7xl" : ""}>?</p>
-      </div>
-    );
-  }
-
-  const resolvedUsername = user.username;
   const Tag = noHref ? "div" : "a";
-  const tagProps = noHref ? {} : { href: `/project2/user/${resolvedUsername}` };
+  const tagProps = noHref
+    ? {}
+    : { href: `/project2/user/${encodeURIComponent(username)}` };
   const BACKEND_URL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
+  const supportedExtensions = ["png", "jpg", "jpeg", "gif"];
+  const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
+  const [hasImage, setHasImage] = useState(true);
+  const [isValidUsername, setIsValidUsername] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (!username || username.trim() === "") {
+      setIsValidUsername(false);
+    } else {
+      setIsValidUsername(true);
+      setCurrentExtensionIndex(0);
+      setHasImage(true);
+    }
+  }, [username]);
+
+  const handleError = () => {
+    if (currentExtensionIndex < supportedExtensions.length - 1) {
+      setCurrentExtensionIndex(currentExtensionIndex + 1);
+    } else {
+      setHasImage(false);
+    }
+  };
+
+  const imageUrl = `${BACKEND_URL}${profilePic}.${supportedExtensions[currentExtensionIndex]}`;
+
   return (
     <figure>
-      {user.profilePicture ? (
+      {isValidUsername && hasImage && profilePic ? (
         <Tag {...tagProps}>
           <img
-            src={`${BACKEND_URL}${user.profilePicture}`}
-            alt={`${resolvedUsername}'s profile`}
-            className={`rounded-full ${large ? "size-24 md:size-36" : "size-8"}`}
+            src={imageUrl}
+            alt={`${username}'s profile`}
+            className={`rounded-full object-cover ${
+              large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8"
+            }`}
+            onError={handleError}
+            loading="lazy"
           />
         </Tag>
       ) : (
         <Tag
           {...tagProps}
-          className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-all ${
+          className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
             disableHover ? "" : "hover:scale-105"
           } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${
-            large ? "size-24 md:size-36" : "size-8"
+            large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8"
           }`}
+          aria-label={`${isValidUsername ? username : "Default"}'s avatar`}
         >
-          <p className={large ? "text-4xl md:text-7xl" : ""}>
-            {resolvedUsername[0].toUpperCase()}
+          <p className={large ? "text-4xl md:text-7xl" : "text-base"}>
+            {isValidUsername && username
+              ? username.charAt(0).toUpperCase()
+              : "U"}
           </p>
         </Tag>
       )}
