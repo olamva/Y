@@ -23,59 +23,70 @@ const Avatar = ({
 
   const supportedExtensions = ["png", "jpg", "jpeg", "gif"];
   const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
-  const [hasImage, setHasImage] = useState(true);
-  const [isValidUsername, setIsValidUsername] = useState<boolean>(true);
+  const [hasImage, setHasImage] = useState(!!user.profilePicture);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    if (!user.username || user.username.trim() === "") {
-      setIsValidUsername(false);
-    } else {
-      setIsValidUsername(true);
-      setCurrentExtensionIndex(0);
-      setHasImage(true);
-    }
-  }, [user.username]);
+  const profilePictureHasExtension = /\.(png|jpg|jpeg|gif)$/.test(
+    user.profilePicture || "",
+  );
+
+  const imageUrl = user.profilePicture
+    ? profilePictureHasExtension
+      ? `${BACKEND_URL}${user.profilePicture}`
+      : `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}`
+    : "";
 
   const handleError = () => {
     if (currentExtensionIndex < supportedExtensions.length - 1) {
-      setCurrentExtensionIndex(currentExtensionIndex + 1);
+      setCurrentExtensionIndex((prevIndex) => prevIndex + 1);
     } else {
       setHasImage(false);
     }
   };
 
-  const imageUrl = `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}`;
+  const handleLoad = () => {
+    setIsLoaded(true);
+  };
+
+  useEffect(() => {
+    setCurrentExtensionIndex(0);
+    setHasImage(!!user.profilePicture);
+    setIsLoaded(false);
+  }, [user.profilePicture]);
+
+  const sizeClasses = large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8";
+
+  const FirstLetterAvatar = () => (
+    <Tag
+      {...tagProps}
+      className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
+        disableHover ? "" : "hover:scale-105"
+      } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${sizeClasses}`}
+      aria-label={`${user.username}'s profile`}
+    >
+      <p className={large ? "text-4xl md:text-7xl" : "text-base"}>
+        {user.username && user.username.trim().length > 0
+          ? user.username.charAt(0).toUpperCase()
+          : "U"}
+      </p>
+    </Tag>
+  );
 
   return (
     <figure>
-      {isValidUsername && hasImage && user.profilePicture ? (
+      {hasImage && isLoaded ? (
         <Tag {...tagProps}>
           <img
             src={imageUrl}
             alt={`${user.username}'s profile`}
-            className={`rounded-full object-cover ${
-              large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8"
-            }`}
+            className={`rounded-full object-cover ${sizeClasses} ${isLoaded ? "visible" : "invisible"}`}
             onError={handleError}
+            onLoad={handleLoad}
             loading="lazy"
           />
         </Tag>
       ) : (
-        <Tag
-          {...tagProps}
-          className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
-            disableHover ? "" : "hover:scale-105"
-          } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${
-            large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8"
-          }`}
-          aria-label={`${isValidUsername ? user.username : "Default"}'s avatar`}
-        >
-          <p className={large ? "text-4xl md:text-7xl" : "text-base"}>
-            {isValidUsername && user.username
-              ? user.username.charAt(0).toUpperCase()
-              : "U"}
-          </p>
-        </Tag>
+        <FirstLetterAvatar />
       )}
     </figure>
   );

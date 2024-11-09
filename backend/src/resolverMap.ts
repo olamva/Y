@@ -237,7 +237,7 @@ export const resolvers: IResolvers = {
 
       if (file) {
         try {
-          const result = await uploadFile(file);
+          const result = await uploadFile(file, user.username);
           user.profilePicture = result.url;
         } catch (err) {
           throw new Error('Error uploading file');

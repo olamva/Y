@@ -68,7 +68,7 @@ const PostContent = ({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Avatar user={post.author} />
-            <a href={`/project2/user/${post.author}`}>
+            <a href={`/project2/user/${post.author.username}`}>
               <p className="font-mono underline-offset-4 hover:underline">
                 <span className="font-sans">@</span>
                 {post.author.username}
