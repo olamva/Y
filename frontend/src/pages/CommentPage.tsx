@@ -63,7 +63,7 @@ const CommentPage = () => {
 
   useEffect(() => {
     if (!user || !reply || !editing) return;
-    if (user.username !== reply?.author) {
+    if (user.username !== reply?.author.username) {
       window.location.href = `/project2/reply/${id}`;
     }
   }, [user, editing, id, reply]);
