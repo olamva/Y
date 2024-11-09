@@ -56,12 +56,14 @@ const Avatar = ({
 
   const sizeClasses = large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8";
 
+  const containerClasses = `flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
+    disableHover ? "" : "hover:scale-105"
+  } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${sizeClasses} overflow-hidden`;
+
   const FirstLetterAvatar = () => (
     <Tag
       {...tagProps}
-      className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
-        disableHover ? "" : "hover:scale-105"
-      } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${sizeClasses}`}
+      className={containerClasses}
       aria-label={`${user.username}'s profile`}
     >
       <p className={large ? "text-4xl md:text-7xl" : "text-base"}>
@@ -75,11 +77,11 @@ const Avatar = ({
   return (
     <figure>
       {hasImage && isLoaded ? (
-        <Tag {...tagProps}>
+        <Tag {...tagProps} className={containerClasses}>
           <img
             src={imageUrl}
             alt={`${user.username}'s profile`}
-            className={`rounded-full object-cover ${sizeClasses} ${isLoaded ? "visible" : "invisible"}`}
+            className="h-full w-full object-cover"
             onError={handleError}
             onLoad={handleLoad}
             loading="lazy"

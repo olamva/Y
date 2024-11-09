@@ -6,7 +6,11 @@ export const SEARCH_POSTS = gql`
       ... on Post {
         id
         body
-        author
+        author {
+          id
+          username
+          profilePicture
+        }
         amtLikes
         amtComments
         createdAt

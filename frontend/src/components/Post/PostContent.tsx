@@ -55,7 +55,11 @@ const PostContent = ({
 
   return (
     <article
-      className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} ${maxWidth !== undefined ? maxWidth : "max-w-xl"} ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${
+        disableBottomMargin ? "" : "mb-2"
+      } ${disableTopMargin ? "" : "mt-2"} ${
+        maxWidth !== undefined ? maxWidth : "max-w-xl"
+      } ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -68,7 +72,12 @@ const PostContent = ({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Avatar user={post.author} />
-            <a href={`/project2/user/${post.author.username}`}>
+            <a
+              href={`/project2/user/${post.author.username}`}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <p className="font-mono underline-offset-4 hover:underline">
                 <span className="font-sans">@</span>
                 {post.author.username}

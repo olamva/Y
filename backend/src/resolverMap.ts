@@ -1,5 +1,3 @@
-// resolvers/index.ts
-
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { GraphQLUpload } from 'graphql-upload-minimal';
@@ -68,7 +66,7 @@ export const resolvers: IResolvers = {
     },
     getPostsByIds: async (_, { ids }) => {
       try {
-        return await Post.find({ _id: { $in: ids } })
+        return await Post.find({ id: { $in: ids } })
           .sort({ createdAt: -1 })
           .populate('author');
       } catch (err) {
@@ -87,7 +85,7 @@ export const resolvers: IResolvers = {
 
     getCommentsByIds: async (_, { ids }) => {
       try {
-        return await Comment.find({ _id: { $in: ids } })
+        return await Comment.find({ id: { $in: ids } })
           .sort({ createdAt: -1 })
           .populate('author');
       } catch (err) {
@@ -95,12 +93,17 @@ export const resolvers: IResolvers = {
       }
     },
 
-    searchPosts: async (_, { query, page }) => {
+    searchPosts: async (_: any, { query, page }: { query: string; page: string }) => {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }
+
       const POSTS_PER_PAGE = 10;
-      const skip = (parseInt(page) - 1) * POSTS_PER_PAGE;
+      const pageNumber = parseInt(page, 10);
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer');
+      }
+      const skip = (pageNumber - 1) * POSTS_PER_PAGE;
 
       try {
         const posts = await Post.aggregate([
@@ -109,48 +112,38 @@ export const resolvers: IResolvers = {
               from: 'users',
               localField: 'author',
               foreignField: '_id',
-              as: 'author',
+              as: 'authorDetails',
             },
           },
-          {
-            $unwind: '$author',
-          },
+          { $unwind: '$authorDetails' },
           {
             $match: {
               $or: [
                 { body: { $regex: query, $options: 'i' } },
-                { 'author.username': { $regex: query, $options: 'i' } },
+                { 'authorDetails.username': { $regex: query, $options: 'i' } },
               ],
             },
           },
-          {
-            $sort: { createdAt: -1 },
-          },
-          {
-            $skip: skip,
-          },
-          {
-            $limit: POSTS_PER_PAGE,
-          },
+          { $sort: { createdAt: -1 } },
+          { $skip: skip },
+          { $limit: POSTS_PER_PAGE },
           {
             $project: {
-              originalBody: 1,
+              id: '$_id',
               body: 1,
+              originalBody: 1,
+              author: '$authorDetails',
               amtLikes: 1,
               amtComments: 1,
               createdAt: 1,
               imageUrl: 1,
-              author: {
-                _id: '$author._id',
-                username: '$author.username',
-                profilePicture: '$author.profilePicture',
-              },
             },
           },
         ]);
 
         return posts;
       } catch (err) {
+        console.error('Search Posts Error:', err);
         throw new Error('Error performing search');
       }
     },
@@ -206,7 +199,7 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        const newPost = new Post({ body, author: user._id, imageUrl });
+        const newPost = new Post({ body, author: user.id, imageUrl });
         const savedPost = await newPost.save();
 
         user.postIds.push(savedPost.id);
@@ -441,7 +434,7 @@ export const resolvers: IResolvers = {
       try {
         const newComment = new Comment({
           body,
-          author: user._id, // Set author as ObjectId
+          author: user.id,
           parentID,
           parentType,
           imageUrl,
@@ -492,8 +485,7 @@ export const resolvers: IResolvers = {
           }
         }
 
-        // Remove the post ID from the user's postIds
-        user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost._id));
+        user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
         await user.save();
 
         return deletedPost;
@@ -531,16 +523,14 @@ export const resolvers: IResolvers = {
           }
         }
 
-        // Decrement amtComments on parent
         if (parentType === 'post') {
           await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
         } else {
           await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
         }
 
-        // Remove the comment ID from the user's commentIds
         user.commentIds = user.commentIds.filter(
-          (commentId) => String(commentId) !== String(deletedComment._id)
+          (commentId) => String(commentId) !== String(deletedComment.id)
         );
         await user.save();
 
@@ -723,10 +713,10 @@ export const resolvers: IResolvers = {
 
   User: {
     followers: async (parent) => {
-      return await User.find({ _id: { $in: parent.followers } });
+      return await User.find({ id: { $in: parent.followers } });
     },
     following: async (parent) => {
-      return await User.find({ _id: { $in: parent.following } });
+      return await User.find({ id: { $in: parent.following } });
     },
   },
 
