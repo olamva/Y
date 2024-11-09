@@ -1,11 +1,11 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
+import { GraphQLUpload } from 'graphql-upload-minimal';
 import { signToken } from './auth';
 import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
-import { GraphQLUpload } from 'graphql-upload-minimal';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
@@ -68,6 +68,14 @@ export const resolvers: IResolvers = {
       }
     },
 
+    getComment: async (_, { id }) => {
+      try {
+        return await Comment.findById(id);
+      } catch (err) {
+        throw new Error('Error fetching comment by ID');
+      }
+    },
+
     getCommentsByIds: async (_, { ids }) => {
       try {
         return await Comment.find({ _id: { $in: ids } }).sort({ createdAt: -1 });
@@ -105,6 +113,14 @@ export const resolvers: IResolvers = {
       return await User.find({
         username: { $regex: query, $options: 'i' },
       }).sort({ createdAt: -1 });
+    },
+    getParent: async (_, { parentID, parentType }) => {
+      try {
+        if (parentType === 'post') return await Post.findById(parentID);
+        else return await Comment.findById(parentID);
+      } catch (err) {
+        throw new Error('Error fetching post');
+      }
     },
   },
 
@@ -259,6 +275,53 @@ export const resolvers: IResolvers = {
 
       return post;
     },
+    editComment: async (_, { id, body, file }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to edit a post');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const comment = await Comment.findById(id);
+      if (!comment) {
+        throw new UserInputError('Comment not found');
+      }
+
+      if (comment.author !== user.username) {
+        throw new AuthenticationError('You are not authorized to edit this comment');
+      }
+
+      if (body.length > 281) {
+        throw new UserInputError('Comment body exceeds 281 characters');
+      }
+
+      let imageUrl: string | undefined = undefined;
+
+      if (!file && comment.imageUrl) {
+        imageUrl = comment.imageUrl;
+      }
+
+      if (file) {
+        try {
+          const result = await uploadFile(file);
+          imageUrl = result.url;
+        } catch (err) {
+          throw new Error('Error uploading file');
+        }
+      }
+
+      if (!comment.originalBody) comment.originalBody = comment.body;
+      if (comment.originalBody === body) comment.originalBody = undefined;
+
+      comment.body = body;
+      comment.imageUrl = imageUrl;
+      await comment.save();
+
+      return comment;
+    },
     register: async (_, { username, password }) => {
       const existingUser = await User.findOne({ username });
       if (existingUser) {
@@ -291,7 +354,7 @@ export const resolvers: IResolvers = {
       return token;
     },
 
-    createComment: async (_, { body, parentID, file }, context) => {
+    createComment: async (_, { body, parentID, parentType, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a comment');
       }
@@ -318,9 +381,10 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        const newComment = new Comment({ body, author: user.username, parentID: parentID, imageUrl });
+        const newComment = new Comment({ body, author: user.username, parentID, parentType, imageUrl });
         const savedComment = await newComment.save();
-        await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+        if (parentType === 'post') await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+        else await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
 
         user.commentIds.push(savedComment.id);
         await user.save();
@@ -332,7 +396,7 @@ export const resolvers: IResolvers = {
     },
     deletePost: async (_, { id }, context) => {
       if (!context.user) {
-        throw new AuthenticationError('You must be logged in to create a comment');
+        throw new AuthenticationError('You must be logged in to delete a post');
       }
 
       const user = await User.findById(context.user.id);
@@ -358,14 +422,12 @@ export const resolvers: IResolvers = {
           }
         }
 
-        await Comment.deleteMany({ parentID: id });
-
         return deletedPost;
       } catch (err) {
-        throw new Error(`Error deleting post and its comments: ${(err as Error).message}`);
+        throw new Error(`Error deleting post: ${(err as Error).message}`);
       }
     },
-    deleteComment: async (_, { id }, context) => {
+    deleteComment: async (_, { id, parentID, parentType }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to delete a comment');
       }
@@ -392,8 +454,8 @@ export const resolvers: IResolvers = {
             console.warn(`Failed to delete file: ${deleteResult.message}`);
           }
         }
-
-        await Post.findByIdAndUpdate(deletedComment.parentID, { $inc: { amtComments: -1 } });
+        if (parentType === 'post') await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+        else await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
 
         return deletedComment;
       } catch (err) {
@@ -451,6 +513,58 @@ export const resolvers: IResolvers = {
 
       return post;
     },
+
+    likeComment: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to like a comment');
+      }
+
+      const comment = await Comment.findById(id);
+      if (!comment) {
+        throw new UserInputError('Comment not found');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (!user.likedCommentIds.includes(id)) {
+        comment.amtLikes += 1;
+        user.likedCommentIds.push(id);
+        await comment.save();
+        await user.save();
+      }
+
+      return comment;
+    },
+
+    unlikeComment: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unlike a comment');
+      }
+
+      const comment = await Comment.findById(id);
+      if (!comment) {
+        throw new UserInputError('Comment not found');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const likedIndex = user.likedCommentIds.indexOf(id);
+      if (likedIndex > -1) {
+        comment.amtLikes = Math.max(comment.amtLikes - 1, 0);
+        user.likedCommentIds.splice(likedIndex, 1);
+        await comment.save();
+        await user.save();
+      }
+
+      return comment;
+    },
+
     followUser: async (_, { username }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to follow a user');
@@ -506,6 +620,17 @@ export const resolvers: IResolvers = {
       await user.save();
 
       return personToUnfollow;
+    },
+  },
+  Parent: {
+    __resolveType(parent: { body?: string; author?: string; parentID?: string }) {
+      if (parent.body && parent.author) {
+        if (parent.parentID) {
+          return 'Comment'; // Return 'Comment' type for comments
+        }
+        return 'Post'; // Return 'Post' type for posts
+      }
+      return null;
     },
   },
   User: {

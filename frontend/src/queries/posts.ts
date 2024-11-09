@@ -64,13 +64,6 @@ export const EDIT_POST = gql`
   mutation EditPost($id: ID!, $body: String!, $file: Upload) {
     editPost(id: $id, body: $body, file: $file) {
       id
-      body
-      originalBody
-      author
-      amtLikes
-      amtComments
-      imageUrl
-      createdAt
     }
   }
 `;
@@ -98,6 +91,34 @@ export const UNLIKE_POST = gql`
     unlikePost(postID: $postID) {
       id
       amtLikes
+    }
+  }
+`;
+
+export const GET_PARENT = gql`
+  query GetParent($parentID: ID!, $parentType: String!) {
+    getParent(parentID: $parentID, parentType: $parentType) {
+      ... on Post {
+        id
+        body
+        originalBody
+        author
+        amtLikes
+        amtComments
+        imageUrl
+        createdAt
+      }
+      ... on Comment {
+        id
+        parentID
+        parentType
+        body
+        author
+        amtLikes
+        amtComments
+        createdAt
+        imageUrl
+      }
     }
   }
 `;

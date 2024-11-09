@@ -120,7 +120,7 @@ const Profile = () => {
 
   return (
     <div className="w-full px-5">
-      <BackButton />
+      <BackButton overrideRedirect="/project2/" />
       {loggedInUser && loggedInUser.username === username && (
         <div className="pt-5 text-center">
           <h2 className="mt-2 text-3xl font-bold">
@@ -250,11 +250,9 @@ const Profile = () => {
                     {comments.map((comment) => (
                       <PostWithReply
                         key={comment.id}
-                        post={
-                          parentPosts.find(
-                            (post) => post.id === comment.parentID,
-                          ) ?? parentPosts[0]
-                        }
+                        post={parentPosts.find(
+                          (post) => post.id === comment.parentID,
+                        )}
                         reply={comment}
                       />
                     ))}

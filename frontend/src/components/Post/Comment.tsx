@@ -1,29 +1,43 @@
+import { useAuth } from "@/components/AuthContext";
 import PostContent from "@/components/Post/PostContent";
 import { CommentType } from "@/lib/types";
-import { DELETE_COMMENT } from "@/queries/comments";
+import {
+  DELETE_COMMENT,
+  LIKE_COMMENT,
+  UNLIKE_COMMENT,
+} from "@/queries/comments";
 import { useMutation } from "@apollo/client";
-import { useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface CommentProps {
   comment: CommentType;
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
-  redirects?: boolean;
+  doesntRedirect?: boolean;
+  redirectToParentOnDelete?: boolean;
   maxWidth?: string;
 }
 const Comment = ({
   comment,
   disableTopMargin = false,
   disableBottomMargin = false,
-  redirects = false,
+  doesntRedirect = false,
+  redirectToParentOnDelete = false,
   maxWidth,
 }: CommentProps) => {
+  const { user } = useAuth();
+  const [isLiked, setIsLiked] = useState(false);
+  const [amtLikes, setAmtLikes] = useState(comment.amtLikes);
   const [isDeleted, setIsDeleted] = useState(false);
 
   const [deleteComment, { loading: deleteLoading, error: deleteError }] =
     useMutation(DELETE_COMMENT, {
-      variables: { id: comment.id },
+      variables: {
+        id: comment.id,
+        parentID: comment.parentID,
+        parentType: comment.parentType,
+      },
       update: (cache, { data }) => {
         if (!data) return;
         const deletedComment = data.deleteComment;
@@ -55,8 +69,48 @@ const Comment = ({
 
     try {
       await deleteComment();
+      if (redirectToParentOnDelete) {
+        window.location.href = `/project2/${comment.parentType}/${comment.parentID}`;
+      }
     } catch (error) {
       toast.error(`Error deleting comment: ${(error as Error).message}`);
+    }
+  };
+
+  useEffect(() => {
+    setIsLiked(user?.likedCommentIds.includes(comment.id) ?? false);
+  }, [user?.likedCommentIds, comment.id]);
+
+  const [likeComment] = useMutation(LIKE_COMMENT, {
+    variables: { id: comment.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.likeComment.amtLikes);
+      setIsLiked(true);
+    },
+    onError: (error) => {
+      toast.error(`Error liking comment: ${error.message}`);
+    },
+  });
+
+  const [unlikeComment] = useMutation(UNLIKE_COMMENT, {
+    variables: { id: comment.id },
+    onCompleted: (data) => {
+      setAmtLikes(data.unlikeComment.amtLikes);
+      setIsLiked(false);
+    },
+    onError: (error) => {
+      toast.error(`Error unliking comment: ${error.message}`);
+    },
+  });
+
+  const toggleLike = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (isLiked) {
+      unlikeComment();
+    } else {
+      likeComment();
     }
   };
 
@@ -65,11 +119,14 @@ const Comment = ({
   return (
     <PostContent
       post={comment}
+      isLiked={isLiked}
+      amtLikes={amtLikes}
+      toggleLike={toggleLike}
       handleDelete={handleDelete}
       deleteLoading={deleteLoading}
       deleteError={deleteError}
       className="bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
-      doesntRedirect={!redirects}
+      doesntRedirect={doesntRedirect}
       disableTopMargin={disableTopMargin}
       disableBottomMargin={disableBottomMargin}
       maxWidth={maxWidth}

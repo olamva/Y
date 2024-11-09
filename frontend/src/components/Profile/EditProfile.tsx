@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/components/AuthContext";
 import { UserType } from "@/lib/types";
-import { useMutation } from "@apollo/client";
 import {
-  CHANGE_PROFILE_PICTURE,
   CHANGE_BACKGROUND_PICTURE,
+  CHANGE_PROFILE_PICTURE,
 } from "@/queries/user";
-import toast from "react-hot-toast";
-import { useAuth } from "../AuthContext";
+import { useMutation } from "@apollo/client";
 import { XIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 
 interface Props {
   user: UserType;
