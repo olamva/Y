@@ -25,15 +25,20 @@ const Avatar = ({
   const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
   const [hasImage, setHasImage] = useState(!!user.profilePicture);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [cacheBuster, setCacheBuster] = useState<string>("");
 
   const profilePictureHasExtension = /\.(png|jpg|jpeg|gif)$/.test(
     user.profilePicture || "",
   );
 
+  const generateCacheBuster = () => {
+    return `cb=${new Date().getTime()}`;
+  };
+
   const imageUrl = user.profilePicture
     ? profilePictureHasExtension
-      ? `${BACKEND_URL}${user.profilePicture}`
-      : `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}`
+      ? `${BACKEND_URL}${user.profilePicture}?${cacheBuster}`
+      : `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}?${cacheBuster}`
     : "";
 
   const handleError = () => {
@@ -52,45 +57,46 @@ const Avatar = ({
     setCurrentExtensionIndex(0);
     setHasImage(!!user.profilePicture);
     setIsLoaded(false);
+    setCacheBuster(generateCacheBuster());
   }, [user.profilePicture]);
 
   const sizeClasses = large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8";
 
-  const containerClasses = `flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
+  const containerClasses = `relative flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
     disableHover ? "" : "hover:scale-105"
   } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${sizeClasses} overflow-hidden`;
 
   const FirstLetterAvatar = () => (
-    <Tag
-      {...tagProps}
-      className={containerClasses}
-      aria-label={`${user.username}'s profile`}
-    >
+    <div className="absolute inset-0 flex items-center justify-center">
       <p className={large ? "text-4xl md:text-7xl" : "text-base"}>
         {user.username && user.username.trim().length > 0
           ? user.username.charAt(0).toUpperCase()
           : "U"}
       </p>
-    </Tag>
+    </div>
   );
 
   return (
-    <figure>
-      {hasImage && isLoaded ? (
-        <Tag {...tagProps} className={containerClasses}>
-          <img
-            src={imageUrl}
-            alt={`${user.username}'s profile`}
-            className="h-full w-full object-cover"
-            onError={handleError}
-            onLoad={handleLoad}
-            loading="lazy"
-          />
-        </Tag>
-      ) : (
-        <FirstLetterAvatar />
+    <Tag
+      {...tagProps}
+      className={containerClasses}
+      aria-label={`${user.username}'s profile`}
+    >
+      {hasImage && (
+        <img
+          src={imageUrl}
+          alt={`${user.username}'s profile`}
+          className={`h-full w-full object-cover transition-opacity duration-500 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          onError={handleError}
+          onLoad={handleLoad}
+          loading="lazy"
+        />
       )}
-    </figure>
+      {hasImage && !isLoaded && <FirstLetterAvatar />}
+      {!hasImage && <FirstLetterAvatar />}
+    </Tag>
   );
 };
 
