@@ -94,3 +94,31 @@ export const UNLIKE_POST = gql`
     }
   }
 `;
+
+export const GET_PARENT = gql`
+  query GetParent($parentID: ID!, $parentType: String!) {
+    getParent(parentID: $parentID, parentType: $parentType) {
+      ... on Post {
+        id
+        body
+        originalBody
+        author
+        amtLikes
+        amtComments
+        imageUrl
+        createdAt
+      }
+      ... on Comment {
+        id
+        parentID
+        parentType
+        body
+        author
+        amtLikes
+        amtComments
+        createdAt
+        imageUrl
+      }
+    }
+  }
+`;

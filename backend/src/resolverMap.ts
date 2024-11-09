@@ -114,6 +114,14 @@ export const resolvers: IResolvers = {
         username: { $regex: query, $options: 'i' },
       }).sort({ createdAt: -1 });
     },
+    getParent: async (_, { parentID, parentType }) => {
+      try {
+        if (parentType === 'post') return await Post.findById(parentID);
+        else return await Comment.findById(parentID);
+      } catch (err) {
+        throw new Error('Error fetching post');
+      }
+    },
   },
 
   Mutation: {
@@ -547,6 +555,17 @@ export const resolvers: IResolvers = {
       await user.save();
 
       return personToUnfollow;
+    },
+  },
+  Parent: {
+    __resolveType(parent: { body?: string; author?: string; parentID?: string }) {
+      if (parent.body && parent.author) {
+        if (parent.parentID) {
+          return 'Comment'; // Return 'Comment' type for comments
+        }
+        return 'Post'; // Return 'Post' type for posts
+      }
+      return null;
     },
   },
   User: {

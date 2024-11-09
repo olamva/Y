@@ -12,7 +12,7 @@ import {
   GET_COMMENT,
   GET_COMMENTS,
 } from "@/queries/comments";
-import { GET_POST } from "@/queries/posts";
+import { GET_PARENT } from "@/queries/posts";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -51,39 +51,15 @@ const CommentPage = () => {
 
   const reply = postData?.getComment;
 
-  let parentPostData:
-    | { getPost?: PostType; getComment?: CommentType }
-    | undefined;
-  let parentPostLoading: boolean | undefined;
-  let parentPostError: Error | undefined;
+  const {
+    data: parentPostData,
+    loading: parentPostLoading,
+    error: parentPostError,
+  } = useQuery<{ getParent: PostType | CommentType }>(GET_PARENT, {
+    variables: { parentID: reply?.parentID, parentType: reply?.parentType },
+  });
 
-  if (reply?.parentType === "post") {
-    const {
-      data: tempPostData,
-      loading: tempPostLoading,
-      error: tempPostError,
-    } = useQuery<{ getPost: PostType }>(GET_POST, {
-      variables: { id: reply.parentID },
-    });
-
-    parentPostData = tempPostData;
-    parentPostLoading = tempPostLoading;
-    parentPostError = tempPostError;
-  } else {
-    const {
-      data: tempCommentData,
-      loading: tempCommentLoading,
-      error: tempCommentError,
-    } = useQuery<{ getComment: CommentType }>(GET_COMMENT, {
-      variables: { id: reply?.parentID },
-    });
-
-    parentPostData = tempCommentData;
-    parentPostLoading = tempCommentLoading;
-    parentPostError = tempCommentError;
-  }
-
-  const parentPost = parentPostData?.getPost || parentPostData?.getComment;
+  const parentPost = parentPostData?.getParent;
 
   useEffect(() => {
     if (!user || !reply || !editing) return;
@@ -281,13 +257,7 @@ const CommentPage = () => {
             />
           </form>
         ) : "parentID" in reply ? (
-          (
-            <PostWithReply
-              replyDoesntRedirect
-              post={parentPost}
-              reply={reply}
-            />
-          )
+          <PostWithReply replyDoesntRedirect post={parentPost} reply={reply} />
         ) : (
           <Post post={reply} doesntRedirect />
         )}
