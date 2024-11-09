@@ -1,84 +1,102 @@
-import { useQuery } from "@apollo/client"; // Ensure you have Apollo Client set up
 import { UserType } from "@/lib/types";
-import { GET_USER_QUERY } from "@/queries/user";
+import { useState, useEffect } from "react";
 
 interface AvatarProps {
   large?: boolean;
   noHref?: boolean;
   disableHover?: boolean;
-  user?: UserType;
-  username?: string;
+  user: UserType;
 }
 
 const Avatar = ({
-  user: propUser,
   large = false,
   disableHover = false,
   noHref = false,
-  username,
+  user,
 }: AvatarProps) => {
-  const { data, loading, error } = useQuery(GET_USER_QUERY, {
-    variables: { username },
-    skip: !!propUser || !username,
-  });
-
-  const fetchedUser: UserType | undefined = data?.getUser;
-  const user = propUser || fetchedUser;
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    console.error("Error fetching user:", error);
-    return <div>Error loading avatar</div>;
-  }
-
-  if (!user) {
-    return (
-      <div
-        className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-all ${
-          disableHover ? "" : "hover:scale-105"
-        } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${
-          large ? "size-24 md:size-36" : "size-8"
-        }`}
-      >
-        <p className={large ? "text-4xl md:text-7xl" : ""}>?</p>
-      </div>
-    );
-  }
-
-  const resolvedUsername = user.username;
   const Tag = noHref ? "div" : "a";
-  const tagProps = noHref ? {} : { href: `/project2/user/${resolvedUsername}` };
+  const tagProps = noHref
+    ? {}
+    : { href: `/project2/user/${encodeURIComponent(user.username)}` };
   const BACKEND_URL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
+  const supportedExtensions = ["png", "jpg", "jpeg", "gif"];
+  const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
+  const [hasImage, setHasImage] = useState(!!user.profilePicture);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [cacheBuster, setCacheBuster] = useState<string>("");
+
+  const profilePictureHasExtension = /\.(png|jpg|jpeg|gif)$/.test(
+    user.profilePicture || "",
+  );
+
+  const generateCacheBuster = () => {
+    return `cb=${new Date().getTime()}`;
+  };
+
+  const imageUrl = user.profilePicture
+    ? profilePictureHasExtension
+      ? `${BACKEND_URL}${user.profilePicture}?${cacheBuster}`
+      : `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}?${cacheBuster}`
+    : "";
+
+  const handleError = () => {
+    if (currentExtensionIndex < supportedExtensions.length - 1) {
+      setCurrentExtensionIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setHasImage(false);
+    }
+  };
+
+  const handleLoad = () => {
+    setIsLoaded(true);
+  };
+
+  useEffect(() => {
+    setCurrentExtensionIndex(0);
+    setHasImage(!!user.profilePicture);
+    setIsLoaded(false);
+    setCacheBuster(generateCacheBuster());
+  }, [user.profilePicture]);
+
+  const sizeClasses = large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8";
+
+  const containerClasses = `relative flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
+    disableHover ? "" : "hover:scale-105"
+  } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${sizeClasses} overflow-hidden`;
+
+  const FirstLetterAvatar = () => (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <p className={large ? "text-4xl md:text-7xl" : "text-base"}>
+        {user.username && user.username.trim().length > 0
+          ? user.username.charAt(0).toUpperCase()
+          : "U"}
+      </p>
+    </div>
+  );
+
   return (
-    <figure>
-      {user.profilePicture ? (
-        <Tag {...tagProps}>
-          <img
-            src={`${BACKEND_URL}${user.profilePicture}`}
-            alt={`${resolvedUsername}'s profile`}
-            className={`rounded-full ${large ? "size-24 md:size-36" : "size-8"}`}
-          />
-        </Tag>
-      ) : (
-        <Tag
-          {...tagProps}
-          className={`flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-all ${
-            disableHover ? "" : "hover:scale-105"
-          } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${
-            large ? "size-24 md:size-36" : "size-8"
+    <Tag
+      {...tagProps}
+      className={containerClasses}
+      aria-label={`${user.username}'s profile`}
+    >
+      {hasImage && (
+        <img
+          src={imageUrl}
+          alt={`${user.username}'s profile`}
+          className={`h-full w-full object-cover transition-opacity duration-500 ${
+            isLoaded ? "opacity-100" : "opacity-0"
           }`}
-        >
-          <p className={large ? "text-4xl md:text-7xl" : ""}>
-            {resolvedUsername[0].toUpperCase()}
-          </p>
-        </Tag>
+          onError={handleError}
+          onLoad={handleLoad}
+          loading="lazy"
+        />
       )}
-    </figure>
+      {hasImage && !isLoaded && <FirstLetterAvatar />}
+      {!hasImage && <FirstLetterAvatar />}
+    </Tag>
   );
 };
 

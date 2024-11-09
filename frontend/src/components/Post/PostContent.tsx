@@ -55,7 +55,11 @@ const PostContent = ({
 
   return (
     <article
-      className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${disableBottomMargin ? "" : "mb-2"} ${disableTopMargin ? "" : "mt-2"} ${maxWidth !== undefined ? maxWidth : "max-w-xl"} ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${
+        disableBottomMargin ? "" : "mb-2"
+      } ${disableTopMargin ? "" : "mt-2"} ${
+        maxWidth !== undefined ? maxWidth : "max-w-xl"
+      } ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -67,15 +71,20 @@ const PostContent = ({
       <header className="flex flex-col gap-1">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Avatar username={post.author} />
-            <a href={`/project2/user/${post.author}`}>
+            <Avatar user={post.author} />
+            <a
+              href={`/project2/user/${post.author.username}`}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <p className="font-mono underline-offset-4 hover:underline">
                 <span className="font-sans">@</span>
-                {post.author}
+                {post.author.username}
               </p>
             </a>
-            {post.author !== user?.username && (
-              <FollowButton targetUsername={post.author} />
+            {post.author.username !== user?.username && (
+              <FollowButton targetUsername={post.author.username} />
             )}
             <p>·</p>
             <p>{formatTimestamp(post.createdAt)}</p>
@@ -100,7 +109,7 @@ const PostContent = ({
           </div>
 
           <div className="flex gap-2">
-            {user && user.username === post.author && (
+            {user && user.username === post.author.username && (
               <button
                 className="text-gray-500 outline-none hover:text-blue-500"
                 aria-label="Edit post"
@@ -114,7 +123,8 @@ const PostContent = ({
               </button>
             )}
             {user &&
-              (user.username === post.author || user.username === "admin") && (
+              (user.username === post.author.username ||
+                user.username === "admin") && (
                 <button
                   onClick={(e: MouseEvent | TouchEvent) => {
                     e.preventDefault();

@@ -6,16 +6,18 @@ import { Comment } from './models/comment';
 import { Post } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
+import mongoose, { Types } from 'mongoose';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
+
   Query: {
     getPosts: async (_, { page }) => {
       const POSTS_PER_PAGE = 10;
       const skip = (page - 1) * POSTS_PER_PAGE;
 
       try {
-        return await Post.find().sort({ createdAt: -1 }).skip(skip).limit(POSTS_PER_PAGE);
+        return await Post.find().sort({ createdAt: -1 }).skip(skip).limit(POSTS_PER_PAGE).populate('author');
       } catch (err) {
         throw new Error('Error fetching posts');
       }
@@ -35,7 +37,8 @@ export const resolvers: IResolvers = {
     },
     getPost: async (_, { id }) => {
       try {
-        return await Post.findById(id);
+        const post = await Post.findById(id).populate('author');
+        return post;
       } catch (err) {
         throw new Error('Error fetching post');
       }
@@ -55,14 +58,17 @@ export const resolvers: IResolvers = {
         return await Comment.find({ parentID: postID })
           .sort({ createdAt: -1 })
           .skip(skip)
-          .limit(COMMENTS_PER_PAGE);
+          .limit(COMMENTS_PER_PAGE)
+          .populate('author');
       } catch (err) {
         throw new Error('Error fetching comments');
       }
     },
     getPostsByIds: async (_, { ids }) => {
       try {
-        return await Post.find({ _id: { $in: ids } }).sort({ createdAt: -1 });
+        return await Post.find({ _id: { $in: ids } })
+          .sort({ createdAt: -1 })
+          .populate('author');
       } catch (err) {
         throw new Error('Error fetching posts by IDs');
       }
@@ -70,7 +76,8 @@ export const resolvers: IResolvers = {
 
     getComment: async (_, { id }) => {
       try {
-        return await Comment.findById(id);
+        const comment = await Comment.findById(id).populate('author');
+        return comment;
       } catch (err) {
         throw new Error('Error fetching comment by ID');
       }
@@ -78,7 +85,9 @@ export const resolvers: IResolvers = {
 
     getCommentsByIds: async (_, { ids }) => {
       try {
-        return await Comment.find({ _id: { $in: ids } }).sort({ createdAt: -1 });
+        return await Comment.find({ _id: { $in: ids } })
+          .sort({ createdAt: -1 })
+          .populate('author');
       } catch (err) {
         throw new Error('Error fetching comments by IDs');
       }
@@ -88,38 +97,77 @@ export const resolvers: IResolvers = {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }
+
       const POSTS_PER_PAGE = 10;
-      const skip = (parseInt(page) - 1) * POSTS_PER_PAGE;
+      const pageNumber = parseInt(page, 10);
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer');
+      }
+      const skip = (pageNumber - 1) * POSTS_PER_PAGE;
 
       try {
-        const posts = await Post.find({
-          $or: [{ body: { $regex: query, $options: 'i' } }, { author: { $regex: query, $options: 'i' } }],
-        })
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(POSTS_PER_PAGE);
+        const posts = await Post.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'author',
+              foreignField: '_id',
+              as: 'authorDetails',
+            },
+          },
+          { $unwind: '$authorDetails' },
+          {
+            $match: {
+              $or: [
+                { body: { $regex: query, $options: 'i' } },
+                { 'authorDetails.username': { $regex: query, $options: 'i' } },
+              ],
+            },
+          },
+          { $sort: { createdAt: -1 } },
+          { $skip: skip },
+          { $limit: POSTS_PER_PAGE },
+          {
+            $project: {
+              id: '$_id',
+              body: 1,
+              originalBody: 1,
+              author: '$authorDetails',
+              amtLikes: 1,
+              amtComments: 1,
+              createdAt: 1,
+              imageUrl: 1,
+            },
+          },
+        ]);
 
         return posts;
       } catch (err) {
+        console.error('Search Posts Error:', err);
         throw new Error('Error performing search');
       }
     },
 
-    searchUsers: async (_: any, { query }: { query: string }) => {
+    searchUsers: async (_, { query }) => {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }
 
-      return await User.find({
-        username: { $regex: query, $options: 'i' },
-      }).sort({ createdAt: -1 });
+      try {
+        return await User.find({
+          username: { $regex: query, $options: 'i' },
+        }).sort({ createdAt: -1 });
+      } catch (err) {
+        throw new Error('Error performing user search');
+      }
     },
+
     getParent: async (_, { parentID, parentType }) => {
       try {
-        if (parentType === 'post') return await Post.findById(parentID);
-        else return await Comment.findById(parentID);
+        if (parentType === 'post') return await Post.findById(parentID).populate('author');
+        else return await Comment.findById(parentID).populate('author');
       } catch (err) {
-        throw new Error('Error fetching post');
+        throw new Error('Error fetching parent');
       }
     },
   },
@@ -151,13 +199,13 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        const newPost = new Post({ body, author: user.username, imageUrl });
+        const newPost = new Post({ body, author: user.id, imageUrl });
         const savedPost = await newPost.save();
 
         user.postIds.push(savedPost.id);
         await user.save();
 
-        return savedPost;
+        return await savedPost.populate('author');
       } catch (err) {
         throw new Error('Error creating post');
       }
@@ -182,7 +230,7 @@ export const resolvers: IResolvers = {
 
       if (file) {
         try {
-          const result = await uploadFile(file);
+          const result = await uploadFile(file, user.username);
           user.profilePicture = result.url;
         } catch (err) {
           throw new Error('Error uploading file');
@@ -197,7 +245,7 @@ export const resolvers: IResolvers = {
 
     changeBackgroundPicture: async (_, { file }, context) => {
       if (!context.user) {
-        throw new AuthenticationError('You must be logged in to change profile picture');
+        throw new AuthenticationError('You must be logged in to change background picture');
       }
 
       const user = await User.findById(context.user.id);
@@ -243,7 +291,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Post not found');
       }
 
-      if (post.author !== user.username) {
+      if (!post.author.equals(user.id)) {
         throw new AuthenticationError('You are not authorized to edit this post');
       }
 
@@ -273,11 +321,12 @@ export const resolvers: IResolvers = {
       post.imageUrl = imageUrl;
       await post.save();
 
-      return post;
+      return await post.populate('author'); // Populate author field before returning
     },
+
     editComment: async (_, { id, body, file }, context) => {
       if (!context.user) {
-        throw new AuthenticationError('You must be logged in to edit a post');
+        throw new AuthenticationError('You must be logged in to edit a comment');
       }
 
       const user = await User.findById(context.user.id);
@@ -290,7 +339,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Comment not found');
       }
 
-      if (comment.author !== user.username) {
+      if (!comment.author.equals(user.id)) {
         throw new AuthenticationError('You are not authorized to edit this comment');
       }
 
@@ -320,8 +369,9 @@ export const resolvers: IResolvers = {
       comment.imageUrl = imageUrl;
       await comment.save();
 
-      return comment;
+      return await comment.populate('author'); // Populate author field before returning
     },
+
     register: async (_, { username, password }) => {
       const existingUser = await User.findOne({ username });
       if (existingUser) {
@@ -341,6 +391,7 @@ export const resolvers: IResolvers = {
       const token = signToken(user);
       return token;
     },
+
     login: async (_, { username, password }) => {
       const user = await User.findOne({ username });
       if (!user) {
@@ -366,7 +417,7 @@ export const resolvers: IResolvers = {
       }
 
       if (body.length > 281) {
-        throw new UserInputError('Post body exceeds 281 characters');
+        throw new UserInputError('Comment body exceeds 281 characters');
       }
 
       let imageUrl = null;
@@ -381,19 +432,30 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        const newComment = new Comment({ body, author: user.username, parentID, parentType, imageUrl });
+        const newComment = new Comment({
+          body,
+          author: user.id,
+          parentID,
+          parentType,
+          imageUrl,
+        });
         const savedComment = await newComment.save();
-        if (parentType === 'post') await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
-        else await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+
+        if (parentType === 'post') {
+          await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+        } else {
+          await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+        }
 
         user.commentIds.push(savedComment.id);
         await user.save();
 
-        return savedComment;
+        return await savedComment.populate('author');
       } catch (err) {
         throw new Error('Error creating comment');
       }
     },
+
     deletePost: async (_, { id }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to delete a post');
@@ -422,11 +484,15 @@ export const resolvers: IResolvers = {
           }
         }
 
+        user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
+        await user.save();
+
         return deletedPost;
       } catch (err) {
         throw new Error(`Error deleting post: ${(err as Error).message}`);
       }
     },
+
     deleteComment: async (_, { id, parentID, parentType }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to delete a comment');
@@ -454,8 +520,17 @@ export const resolvers: IResolvers = {
             console.warn(`Failed to delete file: ${deleteResult.message}`);
           }
         }
-        if (parentType === 'post') await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
-        else await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+
+        if (parentType === 'post') {
+          await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+        } else {
+          await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+        }
+
+        user.commentIds = user.commentIds.filter(
+          (commentId) => String(commentId) !== String(deletedComment.id)
+        );
+        await user.save();
 
         return deletedComment;
       } catch (err) {
@@ -485,7 +560,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return post;
+      return await post.populate('author');
     },
 
     unlikePost: async (_, { postID }, context) => {
@@ -511,7 +586,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return post;
+      return await post.populate('author');
     },
 
     likeComment: async (_, { id }, context) => {
@@ -536,7 +611,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return comment;
+      return await comment.populate('author');
     },
 
     unlikeComment: async (_, { id }, context) => {
@@ -562,7 +637,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      return comment;
+      return await comment.populate('author');
     },
 
     followUser: async (_, { username }, context) => {
@@ -574,7 +649,7 @@ export const resolvers: IResolvers = {
       if (!personToFollow || !user) {
         throw new UserInputError('User not found');
       }
-      if (context.user.username === username) {
+      if (user.username === username) {
         throw new UserInputError('You cannot follow yourself');
       }
 
@@ -583,15 +658,14 @@ export const resolvers: IResolvers = {
       }
 
       personToFollow.followers.push(user.id);
-
       user.following.push(personToFollow.id);
 
       await personToFollow.save();
-
       await user.save();
 
       return personToFollow;
     },
+
     unfollowUser: async (_, { username }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to unfollow a user');
@@ -612,9 +686,9 @@ export const resolvers: IResolvers = {
         throw new UserInputError('You are not following this user');
       }
 
-      user.following = user.following.filter((id) => String(id) !== String(personToUnfollow.id));
+      user.following = user.following.filter((id) => !id.equals(personToUnfollow.id));
 
-      personToUnfollow.followers = personToUnfollow.followers.filter((id) => String(id) !== String(user.id));
+      personToUnfollow.followers = personToUnfollow.followers.filter((id) => !id.equals(user.id));
 
       await personToUnfollow.save();
       await user.save();
@@ -622,23 +696,37 @@ export const resolvers: IResolvers = {
       return personToUnfollow;
     },
   },
+
   Parent: {
-    __resolveType(parent: { body?: string; author?: string; parentID?: string }) {
+    __resolveType(parent: { body?: string; author?: Types.ObjectId; parentID?: string }) {
       if (parent.body && parent.author) {
         if (parent.parentID) {
-          return 'Comment'; // Return 'Comment' type for comments
+          return 'Comment';
         }
-        return 'Post'; // Return 'Post' type for posts
+        return 'Post';
       }
       return null;
     },
   },
+
   User: {
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });
     },
     following: async (parent) => {
       return await User.find({ _id: { $in: parent.following } });
+    },
+  },
+
+  Post: {
+    author: async (parent) => {
+      return await User.findById(parent.author);
+    },
+  },
+
+  Comment: {
+    author: async (parent) => {
+      return await User.findById(parent.author);
     },
   },
 };

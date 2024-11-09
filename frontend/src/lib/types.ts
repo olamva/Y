@@ -2,7 +2,7 @@ type ContentType = {
   id: string;
   body: string;
   originalBody?: string;
-  author: string;
+  author: UserType;
   amtLikes: number;
   amtComments: number;
   imageUrl?: string;

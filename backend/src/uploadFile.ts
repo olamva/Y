@@ -3,12 +3,22 @@ import path from 'path';
 import fs from 'fs';
 
 export const uploadFile = async (
-  file: FileUpload
+  file: FileUpload,
+  username?: string
 ): Promise<{ success: boolean; message: string; url: string }> => {
   const { createReadStream, filename } = await file;
 
   const uploadsDir = path.join(__dirname, 'uploads');
-  const uniqueFilename = `${Date.now()}-${filename}`;
+
+  const fileExtension = path.extname(filename);
+  let uniqueFilename = '';
+
+  if (username) {
+    uniqueFilename = `${username}${fileExtension}`;
+  } else {
+    uniqueFilename = `${Date.now()}-${filename}`;
+  }
+
   const filepath = path.join(uploadsDir, uniqueFilename);
 
   fs.mkdirSync(uploadsDir, { recursive: true });
