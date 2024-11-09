@@ -66,7 +66,7 @@ export const resolvers: IResolvers = {
     },
     getPostsByIds: async (_, { ids }) => {
       try {
-        return await Post.find({ id: { $in: ids } })
+        return await Post.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
           .populate('author');
       } catch (err) {
@@ -85,7 +85,7 @@ export const resolvers: IResolvers = {
 
     getCommentsByIds: async (_, { ids }) => {
       try {
-        return await Comment.find({ id: { $in: ids } })
+        return await Comment.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
           .populate('author');
       } catch (err) {
