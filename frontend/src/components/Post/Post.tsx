@@ -87,10 +87,7 @@ const Post = ({
     }
   };
 
-  const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
-
+  const handleDelete = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this post?",
     );

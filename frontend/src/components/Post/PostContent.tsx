@@ -15,7 +15,7 @@ interface PostContentProps {
   toggleLike: (e: MouseEvent<HTMLButtonElement>) => void;
   isLiked: boolean;
   amtLikes: number;
-  handleDelete: (e: MouseEvent | TouchEvent) => Promise<void>;
+  handleDelete: () => Promise<void>;
   deleteLoading: boolean;
   deleteError: ApolloError | undefined;
   maxWidth?: string;
@@ -129,7 +129,7 @@ const PostContent = ({
                   onClick={(e: MouseEvent | TouchEvent) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handleDelete(e);
+                    handleDelete();
                   }}
                   className="text-gray-500 outline-none hover:text-red-500"
                   aria-label="Delete post"
