@@ -9,7 +9,7 @@ const ProfileCard = ({ user }: { user: UserType }) => {
     >
       <div className="flex flex-col items-center gap-2 p-6">
         <div className="flex-shrink-0">
-          <Avatar noHref username={user.username} />
+          <Avatar noHref user={user} />
         </div>
         <div className="flex-grow">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">

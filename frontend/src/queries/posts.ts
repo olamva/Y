@@ -6,7 +6,11 @@ export const GET_POSTS = gql`
       id
       body
       originalBody
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       imageUrl
@@ -21,7 +25,11 @@ export const GET_POST = gql`
       id
       body
       originalBody
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       imageUrl
@@ -36,7 +44,11 @@ export const GET_POSTS_BY_IDS = gql`
       id
       body
       originalBody
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       createdAt
@@ -50,7 +62,11 @@ export const CREATE_POST = gql`
     createPost(body: $body, file: $file) {
       id
       body
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       imageUrl
@@ -102,7 +118,11 @@ export const GET_PARENT = gql`
         id
         body
         originalBody
-        author
+        author {
+          id
+          username
+          profilePicture
+        }
         amtLikes
         amtComments
         imageUrl
@@ -113,7 +133,11 @@ export const GET_PARENT = gql`
         parentID
         parentType
         body
-        author
+        author {
+          id
+          username
+          profilePicture
+        }
         amtLikes
         amtComments
         createdAt

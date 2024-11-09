@@ -67,15 +67,15 @@ const PostContent = ({
       <header className="flex flex-col gap-1">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Avatar username={post.author} />
+            <Avatar user={post.author} />
             <a href={`/project2/user/${post.author}`}>
               <p className="font-mono underline-offset-4 hover:underline">
                 <span className="font-sans">@</span>
-                {post.author}
+                {post.author.username}
               </p>
             </a>
-            {post.author !== user?.username && (
-              <FollowButton targetUsername={post.author} />
+            {post.author.username !== user?.username && (
+              <FollowButton targetUsername={post.author.username} />
             )}
             <p>·</p>
             <p>{formatTimestamp(post.createdAt)}</p>
@@ -100,7 +100,7 @@ const PostContent = ({
           </div>
 
           <div className="flex gap-2">
-            {user && user.username === post.author && (
+            {user && user.username === post.author.username && (
               <button
                 className="text-gray-500 outline-none hover:text-blue-500"
                 aria-label="Edit post"
@@ -114,7 +114,8 @@ const PostContent = ({
               </button>
             )}
             {user &&
-              (user.username === post.author || user.username === "admin") && (
+              (user.username === post.author.username ||
+                user.username === "admin") && (
                 <button
                   onClick={(e: MouseEvent | TouchEvent) => {
                     e.preventDefault();

@@ -7,7 +7,11 @@ export const GET_COMMENTS = gql`
       parentID
       parentType
       body
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       createdAt
@@ -23,7 +27,11 @@ export const GET_COMMENT = gql`
       parentID
       parentType
       body
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       createdAt
@@ -39,7 +47,11 @@ export const GET_COMMENTS_BY_IDS = gql`
       parentID
       parentType
       body
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       amtLikes
       amtComments
       createdAt
@@ -65,7 +77,11 @@ export const CREATE_COMMENT = gql`
       parentID
       parentType
       body
-      author
+      author {
+        id
+        username
+        profilePicture
+      }
       createdAt
       imageUrl
     }

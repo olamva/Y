@@ -47,7 +47,7 @@ const PostPage = () => {
 
   useEffect(() => {
     if (!user || !post || !editing) return;
-    if (user.username !== post?.author) {
+    if (user.username !== post?.author.username) {
       window.location.href = `/project2/post/${id}`;
     }
   }, [user, editing, id, post]);

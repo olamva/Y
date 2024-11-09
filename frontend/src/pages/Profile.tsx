@@ -141,12 +141,7 @@ const Profile = () => {
               className="h-56 w-full object-cover"
             />
             <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
-              <Avatar
-                username={user.username}
-                profilePic={user.profilePicture}
-                large
-                disableHover
-              />
+              <Avatar user={user} large disableHover />
               <div className="flex items-center justify-center gap-2">
                 <h1 className="font-mono text-lg">
                   <span className="font-sans">@</span>
