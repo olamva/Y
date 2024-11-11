@@ -1,9 +1,41 @@
-name: Test Workflow
+name: Deploy Application
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  deploy:
+    name: Deploy Backend and Frontend
+    runs-on: self-hosted
+
     steps:
-      - run: echo "Test"
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.1"
+
+      - name: Install and Build Frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Install and Build Backend
+        working-directory: backend
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy Frontend
+        run: |
+          sudo rsync -av --delete --exclude='.htaccess' frontend/dist/ /var/www/html/project2/
+
+      - name: Deploy Backend
+        run: |
+          pm2 delete "apollo-express-server" || true
+          pm2 start backend/dist/index.js --name "apollo-express-server" -f
