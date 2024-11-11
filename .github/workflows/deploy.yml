@@ -20,11 +20,6 @@ jobs:
         with:
           node-version: "20.11.1"
 
-      - name: Print Current User
-        run: |
-          whoami
-          id
-
       - name: Install and Build Frontend
         working-directory: frontend
         env:
