@@ -24,7 +24,7 @@ scalar Upload
 
 type Post {
   id: ID!
-  body: String!
+  body: String
   originalBody: String
   author: User!
   amtLikes: Int!
@@ -35,7 +35,7 @@ type Post {
 
 type Comment {
   id: ID!
-  body: String!
+  body: String
   author: User!
   parentID: ID!
   parentType: String!
@@ -59,10 +59,10 @@ type User {
 }
 
 type Mutation {
-  createPost(body: String!, file: Upload): Post!
-  editPost(id: ID!, body: String!, file: Upload): Post!
-  editComment(id: ID!, body: String!, file: Upload): Comment!
-  createComment(body: String!, parentID: ID!, parentType: String!, file: Upload): Comment!
+  createPost(body: String, file: Upload): Post!
+  editPost(id: ID!, body: String, file: Upload): Post!
+  editComment(id: ID!, body: String, file: Upload): Comment!
+  createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!
   deletePost(id: ID!): Post!
   deleteComment(id: ID!, parentID: ID!, parentType: String!): Comment!
   likePost(postID: ID!): Post!

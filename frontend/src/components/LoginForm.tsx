@@ -63,7 +63,7 @@ const LoginForm = ({ view }: LoginFormProps) => {
     try {
       const { data } = await registerMutation({
         variables: {
-          username: formData.username,
+          username: formData.username.trim(),
           password: formData.password,
         },
       });

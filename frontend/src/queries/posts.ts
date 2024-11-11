@@ -58,7 +58,7 @@ export const GET_POSTS_BY_IDS = gql`
 `;
 
 export const CREATE_POST = gql`
-  mutation CreatePost($body: String!, $file: Upload) {
+  mutation CreatePost($body: String, $file: Upload) {
     createPost(body: $body, file: $file) {
       id
       body
@@ -77,7 +77,7 @@ export const CREATE_POST = gql`
 `;
 
 export const EDIT_POST = gql`
-  mutation EditPost($id: ID!, $body: String!, $file: Upload) {
+  mutation EditPost($id: ID!, $body: String, $file: Upload) {
     editPost(id: $id, body: $body, file: $file) {
       id
     }

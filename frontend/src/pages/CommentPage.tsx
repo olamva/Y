@@ -108,7 +108,7 @@ const CommentPage = () => {
 
   useEffect(() => {
     if (reply && !postLoading) {
-      setEditBody(reply.body);
+      setEditBody(reply.body ?? "");
     }
   }, [reply, postLoading]);
 
@@ -151,7 +151,7 @@ const CommentPage = () => {
 
   const handleAddComment = async (e: FormEvent) => {
     e.preventDefault();
-    if (comment.trim() === "") return;
+    if (comment.trim() === "" && file === null) return;
 
     try {
       await createComment({
@@ -169,7 +169,7 @@ const CommentPage = () => {
 
   const handleEditReply = async (e: FormEvent) => {
     e.preventDefault();
-    if (editBody.trim() === "") {
+    if (editBody.trim() === "" || file === null) {
       toast.error("Reply content cannot be empty.");
       return;
     }
@@ -275,7 +275,7 @@ const CommentPage = () => {
               file={commentFile}
               setFile={setCommentFile}
               className={
-                comment && user
+                (comment || file) && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
                   : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }

@@ -197,6 +197,10 @@ export const resolvers: IResolvers = {
         throw new AuthenticationError('You must be logged in to create a post');
       }
 
+      if (body.length < 1 && !file) {
+        throw new UserInputError('Comment must have a body or an image');
+      }
+
       const user = await User.findById(context.user.id);
 
       if (!user) {
@@ -300,6 +304,10 @@ export const resolvers: IResolvers = {
         throw new AuthenticationError('You must be logged in to edit a post');
       }
 
+      if (body.length < 1 && !file) {
+        throw new UserInputError('Comment must have a body or an image');
+      }
+
       const user = await User.findById(context.user.id);
       if (!user) {
         throw new UserInputError('User not found');
@@ -346,6 +354,10 @@ export const resolvers: IResolvers = {
     editComment: async (_, { id, body, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to edit a comment');
+      }
+
+      if (body.length < 1 && !file) {
+        throw new UserInputError('Comment must have a body or an image');
       }
 
       const user = await User.findById(context.user.id);
@@ -427,6 +439,10 @@ export const resolvers: IResolvers = {
     createComment: async (_, { body, parentID, parentType, file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to create a comment');
+      }
+
+      if (body.length < 1 && !file) {
+        throw new UserInputError('Comment must have a body or an image');
       }
 
       const user = await User.findById(context.user.id);

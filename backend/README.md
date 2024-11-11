@@ -154,23 +154,23 @@ Retrieves multiple comments by their IDs.
 
 ## Mutations
 
-### `createPost(body: String!): Post!`
+### `createPost(body: String): Post!`
 
 Creates a new post.
 
 - **Parameters:**
-  - `body` (String!): The content of the post.
+  - `body` (String): The content of the post.
 - **Requires Authentication:** Yes
 - **Returns:** The created `Post` object.
 
 ---
 
-### `createComment(body: String!, parentID: ID!, parentType: String!): Comment!`
+### `createComment(body: String, parentID: ID!, parentType: String!): Comment!`
 
 Creates a new comment on a post.
 
 - **Parameters:**
-  - `body` (String!): The content of the comment.
+  - `body` (String): The content of the comment.
   - `parentID` (ID!): The ID of the parent post.
   - `parentType` (String!): The type of the parent post ('Post' or 'Comment').
 - **Requires Authentication:** Yes
