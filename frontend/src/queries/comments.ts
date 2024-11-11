@@ -62,7 +62,7 @@ export const GET_COMMENTS_BY_IDS = gql`
 
 export const CREATE_COMMENT = gql`
   mutation CreateComment(
-    $body: String!
+    $body: String
     $parentID: ID!
     $parentType: String!
     $file: Upload
@@ -100,7 +100,7 @@ export const DELETE_COMMENT = gql`
 `;
 
 export const EDIT_COMMENT = gql`
-  mutation EditComment($id: ID!, $body: String!, $file: Upload) {
+  mutation EditComment($id: ID!, $body: String, $file: Upload) {
     editComment(id: $id, body: $body, file: $file) {
       id
     }

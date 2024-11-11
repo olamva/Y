@@ -58,7 +58,7 @@ const HomePage = () => {
 
   const handleAddPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (postBody.trim() === "") {
+    if (postBody.trim() === "" && file === null) {
       toast.error("Post content cannot be empty.");
       return;
     }
@@ -140,7 +140,7 @@ const HomePage = () => {
             setFile={setFile}
             loading={createLoading}
             className={
-              postBody && user
+              (postBody || file) && user
                 ? "bg-indigo-600 hover:bg-indigo-700"
                 : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
             }
