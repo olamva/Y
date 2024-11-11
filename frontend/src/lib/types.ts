@@ -16,7 +16,7 @@ export type PostType = ContentType & {
 export type CommentType = ContentType & {
   __typename: "Comment";
   parentID: string;
-  parentType: string;
+  parentType: "post" | "reply";
 };
 
 export type UserType = {

@@ -146,3 +146,39 @@ export const GET_PARENT = gql`
     }
   }
 `;
+
+export const GET_PARENTS_BY_IDS = gql`
+  query GetParentsByIds($parents: [ParentInput!]!) {
+    getParentsByIds(parents: $parents) {
+      ... on Post {
+        id
+        body
+        originalBody
+        author {
+          id
+          username
+          profilePicture
+        }
+        amtLikes
+        amtComments
+        imageUrl
+        createdAt
+      }
+      ... on Comment {
+        id
+        parentID
+        parentType
+        body
+        author {
+          id
+          username
+          profilePicture
+        }
+        amtLikes
+        amtComments
+        createdAt
+        imageUrl
+      }
+    }
+  }
+`;
