@@ -153,7 +153,7 @@ const HomePage = () => {
         </div>
 
         {!hasMore && (
-          <p className="mt-4 text-gray-500 dark:text-gray-400">
+          <p className="mt-4 justify-self-center text-gray-500 dark:text-gray-400">
             You've reached the end of the posts.
           </p>
         )}
