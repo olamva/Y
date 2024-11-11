@@ -2,13 +2,15 @@ import { FileUpload } from 'graphql-upload-minimal';
 import path from 'path';
 import fs from 'fs';
 
+const UPLOADS_PATH = process.env.NODE_ENV
+  ? '/var/www/html/project2/uploads'
+  : path.join(__dirname, 'uploads');
+
 export const uploadFile = async (
   file: FileUpload,
   username?: string
 ): Promise<{ success: boolean; message: string; url: string }> => {
   const { createReadStream, filename } = await file;
-
-  const uploadsDir = path.join(__dirname, 'uploads');
 
   const fileExtension = path.extname(filename);
   let uniqueFilename = '';
@@ -19,9 +21,9 @@ export const uploadFile = async (
     uniqueFilename = `${Date.now()}-${filename}`;
   }
 
-  const filepath = path.join(uploadsDir, uniqueFilename);
+  const filepath = path.join(UPLOADS_PATH, uniqueFilename);
 
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(UPLOADS_PATH, { recursive: true });
 
   return new Promise((resolve, reject) => {
     const stream = createReadStream();
@@ -42,9 +44,7 @@ export const deleteFile = async (url: string): Promise<{ success: boolean; messa
   try {
     const filename = path.basename(url);
 
-    const uploadsDir = path.join(__dirname, 'uploads');
-
-    const filepath = path.join(uploadsDir, filename);
+    const filepath = path.join(UPLOADS_PATH, filename);
     if (!fs.existsSync(filepath)) {
       return { success: false, message: 'File does not exist' };
     }
