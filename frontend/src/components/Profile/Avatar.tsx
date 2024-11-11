@@ -1,5 +1,5 @@
 import { UserType } from "@/lib/types";
-import { useState, useEffect } from "react";
+import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 
 interface AvatarProps {
   large?: boolean;
@@ -17,7 +17,10 @@ const Avatar = ({
   const Tag = noHref ? "div" : "a";
   const tagProps = noHref
     ? {}
-    : { href: `/project2/user/${encodeURIComponent(user.username)}` };
+    : {
+        href: `/project2/user/${encodeURIComponent(user.username)}`,
+        onClick: (e: MouseEvent | TouchEvent) => e.stopPropagation(),
+      };
   const BACKEND_URL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 

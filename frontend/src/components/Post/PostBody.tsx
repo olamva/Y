@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState } from "react";
+import { MouseEvent, TouchEvent, useEffect, useRef, useState } from "react";
 
 const PostBody = ({ text }: { text: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -25,6 +25,25 @@ const PostBody = ({ text }: { text: string }) => {
     }
   }, []);
 
+  const linkify = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlRegex).map((part, index) =>
+      urlRegex.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          rel="noopener noreferrer"
+          onClick={(e: MouseEvent | TouchEvent) => e.stopPropagation()}
+          className="text-blue-500 hover:underline"
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      ),
+    );
+  };
+
   return (
     <div>
       <p
@@ -33,7 +52,7 @@ const PostBody = ({ text }: { text: string }) => {
           isExpanded ? "" : "line-clamp-3"
         }`}
       >
-        {text}
+        {linkify(text)}
       </p>
       {showReadMore && (
         <button
