@@ -21,12 +21,17 @@ jobs:
 
       - name: Install and Build Frontend
         working-directory: frontend
+        env:
+          VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
         run: |
           npm install
           npm run build
 
       - name: Install and Build Backend
         working-directory: backend
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           npm install
           npm run build
