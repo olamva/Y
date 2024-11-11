@@ -38,9 +38,24 @@ jobs:
 
       - name: Deploy Frontend
         run: |
-          sudo rsync -av --delete --exclude='.htaccess' ./frontend/dist/ /var/www/html/project2/
+          rsync -av --delete --exclude='.htaccess' ./frontend/dist/ /var/www/html/project2/
 
       - name: Deploy Backend
         run: |
           pm2 delete "apollo-express-server" || true
-          pm2 start ./backend/dist/index.js --name "apollo-express-server" -f
+
+          cat <<EOF > ecosystem.config.js
+          module.exports = {
+            apps: [{
+              name: 'apollo-express-server',
+              script: './backend/dist/index.js',
+              env: {
+                MONGODB_URI: '${{ secrets.MONGODB_URI }}',
+                JWT_SECRET: '${{ secrets.JWT_SECRET }}',
+                NODE_ENV: 'production'
+              }
+            }]
+          };
+          EOF
+
+          pm2 start ecosystem.config.js
