@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/AuthContext";
-import Avatar from "@/components/Profile/Avatar";
 import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
+import Avatar from "@/components/Profile/Avatar";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
@@ -79,7 +79,7 @@ const PostContent = ({
               }}
             >
               <p className="font-mono underline-offset-4 hover:underline">
-                <span className="font-sans">@</span>
+                <span className="font-sans break-words">@</span>
                 {post.author.username}
               </p>
             </a>
@@ -161,7 +161,11 @@ const PostContent = ({
       </header>
 
       <PostBody
-        text={showOriginal ? (post.originalBody ?? post.body) : post.body}
+        text={
+          showOriginal
+            ? (post.originalBody ?? post.body ?? "")
+            : (post.body ?? "")
+        }
       />
 
       {post.imageUrl && (

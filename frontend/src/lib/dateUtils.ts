@@ -18,10 +18,6 @@ export const formatTimestamp = (timestamp: number | string): string => {
   const now = new Date();
   const secondsElapsed = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (secondsElapsed < 0) {
-    return "In the future";
-  }
-
   const intervals: { [key: string]: number } = {
     month: 2592000,
     w: 604800,
