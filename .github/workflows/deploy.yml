@@ -38,7 +38,7 @@ jobs:
 
       - name: Deploy Frontend
         run: |
-          sudo rsync -av --delete --exclude='.htaccess' ./frontend/dist/ /var/www/html/project2/
+          rsync -av --delete --exclude='.htaccess' ./frontend/dist/ /var/www/html/project2/
 
       - name: Deploy Backend
         run: |
