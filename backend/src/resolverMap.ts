@@ -1,12 +1,12 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { GraphQLUpload } from 'graphql-upload-minimal';
+import { Types } from 'mongoose';
 import { signToken } from './auth';
-import { Comment } from './models/comment';
-import { Post } from './models/post';
+import { Comment, CommentType } from './models/comment';
+import { Post, PostType } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
-import mongoose, { Types } from 'mongoose';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
@@ -168,6 +168,25 @@ export const resolvers: IResolvers = {
         else return await Comment.findById(parentID).populate('author');
       } catch (err) {
         throw new Error('Error fetching parent');
+      }
+    },
+    getParentsByIds: async (_, { parents }) => {
+      const fetchedParents: (PostType | CommentType)[] = [];
+      try {
+        await Promise.all(
+          parents.map(async (parent: { id: string; type: string }) => {
+            if (parent.type === 'post') {
+              const post = await Post.findById(parent.id).populate('author');
+              if (post) fetchedParents.push(post);
+            } else {
+              const comment = await Comment.findById(parent.id).populate('author');
+              if (comment) fetchedParents.push(comment);
+            }
+          })
+        );
+        return fetchedParents;
+      } catch (err) {
+        throw new Error('Error fetching parents');
       }
     },
   },

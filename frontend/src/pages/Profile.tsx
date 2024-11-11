@@ -1,21 +1,21 @@
 import { useAuth } from "@/components/AuthContext";
-import Avatar from "@/components/Profile/Avatar";
 import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
+import Avatar from "@/components/Profile/Avatar";
+import EditProfile from "@/components/Profile/EditProfile";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { CommentType, PostType, UserType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
-import { GET_POSTS_BY_IDS } from "@/queries/posts";
+import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
 import { GET_USER_QUERY } from "@/queries/user";
 import { useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import EditProfile from "@/components/Profile/EditProfile";
 
 type ViewState = "posts" | "likes" | "comments";
 
@@ -102,17 +102,25 @@ const Profile = () => {
 
   const comments: CommentType[] = commentsData?.getCommentsByIds || [];
 
-  const parentPostIds = comments.map((comment) => comment.parentID);
+  const parents = comments.map((comment) => ({
+    id: comment.parentID,
+    type: comment.parentType,
+  }));
+
   const {
     data: parentPostsData,
     loading: parentPostsLoading,
     error: parentPostsError,
-  } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: parentPostIds },
-    skip: !parentPostIds.length,
-  });
+  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
+    GET_PARENTS_BY_IDS,
+    {
+      variables: { parents: parents },
+      skip: !parents.length,
+    },
+  );
 
-  const parentPosts: PostType[] = parentPostsData?.getPostsByIds || [];
+  const parentPosts: (PostType | CommentType)[] =
+    parentPostsData?.getParentsByIds ?? [];
 
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;

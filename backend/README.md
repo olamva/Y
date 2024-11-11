@@ -262,6 +262,7 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 - **getComment**: Retrieves a single comment by its ID.
 - **getCommentsByIds**: Retrieves multiple comments based on an array of IDs.
 - **getParent**: Retrieves the parent post or comment of a comment.
+- **getParentsByIds**: Retrieves the parent posts or comments of multiple comments.
 
 ### Mutation Resolvers
 

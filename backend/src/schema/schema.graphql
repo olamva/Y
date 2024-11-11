@@ -10,9 +10,15 @@ type Query {
   getComment(id: ID!): Comment
   getCommentsByIds(ids: [ID!]!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
+  getParentsByIds(parents: [ParentInput!]!): [Parent!]!
 }
 
 union Parent = Post | Comment
+
+input ParentInput {
+  id: ID!
+  type: String!
+}
 
 scalar Upload
 
