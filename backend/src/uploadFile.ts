@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 const UPLOADS_PATH =
-  process.env.NODE_ENV === 'production' ? '/var/www/html/project2/uploads' : path.join(__dirname, 'uploads');
+  process.env.NODE_ENV === 'production' ? '/var/www/html/uploads' : path.join(__dirname, 'uploads');
 
 export const uploadFile = async (
   file: FileUpload,
