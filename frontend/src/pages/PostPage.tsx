@@ -207,7 +207,7 @@ const PostPage = () => {
   return (
     <div className="w-full">
       <BackButton
-        overrideRedirect={editing ? `/project2/post/${post.id}` : undefined}
+        overrideRedirect={editing ? `/project2/post/${post.id}` : "/project2/"}
       />
       <main className="flex flex-col items-center px-4 pt-5">
         {editing ? (
