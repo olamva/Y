@@ -163,6 +163,75 @@ export const resolvers: IResolvers = {
         throw new Error('Error performing user search');
       }
     },
+    searchHashtags: async (_, { query, page, limit }) => {
+      if (query.length > 40) {
+        throw new UserInputError('Query can be a maximum of 40 characters.');
+      }
+
+      const PAGE_SIZE = limit || 10;
+      const pageNumber = parseInt(page, 10);
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer.');
+      }
+      const skip = (pageNumber - 1) * PAGE_SIZE;
+
+      try {
+        const postHashtags = await Post.aggregate([
+          { $unwind: '$hashTags' },
+          {
+            $match: {
+              hashTags: { $regex: query, $options: 'i' },
+            },
+          },
+          {
+            $group: {
+              _id: { $toLower: '$hashTags' },
+              count: { $sum: 1 },
+            },
+          },
+        ]);
+
+        const commentHashtags = await Comment.aggregate([
+          { $unwind: '$hashTags' },
+          {
+            $match: {
+              hashTags: { $regex: query, $options: 'i' },
+            },
+          },
+          {
+            $group: {
+              _id: { $toLower: '$hashTags' },
+              count: { $sum: 1 },
+            },
+          },
+        ]);
+
+        const combined = [...postHashtags, ...commentHashtags];
+        const hashtagMap = new Map<string, number>();
+
+        combined.forEach((item) => {
+          const tag = item._id;
+          const count = item.count;
+          if (hashtagMap.has(tag)) {
+            hashtagMap.set(tag, hashtagMap.get(tag)! + count);
+          } else {
+            hashtagMap.set(tag, count);
+          }
+        });
+
+        const sortedHashtags = Array.from(hashtagMap, ([tag, count]) => ({
+          tag,
+          count,
+        })).sort((a, b) => b.count - a.count);
+
+        const paginatedHashtags = sortedHashtags.slice(skip, skip + PAGE_SIZE);
+
+        return paginatedHashtags;
+      } catch (err) {
+        console.error('Search Hashtags Error:', err);
+        throw new Error('Error performing hashtag search.');
+      }
+    },
 
     getParent: async (_, { parentID, parentType }) => {
       try {

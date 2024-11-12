@@ -6,6 +6,7 @@ type Query {
   getUsers(page: Int!): [User!]!
   searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!): [User!]!
+  searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
   getComment(id: ID!): Comment
   getCommentsByIds(ids: [ID!]!): [Comment!]!
