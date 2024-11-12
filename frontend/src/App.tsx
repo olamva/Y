@@ -148,8 +148,11 @@ const HomePage = () => {
                 href={`/project2/hashtag/${hashtag.tag}`}
                 className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
               >
-                <h1>#{hashtag.tag}</h1>
-                <p>{hashtag.count} posts</p>
+                <h1 className="text-blue-500">#{hashtag.tag}</h1>
+                <p>
+                  {hashtag.count}
+                  {hashtag.count <= 1 ? " post" : " posts"}
+                </p>
               </a>
             ))}
           </div>
