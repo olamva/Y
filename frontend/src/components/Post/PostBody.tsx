@@ -10,7 +10,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
   const bodyRef = useRef<HTMLParagraphElement>(null);
   const [showReadMore, setShowReadMore] = useState(false);
 
-  const toggleExpand = (event: MouseEvent<HTMLButtonElement>) => {
+  const toggleExpand = (event: MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
     setIsExpanded((prev) => !prev);

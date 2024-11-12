@@ -31,7 +31,7 @@ export const DropdownMenu = () => {
       icon: <HomeIcon className="size-5" />,
     },
     {
-      name: "Hashtags",
+      name: "Trending",
       href: "/project2/hashtag",
       icon: <HashtagIcon className="size-5" />,
     },
