@@ -12,7 +12,7 @@ type Query {
   getParent(parentID: ID!, parentType: String!): Parent
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
   getTrendingHashtags(limit: Int!): [TrendingHashtag!]!
-  getPostsByHashtag(hashtag: String!, page: Int!): [Post!]!
+  getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
 }
 
 union Parent = Post | Comment

@@ -57,26 +57,6 @@ export const GET_POSTS_BY_IDS = gql`
   }
 `;
 
-export const GET_POSTS_BY_HASHTAG = gql`
-  query GetPostsByHashtag($hashtag: String!, $page: Int!) {
-    getPostsByHashtag(hashtag: $hashtag, page: $page) {
-      id
-      body
-      originalBody
-      author {
-        id
-        username
-        profilePicture
-      }
-      amtLikes
-      amtComments
-      createdAt
-      imageUrl
-      hashTags
-    }
-  }
-`;
-
 export const CREATE_POST = gql`
   mutation CreatePost($body: String, $file: Upload) {
     createPost(body: $body, file: $file) {

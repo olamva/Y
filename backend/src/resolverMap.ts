@@ -249,7 +249,7 @@ export const resolvers: IResolvers = {
       }
     },
 
-    getPostsByHashtag: async (_, { hashtag, page }, context) => {
+    getContentByHashtag: async (_, { hashtag, page }, context) => {
       const PAGE_SIZE = 10;
 
       try {
@@ -258,20 +258,29 @@ export const resolvers: IResolvers = {
         }
 
         const normalizedHashtag = hashtag.toLowerCase();
-
         const skip = (page - 1) * PAGE_SIZE;
         const limit = PAGE_SIZE;
 
-        const posts = await Post.find({ hashTags: normalizedHashtag })
+        const postsPromise = Post.find({ hashTags: normalizedHashtag })
           .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
           .populate('author');
 
-        return posts;
+        const commentsPromise = Comment.find({ hashTags: normalizedHashtag })
+          .sort({ createdAt: -1 })
+          .populate('author');
+
+        const [posts, comments] = await Promise.all([postsPromise, commentsPromise]);
+
+        const combined = [...posts, ...comments].sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        );
+
+        const paginatedResults = combined.slice(skip, skip + limit);
+
+        return paginatedResults;
       } catch (error) {
-        console.error(`Error fetching posts for hashtag "${hashtag}":`, error);
-        throw new Error('Failed to fetch posts by hashtag');
+        console.error(`Error fetching posts and comments for hashtag "${hashtag}":`, error);
+        throw new Error('Failed to fetch posts and comments by hashtag');
       }
     },
   },
