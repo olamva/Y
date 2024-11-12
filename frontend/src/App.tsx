@@ -1,8 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
-import FollowButton from "@/components/FollowButton";
 import Post from "@/components/Post/Post";
-import Avatar from "@/components/Profile/Avatar";
 import Divider from "@/components/ui/Divider";
 import { HashtagType, PostType, UserType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
@@ -13,7 +11,7 @@ import toast from "react-hot-toast";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import HashTagCard from "./components/HashtagCard";
 import { HashtagIcon } from "@heroicons/react/24/outline";
-// import { Users } from "lucide-react";
+import ProfileCard from "./components/ProfileCard";
 
 const PAGE_SIZE = 10;
 
@@ -198,19 +196,7 @@ const HomePage = () => {
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl">People to follow</h1>
           {usersData?.getUsers.map((recommendedUser) => (
-            <a
-              key={recommendedUser.id}
-              href={`/project2/user/${recommendedUser.username}`}
-              className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
-            >
-              <div className="flex w-fit flex-row items-center gap-2">
-                <Avatar user={recommendedUser} noHref />
-                <h1>{recommendedUser.username}</h1>
-              </div>
-              {user?.username !== recommendedUser.username && (
-                <FollowButton targetUsername={recommendedUser.username} />
-              )}
-            </a>
+            <ProfileCard user={recommendedUser} key={recommendedUser.id} />
           ))}
           {/* TODO make a search user page */}
           {/* <a
