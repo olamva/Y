@@ -14,6 +14,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HashtagPage from "./pages/HashtagPage";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
   {
     path: "/project2/reply/:id/:edit?",
     element: <CommentPage />,
+  },
+  {
+    path: "/project2/hashtag/:hashtag",
+    element: <HashtagPage />,
   },
 ]);
 
