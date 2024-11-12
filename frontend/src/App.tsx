@@ -4,12 +4,13 @@ import FollowButton from "@/components/FollowButton";
 import Post from "@/components/Post/Post";
 import Avatar from "@/components/Profile/Avatar";
 import Divider from "@/components/ui/Divider";
-import { PostType, UserType } from "@/lib/types";
+import { HashtagType, PostType, UserType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 // import { Users } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -33,6 +34,12 @@ const HomePage = () => {
     getUsers: UserType[];
   }>(GET_USERS, {
     variables: { page: 1 },
+  });
+
+  const { data: hashtagsData, error: hashtagsError } = useQuery<{
+    getTrendingHashtags: HashtagType[];
+  }>(GET_TRENDING_HASHTAGS, {
+    variables: { limit: 10 },
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
@@ -125,7 +132,29 @@ const HomePage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-full max-w-64 py-8 lg:flex"></aside>
+      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+        {hashtagsError && (
+          <p className="mt-4 text-center text-red-500">
+            Error loading hashtags: {hashtagsError.message}
+          </p>
+        )}
+
+        {hashtagsData && (
+          <div className="flex w-full flex-col items-center gap-5">
+            <h1 className="text-3xl">Trending Hashtags</h1>
+            {hashtagsData.getTrendingHashtags.map((hashtag) => (
+              <a
+                key={hashtag.tag}
+                href={`/project2/hashtag/${hashtag.tag}`}
+                className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
+              >
+                <h1>#{hashtag.tag}</h1>
+                <p>{hashtag.count} posts</p>
+              </a>
+            ))}
+          </div>
+        )}
+      </aside>
 
       <main className="w-full max-w-xl">
         <form
