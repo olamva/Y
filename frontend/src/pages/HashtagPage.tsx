@@ -83,9 +83,9 @@ const HashtagPage = () => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5 py-2">
+    <div className="mx-auto w-full max-w-screen-xl px-5">
       <main className="flex w-full flex-col items-center justify-center">
-        <h1 className="mb-4 text-3xl font-bold">#{hashtag}</h1>
+        <h1 className="my-4 text-3xl font-bold">#{hashtag}</h1>
         <Divider />
         <div className="flex w-full flex-col items-center gap-4">
           {posts.map((post) => (

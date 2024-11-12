@@ -79,7 +79,7 @@ const PostContent = ({
               }}
             >
               <p className="font-mono underline-offset-4 hover:underline">
-                <span className="font-sans break-words">@</span>
+                <span className="break-words font-sans">@</span>
                 {post.author.username}
               </p>
             </a>
