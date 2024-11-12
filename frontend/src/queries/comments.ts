@@ -77,6 +77,7 @@ export const CREATE_COMMENT = gql`
       parentID
       parentType
       body
+      hashTags
       author {
         id
         username

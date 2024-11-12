@@ -11,6 +11,8 @@ type Query {
   getCommentsByIds(ids: [ID!]!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
+  getTrendingHashtags(limit: Int!): [TrendingHashtag!]!
+  getPostsByHashtag(hashtag: String!, page: Int!): [Post!]!
 }
 
 union Parent = Post | Comment
@@ -45,6 +47,11 @@ type Comment {
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
+}
+
+type TrendingHashtag {
+  tag: String!
+  count: Int!
 }
 
 type User {

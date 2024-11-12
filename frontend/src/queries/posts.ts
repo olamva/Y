@@ -68,6 +68,7 @@ export const CREATE_POST = gql`
         profilePicture
       }
       amtLikes
+      hashTags
       amtComments
       imageUrl
       createdAt
