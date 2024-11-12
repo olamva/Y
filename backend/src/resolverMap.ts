@@ -7,6 +7,7 @@ import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
+import { extractHashtags } from './utils';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
@@ -221,8 +222,10 @@ export const resolvers: IResolvers = {
         }
       }
 
+      const hashTags = body ? extractHashtags(body) : undefined;
+
       try {
-        const newPost = new Post({ body, author: user.id, imageUrl });
+        const newPost = new Post({ body, author: user.id, imageUrl, hashTags });
         const savedPost = await newPost.save();
 
         user.postIds.push(savedPost.id);
@@ -341,14 +344,17 @@ export const resolvers: IResolvers = {
         }
       }
 
+      const hashTags = body ? extractHashtags(body) : undefined;
+
       if (!post.originalBody) post.originalBody = post.body;
       if (post.originalBody === body) post.originalBody = undefined;
 
       post.body = body;
       post.imageUrl = imageUrl;
+      post.hashTags = hashTags;
       await post.save();
 
-      return await post.populate('author'); // Populate author field before returning
+      return await post.populate('author');
     },
 
     editComment: async (_, { id, body, file }, context) => {
@@ -393,14 +399,17 @@ export const resolvers: IResolvers = {
         }
       }
 
+      const hashTags = body ? extractHashtags(body) : undefined;
+
       if (!comment.originalBody) comment.originalBody = comment.body;
       if (comment.originalBody === body) comment.originalBody = undefined;
 
       comment.body = body;
       comment.imageUrl = imageUrl;
+      comment.hashTags = hashTags;
       await comment.save();
 
-      return await comment.populate('author'); // Populate author field before returning
+      return await comment.populate('author');
     },
 
     register: async (_, { username, password }) => {
@@ -465,6 +474,7 @@ export const resolvers: IResolvers = {
           throw new Error('Error uploading file');
         }
       }
+      const hashTags = body ? extractHashtags(body) : undefined;
 
       try {
         const newComment = new Comment({
@@ -473,6 +483,7 @@ export const resolvers: IResolvers = {
           parentID,
           parentType,
           imageUrl,
+          hashTags,
         });
         const savedComment = await newComment.save();
 
@@ -754,12 +765,14 @@ export const resolvers: IResolvers = {
   },
 
   Post: {
+    hashTags: (parent) => parent.hashTags,
     author: async (parent) => {
       return await User.findById(parent.author);
     },
   },
 
   Comment: {
+    hashTags: (parent) => parent.hashTags,
     author: async (parent) => {
       return await User.findById(parent.author);
     },

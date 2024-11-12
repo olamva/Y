@@ -10,6 +10,7 @@ export interface CommentType extends Document {
   amtComments: number;
   createdAt: Date;
   imageUrl?: string;
+  hashTags?: string[];
 }
 
 const CommentSchema = new Schema<CommentType>({
@@ -22,6 +23,7 @@ const CommentSchema = new Schema<CommentType>({
   amtComments: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   imageUrl: { type: String, default: undefined },
+  hashTags: { type: [String], default: undefined, index: true },
 });
 
 export const Comment = model<CommentType>('Comment', CommentSchema);
