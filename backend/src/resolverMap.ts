@@ -195,12 +195,32 @@ export const resolvers: IResolvers = {
       try {
         const postHashtags = await Post.aggregate([
           { $unwind: '$hashTags' },
-          { $group: { _id: '$hashTags', count: { $sum: 1 } } },
+          {
+            $project: {
+              hashTags: { $toLower: '$hashTags' },
+            },
+          },
+          {
+            $group: {
+              _id: '$hashTags',
+              count: { $sum: 1 },
+            },
+          },
         ]);
 
         const commentHashtags = await Comment.aggregate([
           { $unwind: '$hashTags' },
-          { $group: { _id: '$hashTags', count: { $sum: 1 } } },
+          {
+            $project: {
+              hashTags: { $toLower: '$hashTags' },
+            },
+          },
+          {
+            $group: {
+              _id: '$hashTags',
+              count: { $sum: 1 },
+            },
+          },
         ]);
 
         const combined = [...postHashtags, ...commentHashtags];
@@ -228,6 +248,7 @@ export const resolvers: IResolvers = {
         throw new Error('Failed to fetch trending hashtags');
       }
     },
+
     getPostsByHashtag: async (_, { hashtag, page }, context) => {
       const PAGE_SIZE = 10;
 
