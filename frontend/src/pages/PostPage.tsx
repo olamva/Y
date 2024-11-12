@@ -153,7 +153,7 @@ const PostPage = () => {
 
   const handleEditPost = async (e: FormEvent) => {
     e.preventDefault();
-    if (editBody.trim() === "" || file === null) {
+    if (editBody.trim() === "" && file === null) {
       toast.error("Post content cannot be empty.");
       return;
     }
