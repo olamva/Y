@@ -2,6 +2,7 @@ import { useAuth } from "@/components/AuthContext";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import {
   Bars3Icon,
+  HashtagIcon,
   HomeIcon,
   UserIcon,
   XMarkIcon,
@@ -28,6 +29,11 @@ export const DropdownMenu = () => {
       name: "Homepage",
       href: "/project2",
       icon: <HomeIcon className="size-5" />,
+    },
+    {
+      name: "Hashtags",
+      href: "/project2/hashtag",
+      icon: <HashtagIcon className="size-5" />,
     },
   ];
 

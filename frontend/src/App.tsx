@@ -11,6 +11,8 @@ import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
+import HashTagCard from "./components/HashtagCard";
+import { HashtagIcon } from "@heroicons/react/24/outline";
 // import { Users } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -143,20 +145,15 @@ const HomePage = () => {
           <div className="flex w-full flex-col items-center gap-5">
             <h1 className="text-3xl">Trending Hashtags</h1>
             {hashtagsData.getTrendingHashtags.map((hashtag) => (
-              <a
-                key={hashtag.tag}
-                href={`/project2/hashtag/${hashtag.tag}`}
-                className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
-              >
-                <h1 className="text-xl font-bold text-blue-500">
-                  #{hashtag.tag}
-                </h1>
-                <p>
-                  {hashtag.count}
-                  {hashtag.count <= 1 ? " post" : " posts"}
-                </p>
-              </a>
+              <HashTagCard hashtag={hashtag} />
             ))}
+            <a
+              href={`/project2/hashtag`}
+              className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <HashtagIcon className="mr-2 h-5 w-5" aria-hidden="true" />
+              <span>View All Hashtags</span>
+            </a>
           </div>
         )}
       </aside>
