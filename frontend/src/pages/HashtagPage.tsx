@@ -6,6 +6,7 @@ import { PostType } from "@/lib/types";
 import Post from "@/components/Post/Post";
 import toast from "react-hot-toast";
 import Divider from "@/components/ui/Divider";
+import BackButton from "@/components/BackButton";
 
 const PAGE_SIZE = 10;
 
@@ -84,6 +85,7 @@ const HashtagPage = () => {
 
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5">
+      <BackButton />
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">#{hashtag}</h1>
         <Divider />

@@ -1,3 +1,4 @@
+import BackButton from "@/components/BackButton";
 import HashTagCard from "@/components/HashtagCard";
 import Divider from "@/components/ui/Divider";
 import { HashtagType } from "@/lib/types";
@@ -84,6 +85,7 @@ const HashTagscount = () => {
 
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5">
+      <BackButton />
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>
         <Divider />
