@@ -348,7 +348,7 @@ export const resolvers: IResolvers = {
       post.imageUrl = imageUrl;
       await post.save();
 
-      return await post.populate('author'); // Populate author field before returning
+      return await post.populate('author');
     },
 
     editComment: async (_, { id, body, file }, context) => {
@@ -400,11 +400,12 @@ export const resolvers: IResolvers = {
       comment.imageUrl = imageUrl;
       await comment.save();
 
-      return await comment.populate('author'); // Populate author field before returning
+      return await comment.populate('author');
     },
 
     register: async (_, { username, password }) => {
       const existingUser = await User.findOne({ username });
+
       if (existingUser) {
         throw new Error('Username already exists');
       }
@@ -415,6 +416,11 @@ export const resolvers: IResolvers = {
 
       if (username.length > 20 || password.length > 20) {
         throw new Error('Username and password must be at most 20 characters');
+      }
+
+      const usernameRegex = /^[a-zA-Z0-9_]+$/;
+      if (!usernameRegex.test(username)) {
+        throw new Error('Username can only contain letters, numbers, and underscores.');
       }
 
       const user = new User({ username, password });
