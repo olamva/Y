@@ -145,7 +145,7 @@ const HomePage = () => {
           <div className="flex w-full flex-col items-center gap-5">
             <h1 className="text-3xl">Trending Hashtags</h1>
             {hashtagsData.getTrendingHashtags.map((hashtag) => (
-              <HashTagCard hashtag={hashtag} />
+              <HashTagCard hashtag={hashtag} key={hashtag.tag} />
             ))}
             <a
               href={`/project2/hashtag`}

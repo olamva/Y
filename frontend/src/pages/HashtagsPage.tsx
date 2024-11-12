@@ -91,7 +91,7 @@ const HashTagscount = () => {
         <Divider />
         <div className="col-span-1 flex w-full justify-center gap-2 sm:col-span-2 lg:col-span-3">
           {hashtags.map((hashtag) => (
-            <HashTagCard hashtag={hashtag} />
+            <HashTagCard hashtag={hashtag} key={hashtag.tag} />
           ))}
         </div>
         {loading && networkStatus === 3 && (
