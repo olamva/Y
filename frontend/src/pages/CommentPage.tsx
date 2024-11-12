@@ -169,7 +169,7 @@ const CommentPage = () => {
 
   const handleEditReply = async (e: FormEvent) => {
     e.preventDefault();
-    if (editBody.trim() === "" || file === null) {
+    if (editBody.trim() === "" && file === null) {
       toast.error("Reply content cannot be empty.");
       return;
     }
