@@ -8,6 +8,7 @@ export interface PostType extends Document {
   amtComments: number;
   createdAt: Date;
   imageUrl?: string;
+  hashTags?: string[];
 }
 
 const PostSchema = new Schema<PostType>({
@@ -18,6 +19,7 @@ const PostSchema = new Schema<PostType>({
   amtComments: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   imageUrl: { type: String, default: undefined },
+  hashTags: { type: [String], default: undefined, index: true },
 });
 
 export const Post = model<PostType>('Post', PostSchema);

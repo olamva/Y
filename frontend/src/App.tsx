@@ -4,12 +4,15 @@ import FollowButton from "@/components/FollowButton";
 import Post from "@/components/Post/Post";
 import Avatar from "@/components/Profile/Avatar";
 import Divider from "@/components/ui/Divider";
-import { PostType, UserType } from "@/lib/types";
+import { HashtagType, PostType, UserType } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
+import HashTagCard from "./components/HashtagCard";
+import { HashtagIcon } from "@heroicons/react/24/outline";
 // import { Users } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -33,6 +36,12 @@ const HomePage = () => {
     getUsers: UserType[];
   }>(GET_USERS, {
     variables: { page: 1 },
+  });
+
+  const { data: hashtagsData, error: hashtagsError } = useQuery<{
+    getTrendingHashtags: HashtagType[];
+  }>(GET_TRENDING_HASHTAGS, {
+    variables: { limit: 10 },
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
@@ -125,7 +134,29 @@ const HomePage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-full max-w-64 py-8 lg:flex"></aside>
+      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+        {hashtagsError && (
+          <p className="mt-4 text-center text-red-500">
+            Error loading hashtags: {hashtagsError.message}
+          </p>
+        )}
+
+        {hashtagsData && (
+          <div className="flex w-full flex-col items-center gap-5">
+            <h1 className="text-3xl">Trending Hashtags</h1>
+            {hashtagsData.getTrendingHashtags.map((hashtag) => (
+              <HashTagCard hashtag={hashtag} key={hashtag.tag} />
+            ))}
+            <a
+              href={`/project2/hashtag`}
+              className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <HashtagIcon className="mr-2 h-5 w-5" aria-hidden="true" />
+              <span>View All Hashtags</span>
+            </a>
+          </div>
+        )}
+      </aside>
 
       <main className="w-full max-w-xl">
         <form

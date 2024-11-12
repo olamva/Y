@@ -7,6 +7,8 @@ import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
+import { extractHashtags } from './utils';
+import { TrendingHashtagType } from './models/hashtag';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
@@ -189,6 +191,89 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching parents');
       }
     },
+    getTrendingHashtags: async (_, { limit }, context) => {
+      try {
+        const postHashtags = await Post.aggregate([
+          { $unwind: '$hashTags' },
+          {
+            $project: {
+              hashTags: { $toLower: '$hashTags' },
+            },
+          },
+          {
+            $group: {
+              _id: '$hashTags',
+              count: { $sum: 1 },
+            },
+          },
+        ]);
+
+        const commentHashtags = await Comment.aggregate([
+          { $unwind: '$hashTags' },
+          {
+            $project: {
+              hashTags: { $toLower: '$hashTags' },
+            },
+          },
+          {
+            $group: {
+              _id: '$hashTags',
+              count: { $sum: 1 },
+            },
+          },
+        ]);
+
+        const combined = [...postHashtags, ...commentHashtags];
+
+        const hashtagMap = new Map<string, number>();
+
+        combined.forEach((item) => {
+          const tag = item._id;
+          const count = item.count;
+          if (hashtagMap.has(tag)) {
+            hashtagMap.set(tag, hashtagMap.get(tag)! + count);
+          } else {
+            hashtagMap.set(tag, count);
+          }
+        });
+
+        const sortedHashtags: TrendingHashtagType[] = Array.from(hashtagMap, ([tag, count]) => ({
+          tag,
+          count,
+        })).sort((a, b) => b.count - a.count);
+
+        return sortedHashtags.slice(0, limit);
+      } catch (error) {
+        console.error('Error fetching trending hashtags:', error);
+        throw new Error('Failed to fetch trending hashtags');
+      }
+    },
+
+    getPostsByHashtag: async (_, { hashtag, page }, context) => {
+      const PAGE_SIZE = 10;
+
+      try {
+        if (!hashtag || typeof hashtag !== 'string') {
+          throw new UserInputError('Invalid hashtag provided');
+        }
+
+        const normalizedHashtag = hashtag.toLowerCase();
+
+        const skip = (page - 1) * PAGE_SIZE;
+        const limit = PAGE_SIZE;
+
+        const posts = await Post.find({ hashTags: normalizedHashtag })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .populate('author');
+
+        return posts;
+      } catch (error) {
+        console.error(`Error fetching posts for hashtag "${hashtag}":`, error);
+        throw new Error('Failed to fetch posts by hashtag');
+      }
+    },
   },
 
   Mutation: {
@@ -221,8 +306,10 @@ export const resolvers: IResolvers = {
         }
       }
 
+      const hashTags = body ? extractHashtags(body) : undefined;
+
       try {
-        const newPost = new Post({ body, author: user.id, imageUrl });
+        const newPost = new Post({ body, author: user.id, imageUrl, hashTags });
         const savedPost = await newPost.save();
 
         user.postIds.push(savedPost.id);
@@ -341,11 +428,14 @@ export const resolvers: IResolvers = {
         }
       }
 
+      const hashTags = body ? extractHashtags(body) : undefined;
+
       if (!post.originalBody) post.originalBody = post.body;
       if (post.originalBody === body) post.originalBody = undefined;
 
       post.body = body;
       post.imageUrl = imageUrl;
+      post.hashTags = hashTags;
       await post.save();
 
       return await post.populate('author');
@@ -393,11 +483,14 @@ export const resolvers: IResolvers = {
         }
       }
 
+      const hashTags = body ? extractHashtags(body) : undefined;
+
       if (!comment.originalBody) comment.originalBody = comment.body;
       if (comment.originalBody === body) comment.originalBody = undefined;
 
       comment.body = body;
       comment.imageUrl = imageUrl;
+      comment.hashTags = hashTags;
       await comment.save();
 
       return await comment.populate('author');
@@ -471,6 +564,7 @@ export const resolvers: IResolvers = {
           throw new Error('Error uploading file');
         }
       }
+      const hashTags = body ? extractHashtags(body) : undefined;
 
       try {
         const newComment = new Comment({
@@ -479,6 +573,7 @@ export const resolvers: IResolvers = {
           parentID,
           parentType,
           imageUrl,
+          hashTags,
         });
         const savedComment = await newComment.save();
 
@@ -760,12 +855,14 @@ export const resolvers: IResolvers = {
   },
 
   Post: {
+    hashTags: (parent) => parent.hashTags,
     author: async (parent) => {
       return await User.findById(parent.author);
     },
   },
 
   Comment: {
+    hashTags: (parent) => parent.hashTags,
     author: async (parent) => {
       return await User.findById(parent.author);
     },

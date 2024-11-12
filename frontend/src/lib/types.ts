@@ -9,6 +9,11 @@ type ContentType = {
   createdAt: string;
 };
 
+export type HashtagType = {
+  tag: string;
+  count: number;
+};
+
 export type PostType = ContentType & {
   __typename: "Post";
 };
