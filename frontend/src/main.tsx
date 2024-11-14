@@ -16,6 +16,7 @@ import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HashtagPage from "./pages/HashtagPage";
 import HashtagsPage from "./pages/HashtagsPage";
+import UsersPage from "./pages/UsersPage";
 
 const router = createBrowserRouter([
   {
@@ -31,9 +32,14 @@ const router = createBrowserRouter([
     element: <LoginForm view="register" />,
   },
   {
+    path: "project2/users",
+    element: <UsersPage />,
+  },
+  {
     path: "/project2/user",
     element: <Profile />,
   },
+
   {
     path: "/project2/user/:username",
     element: <Profile />,
