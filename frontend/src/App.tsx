@@ -197,19 +197,7 @@ const HomePage = () => {
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl">People to follow</h1>
           {usersData?.getUsers.map((recommendedUser) => (
-            <a
-              key={recommendedUser.id}
-              href={`/project2/user/${recommendedUser.username}`}
-              className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900/50"
-            >
-              <div className="flex w-fit flex-row items-center gap-2">
-                <Avatar user={recommendedUser} noHref />
-                <h1>{recommendedUser.username}</h1>
-              </div>
-              {user?.username !== recommendedUser.username && (
-                <FollowButton targetUsername={recommendedUser.username} />
-              )}
-            </a>
+            <ProfileCard user={recommendedUser} key={recommendedUser.id} />
           ))}
           <a
             href={`/project2/users`}
