@@ -203,7 +203,7 @@ const SearchPage = () => {
   return (
     <div className="w-full">
       <BackButton />
-      <main className="mx-auto flex w-full max-w-xl flex-col items-center justify-center px-4">
+      <main className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center px-4">
         <h1 className="my-4 text-center text-2xl font-bold">
           Search results for: {searchQuery}
         </h1>
@@ -257,12 +257,17 @@ const SearchPage = () => {
           </>
         )}
         {/* Hashtags */}
-        {(filterType === "all" || filterType === "hashtag") &&
-          hashtagsData?.searchHashtags.map((hashtag) => (
-            <div key={hashtag.tag} className="my-4 w-full">
-              <HashtagCard hashtag={hashtag} />
-            </div>
-          ))}
+        <div className="mb-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(filterType === "all" || filterType === "hashtag") &&
+            hashtagsData?.searchHashtags.map((hashtag) => (
+              <div
+                key={hashtag.tag}
+                className="col-span-1 flex w-full justify-center"
+              >
+                <HashtagCard hashtag={hashtag} />
+              </div>
+            ))}
+        </div>
 
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Users */}
