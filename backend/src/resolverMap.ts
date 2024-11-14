@@ -25,7 +25,7 @@ export const resolvers: IResolvers = {
       }
     },
     getUsers: async (_, { page }) => {
-      const USERS_PER_PAGE = 10;
+      const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
 
       try {

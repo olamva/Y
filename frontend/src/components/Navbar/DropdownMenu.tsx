@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
+import { UsersIcon } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   HashtagIcon,
@@ -29,6 +30,11 @@ export const DropdownMenu = () => {
       name: "Homepage",
       href: "/project2",
       icon: <HomeIcon className="size-5" />,
+    },
+    {
+      name: "Users",
+      href: "/project2/users",
+      icon: <UsersIcon className="size-5" />,
     },
     {
       name: "Trending",
