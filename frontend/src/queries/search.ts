@@ -29,3 +29,12 @@ export const SEARCH_USERS = gql`
     }
   }
 `;
+
+export const SEARCH_HASHTAGS = gql`
+  query SearchHashtags($query: String!, $page: Int!, $limit: Int!) {
+    searchHashtags(query: $query, page: $page, limit: $limit) {
+      tag
+      count
+    }
+  }
+`;

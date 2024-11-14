@@ -1,5 +1,7 @@
 import Avatar from "@/components/Profile/Avatar";
 import { UserType } from "@/lib/types";
+import FollowButton from "./FollowButton";
+import { useAuth } from "./AuthContext";
 import CoverPhoto from "/coverphoto.jpg";
 
 interface Props {
@@ -8,6 +10,8 @@ interface Props {
 }
 
 const ProfileCard = ({ user, large }: Props) => {
+  const { user: currentUser } = useAuth();
+
   if (large) {
     return (
       <a
@@ -26,6 +30,7 @@ const ProfileCard = ({ user, large }: Props) => {
           <div className="flex-grow">
             <h2 className="text-2xl font-bold">{user.username}</h2>
           </div>
+          <FollowButton targetUsername={user.username} />
         </div>
       </a>
     );
@@ -33,19 +38,17 @@ const ProfileCard = ({ user, large }: Props) => {
 
   return (
     <a
+      key={user.id}
       href={`/project2/user/${user.username}`}
-      className="mx-2 my-2 w-full max-w-sm overflow-hidden rounded-lg border-gray-300 shadow-lg hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
+      className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900"
     >
-      <div className="flex flex-col items-center gap-2 p-6">
-        <div className="flex-shrink-0">
-          <Avatar noHref user={user} />
-        </div>
-        <div className="flex-grow">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            @{user.username}
-          </h2>
-        </div>
+      <div className="flex w-fit flex-row items-center gap-2">
+        <Avatar user={user} noHref />
+        <h1>{user.username}</h1>
       </div>
+      {user?.username !== currentUser?.username && (
+        <FollowButton targetUsername={user.username} />
+      )}
     </a>
   );
 };
