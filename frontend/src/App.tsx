@@ -42,7 +42,7 @@ const HomePage = () => {
   const { data: hashtagsData, error: hashtagsError } = useQuery<{
     getTrendingHashtags: HashtagType[];
   }>(GET_TRENDING_HASHTAGS, {
-    variables: { limit: 10 },
+    variables: { limit: 16 },
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
