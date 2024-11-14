@@ -49,6 +49,12 @@ const client = new ApolloClient({
               return [...existing, ...incoming];
             },
           },
+          getTrendingHashtags: {
+            keyArgs: false,
+            merge(existing = [], incoming = []) {
+              return [...existing, ...incoming];
+            },
+          },
         },
       },
     },

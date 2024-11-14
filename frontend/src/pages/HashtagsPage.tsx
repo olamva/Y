@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-const COUNT_SIZE = 10;
+const COUNT_SIZE = 16;
 
 const HashTagscount = () => {
   const { hashtag } = useParams<{ hashtag: string }>();
