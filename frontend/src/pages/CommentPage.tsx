@@ -57,6 +57,7 @@ const CommentPage = () => {
     error: parentPostError,
   } = useQuery<{ getParent: PostType | CommentType }>(GET_PARENT, {
     variables: { parentID: reply?.parentID, parentType: reply?.parentType },
+    skip: !reply,
   });
 
   const parentPost = parentPostData?.getParent;
@@ -169,7 +170,7 @@ const CommentPage = () => {
 
   const handleEditReply = async (e: FormEvent) => {
     e.preventDefault();
-    if (editBody.trim() === "" || file === null) {
+    if (editBody.trim() === "" && file === null) {
       toast.error("Reply content cannot be empty.");
       return;
     }

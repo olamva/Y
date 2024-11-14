@@ -1,33 +1,35 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { GET_POSTS_BY_HASHTAG } from "@/queries/posts";
-import { PostType } from "@/lib/types";
 import Post from "@/components/Post/Post";
 import toast from "react-hot-toast";
 import Divider from "@/components/ui/Divider";
 import BackButton from "@/components/BackButton";
+import { GET_CONTENT_BY_HASHTAG } from "@/queries/hashtags";
+import { PostType, CommentType } from "@/lib/types";
+import Comment from "@/components/Post/Comment";
 
 const PAGE_SIZE = 10;
+type Content = PostType | CommentType;
 
 const HashtagPage = () => {
   const { hashtag } = useParams<{ hashtag: string }>();
   const [page, setPage] = useState(1);
-  const [posts, setPosts] = useState<PostType[]>([]);
+  const [posts, setPosts] = useState<Content[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
-    getPostsByHashtag: PostType[];
-  }>(GET_POSTS_BY_HASHTAG, {
+    getContentByHashtag: Content[];
+  }>(GET_CONTENT_BY_HASHTAG, {
     variables: { hashtag, page: 1 },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
 
   useEffect(() => {
-    if (data && data.getPostsByHashtag) {
-      setPosts(data.getPostsByHashtag);
-      setHasMore(data.getPostsByHashtag.length === PAGE_SIZE);
+    if (data && data.getContentByHashtag) {
+      setPosts(data.getContentByHashtag);
+      setHasMore(data.getContentByHashtag.length === PAGE_SIZE);
       setPage(1);
     }
   }, [data]);
@@ -41,12 +43,12 @@ const HashtagPage = () => {
         variables: { hashtag, page: nextPage },
       });
 
-      if (fetchMoreData?.getPostsByHashtag) {
+      if (fetchMoreData?.getContentByHashtag) {
         setPosts((prevPosts) => [
           ...prevPosts,
-          ...fetchMoreData.getPostsByHashtag,
+          ...fetchMoreData.getContentByHashtag,
         ]);
-        setHasMore(fetchMoreData.getPostsByHashtag.length === PAGE_SIZE);
+        setHasMore(fetchMoreData.getContentByHashtag.length === PAGE_SIZE);
         setPage(nextPage);
       } else {
         setHasMore(false);
@@ -90,9 +92,14 @@ const HashtagPage = () => {
         <h1 className="my-4 text-3xl font-bold">#{hashtag?.toLowerCase()}</h1>
         <Divider />
         <div className="flex w-full flex-col items-center gap-4">
-          {posts.map((post) => (
-            <Post key={post.id} post={post} />
-          ))}
+          {posts.map((post) => {
+            if (post.__typename === "Post") {
+              return <Post key={post.id} post={post} />;
+            } else if (post.__typename === "Comment") {
+              return <Comment key={post.id} comment={post} />;
+            }
+            return null;
+          })}
         </div>
         {loading && networkStatus === 3 && (
           <p className="mt-4 text-center">Loading more posts...</p>

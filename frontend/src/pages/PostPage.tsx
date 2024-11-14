@@ -135,7 +135,7 @@ const PostPage = () => {
 
   const handleAddComment = async (e: FormEvent) => {
     e.preventDefault();
-    if (comment.trim() === "" || file === null) return;
+    if (comment.trim() === "" && file === null) return;
 
     try {
       await createComment({

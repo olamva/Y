@@ -89,11 +89,12 @@ const HashTagscount = () => {
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>
         <Divider />
-        <div className="col-span-1 flex w-full justify-center gap-2 sm:col-span-2 lg:col-span-3">
+        <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {hashtags.map((hashtag) => (
             <HashTagCard hashtag={hashtag} key={hashtag.tag} />
           ))}
         </div>
+
         {loading && networkStatus === 3 && (
           <p className="mt-4 text-center">Loading more hashtags...</p>
         )}
