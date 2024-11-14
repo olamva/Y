@@ -260,7 +260,16 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching parents');
       }
     },
-    getTrendingHashtags: async (_, { limit }, context) => {
+    getTrendingHashtags: async (_, { page }, context) => {
+      const HASHTAGS_PER_PAGE = 16;
+      const pageNumber = parseInt(page, 16);
+
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer');
+      }
+
+      const skip = (pageNumber - 1) * HASHTAGS_PER_PAGE;
+
       try {
         const postHashtags = await Post.aggregate([
           { $unwind: '$hashTags' },
@@ -294,24 +303,26 @@ export const resolvers: IResolvers = {
 
         const combined = [...postHashtags, ...commentHashtags];
 
-        const hashtagMap = new Map<string, number>();
+        const hashtagMap = new Map();
 
         combined.forEach((item) => {
           const tag = item._id;
           const count = item.count;
           if (hashtagMap.has(tag)) {
-            hashtagMap.set(tag, hashtagMap.get(tag)! + count);
+            hashtagMap.set(tag, hashtagMap.get(tag) + count);
           } else {
             hashtagMap.set(tag, count);
           }
         });
 
-        const sortedHashtags: TrendingHashtagType[] = Array.from(hashtagMap, ([tag, count]) => ({
+        const sortedHashtags = Array.from(hashtagMap, ([tag, count]) => ({
           tag,
           count,
         })).sort((a, b) => b.count - a.count);
 
-        return sortedHashtags.slice(0, limit);
+        const paginatedHashtags = sortedHashtags.slice(skip, skip + HASHTAGS_PER_PAGE);
+
+        return paginatedHashtags;
       } catch (error) {
         console.error('Error fetching trending hashtags:', error);
         throw new Error('Failed to fetch trending hashtags');

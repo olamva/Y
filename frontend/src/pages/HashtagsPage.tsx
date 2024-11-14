@@ -8,53 +8,50 @@ import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-const COUNT_SIZE = 16;
-
-const HashTagscount = () => {
+const HashtagsPage = () => {
   const { hashtag } = useParams<{ hashtag: string }>();
-  const [count, setCount] = useState(1);
+  const [page, setPage] = useState(1);
   const [hashtags, setHashTags] = useState<HashtagType[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getTrendingHashtags: HashtagType[];
   }>(GET_TRENDING_HASHTAGS, {
-    variables: { hashtag, limit: COUNT_SIZE },
+    variables: { hashtag, page: page },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
 
   useEffect(() => {
-    if (data && data.getTrendingHashtags) {
+    if (data && data.getTrendingHashtags && page === 1) {
       setHashTags(data.getTrendingHashtags);
-      setHasMore(data.getTrendingHashtags.length === COUNT_SIZE);
-      setCount(1);
+      setHasMore(data.getTrendingHashtags.length > 0);
     }
-  }, [data]);
+  }, [data, page]);
 
-  const loadMorehashtags = useCallback(async () => {
+  const loadMoreHashtags = useCallback(async () => {
     if (!hasMore || loading) return;
 
     try {
-      const nextcount = count + 1;
+      const nextPage = page + 1;
       const { data: fetchMoreData } = await fetchMore({
-        variables: { hashtag, count: nextcount },
+        variables: { page: nextPage },
       });
 
       if (fetchMoreData?.getTrendingHashtags) {
-        setHashTags((prevhashtags) => [
-          ...prevhashtags,
+        setHashTags((prevHashtags) => [
+          ...prevHashtags,
           ...fetchMoreData.getTrendingHashtags,
         ]);
-        setHasMore(fetchMoreData.getTrendingHashtags.length === COUNT_SIZE);
-        setCount(nextcount);
+        setHasMore(fetchMoreData.getTrendingHashtags.length > 0);
+        setPage(nextPage);
       } else {
         setHasMore(false);
       }
     } catch (error) {
-      toast.error(`Failed to load more hashtags: ${(error as Error).message}`);
+      toast.error(`Failed to load more users: ${(error as Error).message}`);
     }
-  }, [fetchMore, hasMore, loading, count, hashtag]);
+  }, [fetchMore, hasMore, loading, page]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,12 +61,12 @@ const HashTagscount = () => {
         networkStatus !== 3 &&
         hasMore
       ) {
-        loadMorehashtags();
+        loadMoreHashtags();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loadMorehashtags, hasMore, networkStatus]);
+  }, [loadMoreHashtags, hasMore, networkStatus]);
 
   if (loading && networkStatus === 1) {
     return <p className="mt-4 text-center">Loading hashtags...</p>;
@@ -113,4 +110,4 @@ const HashTagscount = () => {
   );
 };
 
-export default HashTagscount;
+export default HashtagsPage;

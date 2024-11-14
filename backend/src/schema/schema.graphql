@@ -12,7 +12,7 @@ type Query {
   getCommentsByIds(ids: [ID!]!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
-  getTrendingHashtags(limit: Int!): [TrendingHashtag!]!
+  getTrendingHashtags(page: Int!): [TrendingHashtag!]!
   getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
 }
 

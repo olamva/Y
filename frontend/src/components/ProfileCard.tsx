@@ -28,7 +28,7 @@ const ProfileCard = ({ user, large }: Props) => {
             <Avatar noHref user={user} large={true} />
           </div>
           <div className="flex-grow">
-            <h2 className="text-2xl font-bold">{user.username}</h2>
+            <h2 className="break-words text-2xl font-bold">{user.username}</h2>
           </div>
           <FollowButton targetUsername={user.username} />
         </div>

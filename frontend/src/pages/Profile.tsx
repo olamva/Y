@@ -131,7 +131,7 @@ const Profile = () => {
       <BackButton overrideRedirect="/project2/" />
       {loggedInUser && loggedInUser.username === username && (
         <div className="pt-5 text-center">
-          <h2 className="mt-2 text-3xl font-bold">
+          <h2 className="mt-2 break-words text-3xl font-bold">
             Welcome, {loggedInUser.username}
           </h2>
         </div>
