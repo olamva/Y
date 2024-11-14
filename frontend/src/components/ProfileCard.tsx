@@ -17,7 +17,7 @@ const ProfileCard = ({ user, large }: Props) => {
           backgroundPosition: "center top",
         }}
         href={`/project2/user/${user.username}`}
-        className="flex h-64 w-full flex-col items-center justify-center rounded-lg border bg-cover bg-no-repeat text-white hover:opacity-80"
+        className="flex h-64 w-full flex-col items-center justify-center rounded-lg border border-gray-400 bg-zinc-200 bg-cover bg-no-repeat shadow-xl hover:opacity-80 dark:border-gray-600 dark:bg-zinc-800"
       >
         <div className="flex flex-col items-center gap-2">
           <div className="flex-shrink-0">
