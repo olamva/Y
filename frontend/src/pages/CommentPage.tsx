@@ -57,6 +57,7 @@ const CommentPage = () => {
     error: parentPostError,
   } = useQuery<{ getParent: PostType | CommentType }>(GET_PARENT, {
     variables: { parentID: reply?.parentID, parentType: reply?.parentType },
+    skip: !reply,
   });
 
   const parentPost = parentPostData?.getParent;
