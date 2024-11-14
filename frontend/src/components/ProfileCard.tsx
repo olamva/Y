@@ -30,6 +30,7 @@ const ProfileCard = ({ user, large }: Props) => {
           <div className="flex-grow">
             <h2 className="text-2xl font-bold">{user.username}</h2>
           </div>
+          <FollowButton targetUsername={user.username} />
         </div>
       </a>
     );
