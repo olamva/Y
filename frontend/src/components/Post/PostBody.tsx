@@ -1,5 +1,15 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { UserType } from "@/lib/types";
+import { GET_USER_QUERY } from "@/queries/user";
+import { useQuery } from "@apollo/client";
 import { MouseEvent, TouchEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import ProfilePreview from "../ProfilePreview";
 
 interface PostBodyProps {
   text: string;
@@ -81,19 +91,34 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
           </Link>,
         );
       } else if (mention) {
+        const { data } = useQuery<{ getUser: UserType }>(GET_USER_QUERY, {
+          variables: { username: mention },
+        });
+
+        const user = data?.getUser;
         parts.push(
-          <Link
-            key={`mention-${index}`}
-            to={`/project2/user/${mention}`}
-            onClick={(
-              e: MouseEvent<HTMLAnchorElement> | TouchEvent<HTMLAnchorElement>,
-            ) => {
-              e.stopPropagation();
-            }}
-            className="text-blue-500 underline-offset-4 hover:underline"
-          >
-            @{mention}
-          </Link>,
+          <TooltipProvider key={`mention-${index}`}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to={`/project2/user/${mention}`}
+                  onClick={(
+                    e:
+                      | MouseEvent<HTMLAnchorElement>
+                      | TouchEvent<HTMLAnchorElement>,
+                  ) => {
+                    e.stopPropagation();
+                  }}
+                  className="text-blue-500 underline-offset-4 hover:underline"
+                >
+                  @{mention}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="border border-gray-300 p-0 dark:border-gray-600">
+                {user && <ProfilePreview user={user} />}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>,
         );
       }
 
