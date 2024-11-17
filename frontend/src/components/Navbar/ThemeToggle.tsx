@@ -29,7 +29,7 @@ const ThemeToggle = () => {
         <button
           onClick={toggleTheme}
           className={`mx-4 h-10 w-16 rounded-full p-1 transition-colors duration-300 focus:outline-none ${
-            theme === "dark" ? "bg-gray-900" : "bg-gray-300"
+            theme === "dark" ? "bg-gray-800" : "bg-gray-300"
           }`}
           aria-label={
             theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
@@ -38,7 +38,7 @@ const ThemeToggle = () => {
           <div
             className={`flex h-8 w-8 transform items-center justify-center rounded-full transition-transform duration-300 ${
               theme === "dark"
-                ? "translate-x-6 bg-gray-800"
+                ? "translate-x-6 bg-gray-900"
                 : "translate-x-0 bg-white"
             }`}
           >

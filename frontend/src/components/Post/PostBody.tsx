@@ -139,9 +139,11 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
                   @{mention}
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="border border-gray-300 p-0 dark:border-gray-600">
-                {user && <ProfilePreview user={user} />}
-              </TooltipContent>
+              {user && (
+                <TooltipContent className="border border-gray-300 p-0 dark:border-gray-600">
+                  <ProfilePreview user={user} />
+                </TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>,
         );
