@@ -1,4 +1,4 @@
-import { Document, Schema, model, Types } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
 export interface PostType extends Document {
   body?: string;
@@ -9,6 +9,7 @@ export interface PostType extends Document {
   createdAt: Date;
   imageUrl?: string;
   hashTags?: string[];
+  mentionedUsers?: Types.ObjectId[];
 }
 
 const PostSchema = new Schema<PostType>({
@@ -20,6 +21,7 @@ const PostSchema = new Schema<PostType>({
   createdAt: { type: Date, default: Date.now },
   imageUrl: { type: String, default: undefined },
   hashTags: { type: [String], default: undefined, index: true },
+  mentionedUsers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
 });
 
 export const Post = model<PostType>('Post', PostSchema);

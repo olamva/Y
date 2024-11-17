@@ -36,14 +36,14 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
    * Hashtags are converted to <Link> components from react-router-dom.
    */
   const linkify = (text: string) => {
-    const combinedRegex = /(https?:\/\/[^\s]+)|#(\w+)/g;
+    const combinedRegex = /(https?:\/\/[^\s]+)|#(\w+)|@(\w+)/g;
     const parts = [];
     let lastIndex = 0;
     let match;
 
     while ((match = combinedRegex.exec(text)) !== null) {
       const { index } = match;
-      const [fullMatch, url, hashtag] = match;
+      const [fullMatch, url, hashtag, mention] = match;
       if (index > lastIndex) {
         parts.push(text.substring(lastIndex, index));
       }
@@ -78,6 +78,21 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
             className="text-blue-500 hover:underline"
           >
             #{hashtag}
+          </Link>,
+        );
+      } else if (mention) {
+        parts.push(
+          <Link
+            key={`mention-${index}`}
+            to={`/project2/user/${mention}`}
+            onClick={(
+              e: MouseEvent<HTMLAnchorElement> | TouchEvent<HTMLAnchorElement>,
+            ) => {
+              e.stopPropagation();
+            }}
+            className="text-blue-500 underline-offset-4 hover:underline"
+          >
+            @{mention}
           </Link>,
         );
       }

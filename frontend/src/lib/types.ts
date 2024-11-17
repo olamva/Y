@@ -30,8 +30,10 @@ export type UserType = {
   username: string;
   postIds: string[];
   likedPostIds: string[];
-  likedCommentIds: string[];
+  mentionedPostIds: string[];
   commentIds: string[];
+  likedCommentIds: string[];
+  mentionedCommentIds: string[];
   followers: UserType[];
   following: UserType[];
   profilePicture?: string;

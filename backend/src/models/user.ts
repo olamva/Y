@@ -6,8 +6,10 @@ export interface UserType extends Document {
   password: string;
   postIds: string[];
   likedPostIds: string[];
-  likedCommentIds: string[];
+  mentionedPostIds: string[];
   commentIds: string[];
+  likedCommentIds: string[];
+  mentionedCommentIds: string[];
   followers: Types.ObjectId[];
   following: Types.ObjectId[];
   profilePicture?: string;
@@ -20,10 +22,12 @@ const UserSchema = new Schema<UserType>({
   password: { type: String, required: true },
   postIds: { type: [String], default: [] },
   likedPostIds: { type: [String], default: [] },
+  mentionedPostIds: { type: [String], default: [] },
+  commentIds: { type: [String], default: [] },
   likedCommentIds: { type: [String], default: [] },
+  mentionedCommentIds: { type: [String], default: [] },
   followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
   following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
-  commentIds: { type: [String], default: [] },
   profilePicture: { type: String, default: undefined },
   backgroundPicture: { type: String, default: undefined },
 });

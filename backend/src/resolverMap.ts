@@ -7,8 +7,7 @@ import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
 import { User } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
-import { extractHashtags } from './utils';
-import { TrendingHashtagType } from './models/hashtag';
+import { extractHashtags, extractMentions } from './utils';
 
 export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
@@ -396,13 +395,20 @@ export const resolvers: IResolvers = {
       }
 
       const hashTags = body ? extractHashtags(body) : undefined;
+      const mentionedUsers = body ? await extractMentions(body) : undefined;
 
       try {
-        const newPost = new Post({ body, author: user.id, imageUrl, hashTags });
+        const newPost = new Post({ body, author: user.id, imageUrl, hashTags, mentionedUsers });
         const savedPost = await newPost.save();
 
         user.postIds.push(savedPost.id);
         await user.save();
+
+        if (mentionedUsers) {
+          mentionedUsers.forEach(
+            async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedPostIds: savedPost.id } })
+          );
+        }
 
         return await savedPost.populate('author');
       } catch (err) {
@@ -518,6 +524,7 @@ export const resolvers: IResolvers = {
       }
 
       const hashTags = body ? extractHashtags(body) : undefined;
+      const mentionedUsers = body ? await extractMentions(body) : undefined;
 
       if (!post.originalBody) post.originalBody = post.body;
       if (post.originalBody === body) post.originalBody = undefined;
@@ -525,6 +532,21 @@ export const resolvers: IResolvers = {
       post.body = body;
       post.imageUrl = imageUrl;
       post.hashTags = hashTags;
+
+      if (
+        mentionedUsers &&
+        mentionedUsers.length > 0 &&
+        post.mentionedUsers &&
+        post.mentionedUsers.length > 0
+      ) {
+        mentionedUsers
+          .filter((id) => !post.mentionedUsers?.includes(id))
+          .forEach(async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedPostIds: post.id } }));
+        post.mentionedUsers
+          .filter((id) => !mentionedUsers.includes(id))
+          .forEach(async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: post.id } }));
+      }
+      post.mentionedUsers = mentionedUsers;
       await post.save();
 
       return await post.populate('author');
@@ -573,6 +595,7 @@ export const resolvers: IResolvers = {
       }
 
       const hashTags = body ? extractHashtags(body) : undefined;
+      const mentionedUsers = body ? await extractMentions(body) : undefined;
 
       if (!comment.originalBody) comment.originalBody = comment.body;
       if (comment.originalBody === body) comment.originalBody = undefined;
@@ -580,6 +603,26 @@ export const resolvers: IResolvers = {
       comment.body = body;
       comment.imageUrl = imageUrl;
       comment.hashTags = hashTags;
+
+      if (
+        mentionedUsers &&
+        mentionedUsers.length > 0 &&
+        comment.mentionedUsers &&
+        comment.mentionedUsers.length > 0
+      ) {
+        mentionedUsers
+          .filter((id) => !comment.mentionedUsers?.includes(id))
+          .forEach(
+            async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedCommentIds: comment.id } })
+          );
+        comment.mentionedUsers
+          .filter((id) => !mentionedUsers.includes(id))
+          .forEach(
+            async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: comment.id } })
+          );
+      }
+      comment.mentionedUsers = mentionedUsers;
+
       await comment.save();
 
       return await comment.populate('author');
@@ -654,6 +697,7 @@ export const resolvers: IResolvers = {
         }
       }
       const hashTags = body ? extractHashtags(body) : undefined;
+      const mentionedUsers = body ? await extractMentions(body) : undefined;
 
       try {
         const newComment = new Comment({
@@ -663,6 +707,7 @@ export const resolvers: IResolvers = {
           parentType,
           imageUrl,
           hashTags,
+          mentionedUsers,
         });
         const savedComment = await newComment.save();
 
@@ -674,6 +719,13 @@ export const resolvers: IResolvers = {
 
         user.commentIds.push(savedComment.id);
         await user.save();
+
+        if (mentionedUsers) {
+          mentionedUsers.forEach(
+            async (id) =>
+              await User.findByIdAndUpdate(id, { $push: { mentionedCommentIds: savedComment.id } })
+          );
+        }
 
         return await savedComment.populate('author');
       } catch (err) {
@@ -710,6 +762,11 @@ export const resolvers: IResolvers = {
         }
 
         user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
+
+        deletedPost.mentionedUsers?.forEach(
+          async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: deletedPost.id } })
+        );
+
         await user.save();
 
         return deletedPost;
@@ -755,6 +812,12 @@ export const resolvers: IResolvers = {
         user.commentIds = user.commentIds.filter(
           (commentId) => String(commentId) !== String(deletedComment.id)
         );
+
+        deletedComment.mentionedUsers?.forEach(
+          async (id) =>
+            await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: deletedComment.id } })
+        );
+
         await user.save();
 
         return deletedComment;
@@ -945,6 +1008,7 @@ export const resolvers: IResolvers = {
 
   Post: {
     hashTags: (parent) => parent.hashTags,
+    mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
     },
@@ -952,6 +1016,7 @@ export const resolvers: IResolvers = {
 
   Comment: {
     hashTags: (parent) => parent.hashTags,
+    mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
     },
