@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 import { UserType } from "@/lib/types";
 import { GET_USER_QUERY } from "@/queries/user";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { MouseEvent, TouchEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import ProfilePreview from "../ProfilePreview";
@@ -40,12 +40,40 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
     }
   }, []);
 
+  const [userMentions, setUserMentions] = useState<{
+    [key: string]: UserType | null;
+  }>({});
+  const [fetchUser] = useLazyQuery<{ getUser: UserType }>(GET_USER_QUERY);
+
+  useEffect(() => {
+    const fetchUserMentions = async (mentions: string[]) => {
+      const results = await Promise.all(
+        mentions.map(async (mention) => {
+          const { data } = await fetchUser({
+            variables: { username: mention },
+          });
+          return { mention, user: data?.getUser };
+        }),
+      );
+      const userMap: { [key: string]: UserType | null } = {};
+      results.forEach(({ mention, user }) => {
+        userMap[mention] = user ?? null;
+      });
+      setUserMentions(userMap);
+    };
+
+    const mentions = Array.from(
+      new Set(text.match(/@(\w+)/g)?.map((m) => m.slice(1)) || []),
+    );
+    fetchUserMentions(mentions);
+  }, [text, fetchUser]);
+
   /**
    * linkify function that converts URLs and hashtags into clickable links.
    * URLs are converted to <a> tags.
    * Hashtags are converted to <Link> components from react-router-dom.
    */
-  const linkify = (text: string) => {
+  const Linkify = (text: string) => {
     const combinedRegex = /(https?:\/\/[^\s]+)|#(\w+)|@(\w+)/g;
     const parts = [];
     let lastIndex = 0;
@@ -54,6 +82,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
     while ((match = combinedRegex.exec(text)) !== null) {
       const { index } = match;
       const [fullMatch, url, hashtag, mention] = match;
+
       if (index > lastIndex) {
         parts.push(text.substring(lastIndex, index));
       }
@@ -91,11 +120,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
           </Link>,
         );
       } else if (mention) {
-        const { data } = useQuery<{ getUser: UserType }>(GET_USER_QUERY, {
-          variables: { username: mention },
-        });
-
-        const user = data?.getUser;
+        const user = userMentions[mention];
         parts.push(
           <TooltipProvider key={`mention-${index}`}>
             <Tooltip>
@@ -140,7 +165,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
           isExpanded ? "" : "line-clamp-3"
         }`}
       >
-        {linkify(text)}
+        {Linkify(text)}
       </p>
       {showReadMore && (
         <button
