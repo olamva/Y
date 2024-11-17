@@ -20,8 +20,8 @@ export const SEARCH_POSTS = gql`
 `;
 
 export const SEARCH_USERS = gql`
-  query SearchUsers($query: String!) {
-    searchUsers(query: $query) {
+  query SearchUsers($query: String!, $page: Int!, $limit: Int!) {
+    searchUsers(query: $query, page: $page, limit: $limit) {
       ... on User {
         id
         username

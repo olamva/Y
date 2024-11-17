@@ -10,6 +10,7 @@ type ContentType = {
 };
 
 export type HashtagType = {
+  __typename: "Hashtag";
   tag: string;
   count: number;
 };

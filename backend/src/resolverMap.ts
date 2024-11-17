@@ -149,16 +149,25 @@ export const resolvers: IResolvers = {
       }
     },
 
-    searchUsers: async (_, { query }) => {
+    searchUsers: async (_, { query, page, limit }) => {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }
 
+      const PAGE_SIZE = limit || 10;
+      const pageNumber = parseInt(page, 10);
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer');
+      }
+      const skip = (pageNumber - 1) * PAGE_SIZE;
+
       try {
-        return await User.find({
-          username: { $regex: query, $options: 'i' },
-        }).sort({ createdAt: -1 });
+        return await User.find({ username: { $regex: query, $options: 'i' } })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(PAGE_SIZE);
       } catch (err) {
+        console.error('Search Users Error:', err);
         throw new Error('Error performing user search');
       }
     },

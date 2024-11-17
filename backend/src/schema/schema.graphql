@@ -5,7 +5,7 @@ type Query {
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!
   searchPosts(query: String!, page: Int!): [Post!]!
-  searchUsers(query: String!): [User!]!
+  searchUsers(query: String!, page: Int!, limit: Int!): [User!]!
   searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
   getComment(id: ID!): Comment

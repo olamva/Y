@@ -3,7 +3,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChangeEvent, KeyboardEvent, forwardRef, useState } from "react";
+import useDebounce from "@/hooks/useDebounce"; // Import the debounce hook
+import { HashtagType, UserType } from "@/lib/types";
+import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
+import { useQuery } from "@apollo/client";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
 
 interface TextInputProps {
   value: string;
@@ -15,41 +25,67 @@ interface TextInputProps {
 const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
   ({ value, onChange, placeholder, maxChars }, ref) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [suggestionType, setSuggestionType] = useState<
-      "mentions" | "hashtags"
-    >("mentions");
-    const [suggestionQuery, setSuggestionQuery] = useState("");
-    const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-
-    const suggestions = ["user1", "user2", "user3"];
-    const filteredSuggestions = suggestions.filter((suggestion) =>
-      suggestion.includes(suggestionQuery),
+    const [suggestionType, setSuggestionType] = useState<"users" | "hashtags">(
+      "users",
     );
+    const [query, setQuery] = useState("");
+    const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+    const [currentSuggestions, setCurrentSuggestions] = useState<
+      (HashtagType | UserType)[]
+    >([]);
+
+    const debouncedQuery = useDebounce(query, 300);
+
+    const { data: hashtagsData, loading: hashtagsLoading } = useQuery<{
+      searchHashtags: HashtagType[];
+    }>(SEARCH_HASHTAGS, {
+      variables: { query: debouncedQuery, page: 1, limit: 5 },
+      skip: suggestionType !== "hashtags" || debouncedQuery.length < 1,
+    });
+
+    const hashtagSuggestions = hashtagsData?.searchHashtags || [];
+
+    const { data: mentionsData, loading: mentionsLoading } = useQuery<{
+      searchUsers: UserType[];
+    }>(SEARCH_USERS, {
+      variables: { query: debouncedQuery, page: 1, limit: 5 },
+      skip: suggestionType !== "users" || debouncedQuery.length < 1,
+    });
+
+    const mentionSuggestions = mentionsData?.searchUsers || [];
+
+    useEffect(() => {
+      if (suggestionType === "users") {
+        setCurrentSuggestions(mentionSuggestions);
+      } else {
+        setCurrentSuggestions(hashtagSuggestions);
+      }
+    }, [mentionSuggestions, hashtagSuggestions, suggestionType]);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (showSuggestions) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
           setActiveSuggestionIndex((prevIndex) =>
-            prevIndex === filteredSuggestions.length - 1 ? 0 : prevIndex + 1,
+            prevIndex === currentSuggestions.length - 1 ? 0 : prevIndex + 1,
           );
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
           setActiveSuggestionIndex((prevIndex) =>
-            prevIndex === 0 ? filteredSuggestions.length - 1 : prevIndex - 1,
+            prevIndex === 0 ? currentSuggestions.length - 1 : prevIndex - 1,
           );
-        } else if (e.key === "Enter" && filteredSuggestions.length > 0) {
+        } else if (e.key === "Enter" && currentSuggestions.length > 0) {
           e.preventDefault();
-          const selectedSuggestion = filteredSuggestions[activeSuggestionIndex];
+          const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
           const currentValue = value.split(" ");
           currentValue.pop();
+          const finalSuggestion =
+            selectedSuggestion.__typename === "User"
+              ? `@${selectedSuggestion.username} `
+              : `#${selectedSuggestion.tag} `;
           onChange({
             target: {
-              value:
-                currentValue +
-                (suggestionType === "mentions" ? "@" : "#") +
-                selectedSuggestion +
-                " ",
+              value: currentValue + finalSuggestion,
             },
           } as ChangeEvent<HTMLTextAreaElement>);
           setShowSuggestions(false);
@@ -73,14 +109,17 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       const value = e.target.value;
       const lastWord = value.split(" ").pop();
 
-      if (lastWord?.startsWith("@") || lastWord?.startsWith("#")) {
+      if (
+        (lastWord?.startsWith("@") || lastWord?.startsWith("#")) &&
+        lastWord.length > 1
+      ) {
         setShowSuggestions(true);
-        setSuggestionQuery(lastWord?.slice(1));
-        setSuggestionType(lastWord?.startsWith("@") ? "mentions" : "hashtags");
+        setQuery(lastWord?.slice(1));
+        setSuggestionType(lastWord?.startsWith("@") ? "users" : "hashtags");
         setActiveSuggestionIndex(0);
       } else {
         setShowSuggestions(false);
-        setSuggestionQuery("");
+        setQuery("");
       }
 
       e.target.style.height = "auto";
@@ -103,22 +142,37 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           </PopoverTrigger>
           <PopoverContent
             onOpenAutoFocus={(e) => e.preventDefault()}
-            className="p-0"
+            className="p-0 overflow-hidden"
           >
-            {filteredSuggestions.length > 0 ? (
+            {hashtagsLoading || mentionsLoading ? (
+              <p className="w-full p-2">Loading...</p>
+            ) : currentSuggestions.length > 0 ? (
               <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
-                {filteredSuggestions.map((suggestion, index) => (
-                  <div
-                    key={suggestion}
-                    className={`w-full p-2 ${
-                      index === activeSuggestionIndex
-                        ? "bg-blue-500 text-white"
-                        : ""
-                    }`}
-                  >
-                    {suggestion}
-                  </div>
-                ))}
+                {currentSuggestions.map((suggestion, index) =>
+                  suggestion.__typename === "User" ? (
+                    <div
+                      key={suggestion.id}
+                      className={`w-full p-2 ${
+                        index === activeSuggestionIndex
+                          ? "bg-blue-500 text-white"
+                          : ""
+                      }`}
+                    >
+                      {suggestion.username}
+                    </div>
+                  ) : (
+                    <div
+                      key={suggestion.tag}
+                      className={`w-full p-2 ${
+                        index === activeSuggestionIndex
+                          ? "bg-blue-500 text-white"
+                          : ""
+                      }`}
+                    >
+                      {suggestion.tag}
+                    </div>
+                  ),
+                )}
               </div>
             ) : (
               <p className="w-full p-2">No matching {suggestionType}</p>
