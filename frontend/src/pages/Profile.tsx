@@ -107,9 +107,12 @@ const Profile = () => {
   const likedContent: (PostType | CommentType)[] = [
     ...likedPosts,
     ...likedComments,
-  ].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  ].sort((a, b) => {
+    return (
+      new Date(parseInt(b.createdAt)).getTime() -
+      new Date(parseInt(a.createdAt)).getTime()
+    );
+  });
 
   const {
     data: commentsData,
@@ -168,9 +171,12 @@ const Profile = () => {
   const mentionedContent: (PostType | CommentType)[] = [
     ...mentionedPosts,
     ...mentionedComments,
-  ].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  ].sort((a, b) => {
+    return (
+      new Date(parseInt(b.createdAt)).getTime() -
+      new Date(parseInt(a.createdAt)).getTime()
+    );
+  });
 
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
