@@ -137,7 +137,8 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
 
       if (
         (lastWord?.startsWith("@") || lastWord?.startsWith("#")) &&
-        lastWord.length > 1
+        lastWord.length > 1 &&
+        /^[a-zA-Z0-9]+$/.test(lastWord.slice(-1))
       ) {
         setShowSuggestions(true);
         setQuery(lastWord?.slice(1));
