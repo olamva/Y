@@ -3,6 +3,7 @@ import BackButton from "@/components/BackButton";
 import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
@@ -193,24 +194,21 @@ const PostPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [commentsLoading, page, hasMore, commentsNetworkStatus, loadMoreComments]);
 
-  if (postLoading) {
-    return <p>Loading...</p>;
-  }
   if (postError) {
     return <p>Error loading post: {postError.message}</p>;
   }
 
-  if (!post) {
-    return <h1>Post not found</h1>;
+  if (!post && !postLoading) {
+    return <p>Post not found.</p>;
   }
 
   return (
     <div className="w-full">
       <BackButton
-        overrideRedirect={editing ? `/project2/post/${post.id}` : "/project2/"}
+        overrideRedirect={editing ? `/project2/post/${post!.id}` : "/project2/"}
       />
       <main className="flex flex-col items-center px-4 pt-5">
-        {editing ? (
+        {editing && post ? (
           <form
             className="flex w-full max-w-xl flex-col items-start gap-4"
             onSubmit={handleEditPost}
@@ -232,8 +230,14 @@ const PostPage = () => {
               }
             />
           </form>
-        ) : (
+        ) : postLoading ? (
+          <div className="flex w-full max-w-xl flex-col">
+            <PostSkeleton />
+          </div>
+        ) : post ? (
           <Post post={post} doesntRedirect />
+        ) : (
+          <p>Post not found.</p>
         )}
         <Divider />
         {!editing && (
@@ -270,10 +274,13 @@ const PostPage = () => {
           <p>Error loading comments: {commentsError.message}</p>
         )}
 
-        {commentsLoading ||
-          (commentsNetworkStatus === NetworkStatus.loading && (
-            <p>Loading comments...</p>
-          ))}
+        {!commentsData && commentsLoading && (
+          <div className="flex w-full max-w-xl flex-col gap-4">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <PostSkeleton key={index} />
+            ))}
+          </div>
+        )}
 
         {!hasMore && (
           <p className="mt-4 text-gray-500 dark:text-gray-400">
