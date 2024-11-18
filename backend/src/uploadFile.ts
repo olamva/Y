@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import sanitize from 'sanitize-filename';
+import sharp from 'sharp';
 
 const UPLOADS_PATH =
   process.env.NODE_ENV === 'production' ? '/var/www/html/uploads' : path.join(__dirname, 'uploads');
@@ -47,41 +48,37 @@ export const uploadFile = async (
 
     fs.mkdirSync(UPLOADS_PATH, { recursive: true });
 
+    const tempFilePath = path.join(UPLOADS_PATH, `temp-${uniqueFilename}`);
+
     return new Promise((resolve, reject) => {
       const stream = createReadStream();
-      const out = fs.createWriteStream(filepath);
+      const out = fs.createWriteStream(tempFilePath);
       let totalBytes = 0;
-      let hasError = false;
 
-      stream.on('error', (err) => {
-        hasError = true;
-        fs.unlink(filepath, () => {
-          reject(err);
-        });
+      stream.on('data', (chunk: Buffer) => {
+        totalBytes += chunk.length;
+        if (totalBytes > MAX_SIZE) {
+          stream.destroy(new Error('File size exceeds the 10MB limit.'));
+        }
       });
 
-      out.on('error', (err) => {
-        hasError = true;
-        fs.unlink(filepath, () => {
-          reject(err);
-        });
-      });
-
-      out.on('finish', () => {
-        if (!hasError) {
+      stream.on('error', (err) => reject(err));
+      out.on('error', (err) => reject(err));
+      out.on('finish', async () => {
+        try {
+          if (username) {
+            await sharp(tempFilePath).resize(300, 300, { fit: 'cover' }).toFile(filepath);
+            fs.unlinkSync(tempFilePath);
+          } else {
+            fs.renameSync(tempFilePath, filepath);
+          }
           resolve({
             success: true,
             message: 'File uploaded successfully',
             url: `/uploads/${uniqueFilename}`,
           });
-        }
-      });
-
-      stream.on('data', (chunk: Buffer) => {
-        totalBytes += chunk.length;
-        if (totalBytes > MAX_SIZE) {
-          hasError = true;
-          stream.destroy(new Error('File size exceeds the 10MB limit.'));
+        } catch (err) {
+          reject(err);
         }
       });
 

@@ -275,7 +275,7 @@ const EditProfile = ({ user }: Props) => {
                               alt="Profile"
                               width={100}
                               height={100}
-                              className="rounded-full"
+                              className="aspect-square rounded-full object-cover"
                             />
                             <button
                               type="button"
