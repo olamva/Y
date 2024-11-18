@@ -99,10 +99,13 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments');
       }
     },
-    getPostsByIds: async (_, { ids }) => {
+    getPostsByIds: async (_, { ids, page }) => {
+      const limit = 10;
       try {
         return await Post.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
           .populate('author');
       } catch (err) {
         throw new Error('Error fetching posts by IDs');
@@ -118,10 +121,13 @@ export const resolvers: IResolvers = {
       }
     },
 
-    getCommentsByIds: async (_, { ids }) => {
+    getCommentsByIds: async (_, { ids, page }) => {
+      const limit = 10;
       try {
         return await Comment.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
           .populate('author');
       } catch (err) {
         throw new Error('Error fetching comments by IDs');
@@ -283,9 +289,11 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching parent');
       }
     },
-    getParentsByIds: async (_, { parents }) => {
+    getParentsByIds: async (_, { parents, page }) => {
       const fetchedParents: (PostType | CommentType)[] = [];
+      const limit = 10;
       try {
+        const parentsToFetch = parents.slice((page - 1) * limit, page * limit);
         await Promise.all(
           parents.map(async (parent: { id: string; type: string }) => {
             if (parent.type === 'post') {

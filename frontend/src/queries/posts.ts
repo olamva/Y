@@ -39,8 +39,8 @@ export const GET_POST = gql`
 `;
 
 export const GET_POSTS_BY_IDS = gql`
-  query GetPostsByIds($ids: [ID!]!) {
-    getPostsByIds(ids: $ids) {
+  query GetPostsByIds($ids: [ID!]!, $page: Int!) {
+    getPostsByIds(ids: $ids, page: $page) {
       id
       body
       originalBody
@@ -149,8 +149,8 @@ export const GET_PARENT = gql`
 `;
 
 export const GET_PARENTS_BY_IDS = gql`
-  query GetParentsByIds($parents: [ParentInput!]!) {
-    getParentsByIds(parents: $parents) {
+  query GetParentsByIds($parents: [ParentInput!]!, $page: Int!) {
+    getParentsByIds(parents: $parents, page: $page) {
       ... on Post {
         id
         body
