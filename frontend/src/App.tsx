@@ -22,6 +22,7 @@ const HomePage = () => {
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [filter, setFilter] = useState<
     "FOR_YOU" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL"
   >("FOR_YOU");
@@ -32,6 +33,7 @@ const HomePage = () => {
     variables: { page: 1, filter },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
+    skip: filter === "FOLLOWING" && !user,
   });
 
   const { data: usersData, error: usersError } = useQuery<{
@@ -130,6 +132,12 @@ const HomePage = () => {
     refetch({ page: 1, filter });
   }, [filter, refetch]);
 
+  useEffect(() => {
+    if (filter !== "FOLLOWING") {
+      setShowLoginPrompt(false);
+    }
+  }, [filter]);
+
   if (networkStatus === NetworkStatus.loading)
     return <p className="mt-4 text-center">Loading...</p>;
 
@@ -196,7 +204,7 @@ const HomePage = () => {
             className={`mx-2 flex-1 rounded-lg border p-4 ${
               filter === "FOR_YOU"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
             onClick={() => setFilter("FOR_YOU")}
           >
@@ -206,9 +214,16 @@ const HomePage = () => {
             className={`mx-2 flex-1 rounded-lg border p-4 ${
               filter === "FOLLOWING"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
-            onClick={() => setFilter("FOLLOWING")}
+            onClick={() => {
+              if (user) {
+                setFilter("FOLLOWING");
+              } else {
+                setFilter("FOLLOWING");
+                setShowLoginPrompt(true);
+              }
+            }}
           >
             Following
           </button>
@@ -216,7 +231,7 @@ const HomePage = () => {
             className={`mx-2 flex-1 rounded-lg border p-4 ${
               filter === "POPULAR"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
             onClick={() => setFilter("POPULAR")}
           >
@@ -226,7 +241,7 @@ const HomePage = () => {
             className={`mx-2 flex-1 rounded-lg border p-4 ${
               filter === "CONTROVERSIAL"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
             onClick={() => setFilter("CONTROVERSIAL")}
           >
@@ -234,11 +249,27 @@ const HomePage = () => {
           </button>
         </section>
 
-        <div className="flex flex-col gap-4">
-          {posts.map((post) => (
-            <Post key={post.id} post={post} />
-          ))}
-        </div>
+        {showLoginPrompt && (
+          <div className="my-4 flex flex-col justify-center gap-5">
+            <p>You need to log in to view following posts</p>
+            <button
+              onClick={() => {
+                window.location.href = "/project2/login";
+              }}
+              className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <span>Log In</span>
+            </button>
+          </div>
+        )}
+
+        {!showLoginPrompt && (
+          <div className="flex flex-col gap-4">
+            {posts.map((post) => (
+              <Post key={post.id} post={post} />
+            ))}
+          </div>
+        )}
 
         {!hasMore && (
           <p className="mt-4 justify-self-center text-gray-500 dark:text-gray-400">
