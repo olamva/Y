@@ -100,7 +100,16 @@ const CreatePostField = ({
             type="button"
             className="h-fit"
             onClick={() => {
-              setValue(value + "@");
+              const start = textInputRef.current?.selectionStart;
+              const end = textInputRef.current?.selectionEnd;
+              if (start !== undefined && end !== undefined) {
+                setValue(
+                  value.substring(0, start) +
+                    "@" +
+                    value.substring(start, end) +
+                    value.substring(end),
+                );
+              }
             }}
           >
             <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
@@ -111,7 +120,16 @@ const CreatePostField = ({
             type="button"
             className="h-fit"
             onClick={() => {
-              setValue(value + "#");
+              const start = textInputRef.current?.selectionStart;
+              const end = textInputRef.current?.selectionEnd;
+              if (start !== undefined && end !== undefined) {
+                setValue(
+                  value.substring(0, start) +
+                    "#" +
+                    value.substring(start, end) +
+                    value.substring(end),
+                );
+              }
             }}
           >
             <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">

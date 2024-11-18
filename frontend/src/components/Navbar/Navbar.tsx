@@ -27,14 +27,14 @@ const Navbar = () => {
           href="/project2"
           className="group flex items-center justify-center gap-5 hover:scale-110 hover:text-gray-300"
         >
-          <h1 className="text-2xl font-semibold sm:text-2xl md:text-2xl lg:text-2xl xl:text-3xl">
+          <h1 className="sm:text-2x text-2xl font-semibold lg:text-2xl xl:text-3xl">
             <span className="group-hover:text-gray-600 group-hover:dark:text-gray-300">
               Y
             </span>
           </h1>
         </a>
 
-        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg md:justify-end">
+        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg lg:justify-end">
           <form onSubmit={navigateSearch}>
             <input
               type="search"
@@ -46,7 +46,7 @@ const Navbar = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </form>
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-2 lg:flex">
             <ThemeToggle />
             <div className="flex items-center gap-2">
               {user && (
