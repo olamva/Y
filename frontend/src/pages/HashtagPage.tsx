@@ -1,10 +1,11 @@
 import BackButton from "@/components/BackButton";
-import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
+import PostWithReply from "@/components/Post/PostWithReply";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { GET_CONTENT_BY_HASHTAG } from "@/queries/hashtags";
+import { GET_PARENTS_BY_IDS } from "@/queries/posts";
 import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -16,7 +17,6 @@ type Content = PostType | CommentType;
 const HashtagPage = () => {
   const { hashtag } = useParams<{ hashtag: string }>();
   const [page, setPage] = useState(1);
-  const [posts, setPosts] = useState<Content[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
@@ -27,9 +27,31 @@ const HashtagPage = () => {
     fetchPolicy: "cache-and-network",
   });
 
+  const {
+    data: parentPostsData,
+    loading: parentPostsLoading,
+    error: parentPostsError,
+    fetchMore: fetchMoreParentPosts,
+    networkStatus: parentPostsNetworkStatus,
+  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
+    GET_PARENTS_BY_IDS,
+    {
+      variables: {
+        parents: data?.getContentByHashtag
+          .filter((post) => post.__typename === "Comment")
+          .map((comment) => ({
+            id: comment.parentID,
+            type: comment.parentType,
+          })),
+      },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "cache-and-network",
+      skip: !data?.getContentByHashtag.length,
+    },
+  );
+
   useEffect(() => {
     if (data && data.getContentByHashtag) {
-      setPosts(data.getContentByHashtag);
       setHasMore(data.getContentByHashtag.length === PAGE_SIZE);
       setPage(1);
     }
@@ -45,15 +67,22 @@ const HashtagPage = () => {
       });
 
       if (fetchMoreData?.getContentByHashtag) {
-        setPosts((prevPosts) => [
-          ...prevPosts,
-          ...fetchMoreData.getContentByHashtag,
-        ]);
         setHasMore(fetchMoreData.getContentByHashtag.length === PAGE_SIZE);
         setPage(nextPage);
       } else {
         setHasMore(false);
       }
+
+      await fetchMoreParentPosts({
+        variables: {
+          parents: fetchMoreData.getContentByHashtag
+            .filter((post) => post.__typename === "Comment")
+            .map((comment) => ({
+              id: comment.parentID,
+              type: comment.parentType,
+            })),
+        },
+      });
     } catch (error) {
       toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
@@ -74,17 +103,8 @@ const HashtagPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMorePosts, hasMore, networkStatus]);
 
-  // if (loading && networkStatus === 1) {
-  //   return <p className="mt-4 text-center">Loading posts...</p>;
-  // }
-
-  if (error) {
-    return (
-      <p className="mt-4 text-center text-red-500">
-        Error loading posts: {error.message}
-      </p>
-    );
-  }
+  const posts = data?.getContentByHashtag || [];
+  const parentPosts = parentPostsData?.getParentsByIds || [];
 
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5">
@@ -95,20 +115,36 @@ const HashtagPage = () => {
         </h1>
         <Divider />
         <div className="flex w-full flex-col items-center gap-4">
-          {loading && networkStatus === 1
+          {(error || parentPostsError) && (
+            <p className="mt-4 text-center text-red-500">
+              Error loading posts: {error?.message || parentPostsError?.message}
+            </p>
+          )}
+          {(loading && networkStatus === 1) ||
+          (parentPostsLoading && parentPostsNetworkStatus === 1)
             ? Array.from({ length: 10 }).map((_, index) => (
                 <div className="w-full max-w-xl">
                   <PostSkeleton key={index} />
                 </div>
               ))
-            : posts.map((post) => {
-                if (post.__typename === "Post") {
-                  return <Post key={post.id} post={post} />;
-                } else if (post.__typename === "Comment") {
-                  return <Comment key={post.id} comment={post} />;
-                }
-                return null;
-              })}
+            : posts
+                .filter(
+                  (post) =>
+                    !parentPosts.some((parent) => parent.id === post.id),
+                )
+                .map((post) =>
+                  post.__typename === "Post" ? (
+                    <Post key={post.id} post={post} />
+                  ) : (
+                    <PostWithReply
+                      key={post.id}
+                      post={parentPosts.find(
+                        (parent) => parent.id === post.parentID,
+                      )}
+                      reply={post}
+                    />
+                  ),
+                )}
         </div>
         {loading && networkStatus === 3 && (
           <p className="mt-4 text-center">Loading more posts...</p>

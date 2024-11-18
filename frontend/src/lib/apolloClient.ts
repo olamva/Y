@@ -73,6 +73,12 @@ const client = new ApolloClient({
               return [...existing, ...incoming];
             },
           },
+          getParentsByIds: {
+            keyArgs: false,
+            merge(existing = [], incoming = []) {
+              return [...existing, ...incoming];
+            },
+          },
         },
       },
     },
