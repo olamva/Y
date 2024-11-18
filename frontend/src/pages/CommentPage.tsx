@@ -4,6 +4,7 @@ import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import {
@@ -211,7 +212,14 @@ const CommentPage = () => {
   }, [commentsLoading, page, hasMore, commentsNetworkStatus, loadMoreComments]);
 
   if (postLoading || parentPostLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="mx-auto my-16 flex w-full max-w-xl flex-col gap-4">
+        <PostSkeleton />
+        <div className="mx-auto my-4 flex w-full max-w-lg flex-col gap-4">
+          <PostSkeleton />
+        </div>
+      </div>
+    );
   }
   if (postError) {
     return <p>Error loading post: {postError.message}</p>;
