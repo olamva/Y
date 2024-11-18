@@ -2,6 +2,7 @@ import BackButton from "@/components/BackButton";
 import HashtagCard from "@/components/HashtagCard";
 import Post from "@/components/Post/Post";
 import ProfileCard from "@/components/ProfileCard";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { HashtagType, PostType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_POSTS, SEARCH_USERS } from "@/queries/search";
@@ -247,7 +248,13 @@ const SearchPage = () => {
           </div>
         )}
 
-        {isAnyLoading && <p className="mb-4 text-center">Loading results...</p>}
+        {isAnyLoading && (
+          <div className="flex w-full max-w-xl flex-col gap-4">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <PostSkeleton key={index} />
+            ))}
+          </div>
+        )}
 
         {!isAnyLoading && !isAnyError && (
           <>
