@@ -1,11 +1,11 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { GraphQLUpload } from 'graphql-upload-minimal';
-import { Types } from 'mongoose';
+import { Types, SortOrder } from 'mongoose';
 import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
-import { User } from './models/user';
+import { User, UserType } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
 import { extractHashtags, extractMentions } from './utils';
 
@@ -13,13 +13,47 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page }) => {
+    getPosts: async (_, { page, filter }, { user }) => {
       const POSTS_PER_PAGE = 10;
       const skip = (page - 1) * POSTS_PER_PAGE;
 
+      if (!user && filter === 'FOLLOWING') {
+        throw new AuthenticationError('You must be logged in to view posts.');
+      }
+
       try {
-        return await Post.find().sort({ createdAt: -1 }).skip(skip).limit(POSTS_PER_PAGE).populate('author');
+        let query: any = {};
+        let sort: Record<string, SortOrder> = { createdAt: -1 };
+
+        switch (filter) {
+          case 'LATEST':
+            query = {};
+            break;
+
+          case 'FOLLOWING':
+            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
+            query = { author: { $in: followingIds } };
+            break;
+
+          case 'POPULAR':
+            sort = { amtLikes: -1, createdAt: -1 };
+            query = {};
+            break;
+
+          case 'CONTROVERSIAL':
+            sort = { amtComments: -1, createdAt: -1 };
+            query = {};
+            break;
+
+          default:
+            throw new UserInputError('Invalid filter type.');
+        }
+
+        const posts = await Post.find(query).sort(sort).skip(skip).limit(POSTS_PER_PAGE).populate('author');
+
+        return posts;
       } catch (err) {
+        console.error(err);
         throw new Error('Error fetching posts');
       }
     },
