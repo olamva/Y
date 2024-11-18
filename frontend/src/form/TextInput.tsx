@@ -80,6 +80,14 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
 
     const handleAutofill = () => {
       const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
+      if (!selectedSuggestion) {
+        handleInputChange({
+          target: {
+            value: value + " ",
+          },
+        } as ChangeEvent<HTMLTextAreaElement>);
+        return;
+      }
       const currentValue = value.split(" ");
       currentValue.pop();
       const finalSuggestion =
@@ -117,7 +125,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           setActiveSuggestionIndex((prevIndex) =>
             prevIndex === 0 ? currentSuggestions.length - 1 : prevIndex - 1,
           );
-        } else if (e.key === "Enter" && currentSuggestions.length > 0) {
+        } else if (e.key === "Enter") {
           e.preventDefault();
           handleAutofill();
         }

@@ -133,6 +133,7 @@ const Navbar = () => {
                 value={searchQuery}
                 onKeyDown={handleKeyDown}
                 onChange={handleInputChange}
+                onMouseEnter={() => setActiveSuggestionIndex(0)}
               />
             </PopoverTrigger>
             {suggestions.length > 0 && (
@@ -144,26 +145,32 @@ const Navbar = () => {
                   <p className="w-full p-2">Loading...</p>
                 ) : (
                   <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
-                    {suggestions.slice(0, 5).map((suggestion, index) => (
-                      <div
-                        key={
-                          suggestion.__typename === "User"
-                            ? suggestion.id
-                            : suggestion.tag
-                        }
-                        className={`w-full cursor-pointer p-2 ${
-                          index + 1 === activeSuggestionIndex
-                            ? "bg-blue-500 text-white dark:bg-blue-800"
-                            : ""
-                        }`}
-                        onClick={handleSearch}
-                        onMouseEnter={() => setActiveSuggestionIndex(index + 1)}
-                      >
-                        {suggestion.__typename === "User"
-                          ? `@${suggestion.username}`
-                          : `#${suggestion.tag}`}
-                      </div>
-                    ))}
+                    {suggestions.slice(0, 5).map((suggestion, index) => {
+                      const isUser = suggestion.__typename === "User";
+                      return (
+                        <div
+                          key={isUser ? suggestion.id : suggestion.tag}
+                          className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
+                            index + 1 === activeSuggestionIndex
+                              ? "bg-blue-500 text-white dark:bg-blue-800"
+                              : ""
+                          }`}
+                          onClick={handleSearch}
+                          onMouseEnter={() =>
+                            setActiveSuggestionIndex(index + 1)
+                          }
+                        >
+                          <p className={`${isUser ? "" : "text-lg"}`}>
+                            {isUser ? "@" : "#"}
+                          </p>
+                          <p>
+                            {isUser
+                              ? `${suggestion.username}`
+                              : `${suggestion.tag}`}
+                          </p>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </PopoverContent>

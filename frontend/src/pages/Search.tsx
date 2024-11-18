@@ -3,6 +3,7 @@ import HashtagCard from "@/components/HashtagCard";
 import Post from "@/components/Post/Post";
 import ProfileCard from "@/components/ProfileCard";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
+import Divider from "@/components/ui/Divider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { HashtagType, PostType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_POSTS, SEARCH_USERS } from "@/queries/search";
@@ -193,40 +194,42 @@ const SearchPage = () => {
     <div className="w-full">
       <BackButton />
       <main className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center px-4">
-        <h1 className="my-4 text-center text-2xl font-bold">
+        {/* <h1 className="my-4 text-center text-2xl font-bold">
           Search results for: {searchQuery}
-        </h1>
+        </h1> */}
         <div className="mb-4 flex items-center gap-2">
           <ToggleGroup
             value={filterType}
             onValueChange={(value: ViewState) => setFilterType(value)}
             type="single"
             variant="outline"
-            className="flex items-center justify-center gap-2"
+            className="flex items-center justify-center gap-1"
           >
             <ToggleGroupItem
               value="posts"
               aria-label="View Posts"
-              className="text-center"
+              className="p-5 text-center text-xl"
             >
               <p>Posts</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="users"
               aria-label="View Comments"
-              className="text-center"
+              className="p-5 text-center text-xl"
             >
               <p>Users</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="hashtags"
               aria-label="View Mentions"
-              className="text-center"
+              className="p-5 text-center text-xl"
             >
               <p>Hashtags</p>
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
+
+        <Divider />
 
         {isAnyError && (
           <div className="mb-4">
