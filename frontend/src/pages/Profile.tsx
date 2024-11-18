@@ -326,7 +326,7 @@ const Profile = () => {
               onValueChange={(value: ViewState) => handleViewChange(value)}
               type="single"
               variant="outline"
-              className="grid grid-cols-2 gap-2 p-2"
+              className="grid grid-cols-2 gap-2 p-2 md:grid-cols-4"
             >
               <ToggleGroupItem
                 value="posts"

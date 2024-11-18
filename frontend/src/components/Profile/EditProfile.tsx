@@ -221,8 +221,9 @@ const EditProfile = ({ user }: Props) => {
                         type="text"
                         id="first-name"
                         defaultValue={user.firstName}
+                        placeholder="What's your first name?"
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
                     <div className="mt-6">
@@ -236,8 +237,9 @@ const EditProfile = ({ user }: Props) => {
                         type="text"
                         id="last-name"
                         defaultValue={user.lastName}
+                        placeholder="What's your last name?"
                         onChange={(e) => setLastName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
                     <div className="mt-6">
@@ -250,8 +252,9 @@ const EditProfile = ({ user }: Props) => {
                       <textarea
                         id="biography"
                         defaultValue={user.biography}
+                        placeholder="Tell us about yourself..."
                         onChange={(e) => setBiography(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
                     <div className="my-6">
