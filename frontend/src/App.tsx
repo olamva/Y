@@ -199,19 +199,21 @@ const HomePage = () => {
 
         <Divider />
 
-        <section className="mb-4 flex w-full flex-row justify-between">
+        <section className="mb-4 grid w-full grid-cols-2 gap-2 p-2 text-lg md:grid-cols-4">
           <button
-            className={`mx-2 flex-1 rounded-lg border p-4 ${
+            className={`w-full rounded-lg border p-4 ${
               filter === "FOR_YOU"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
                 : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
             onClick={() => setFilter("FOR_YOU")}
+            aria-pressed={filter === "FOR_YOU"}
           >
             For you
           </button>
+
           <button
-            className={`mx-2 flex-1 rounded-lg border p-4 ${
+            className={`w-full rounded-lg border p-4 ${
               filter === "FOLLOWING"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
                 : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
@@ -224,26 +226,31 @@ const HomePage = () => {
                 setShowLoginPrompt(true);
               }
             }}
+            aria-pressed={filter === "FOLLOWING"}
           >
             Following
           </button>
+
           <button
-            className={`mx-2 flex-1 rounded-lg border p-4 ${
+            className={`w-full rounded-lg border p-4 ${
               filter === "POPULAR"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
                 : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
             onClick={() => setFilter("POPULAR")}
+            aria-pressed={filter === "POPULAR"}
           >
             Popular
           </button>
+
           <button
-            className={`mx-2 flex-1 rounded-lg border p-4 ${
+            className={`w-full rounded-lg border p-4 ${
               filter === "CONTROVERSIAL"
                 ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
                 : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
             }`}
             onClick={() => setFilter("CONTROVERSIAL")}
+            aria-pressed={filter === "CONTROVERSIAL"}
           >
             Controversial
           </button>
