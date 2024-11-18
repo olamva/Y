@@ -2,18 +2,100 @@ import { useAuth } from "@/components/AuthContext";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import Avatar from "@/components/Profile/Avatar";
-import { FormEvent, useState } from "react";
+import useDebounce from "@/hooks/useDebounce";
+import { HashtagType, UserType } from "@/lib/types";
+import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
+import { useQuery } from "@apollo/client";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const Navbar = () => {
   const params = new URLSearchParams(location.search);
   const currentQuery = params.get("q") || "";
   const [searchQuery, setSearchQuery] = useState(currentQuery);
   const { logout, user } = useAuth();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+  const [suggestions, setSuggestions] = useState<(HashtagType | UserType)[]>(
+    [],
+  );
 
-  const navigateSearch = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (searchQuery.trim() === "") return;
-    window.location.href = `/project2/search?q=${encodeURIComponent(searchQuery)}`;
+  const debouncedQuery = useDebounce(searchQuery, 300);
+
+  const {
+    data: hashtagsData,
+    loading: hashtagsLoading,
+    refetch: refetchHashtags,
+  } = useQuery<{
+    searchHashtags: HashtagType[];
+  }>(SEARCH_HASHTAGS, {
+    variables: { query: debouncedQuery, page: 1, limit: 5 },
+    skip: debouncedQuery.length < 1,
+  });
+
+  const {
+    data: mentionsData,
+    loading: mentionsLoading,
+    refetch: refetchUsers,
+  } = useQuery<{
+    searchUsers: UserType[];
+  }>(SEARCH_USERS, {
+    variables: { query: debouncedQuery, page: 1, limit: 5 },
+    skip: debouncedQuery.length < 1,
+  });
+
+  useEffect(() => {
+    if (debouncedQuery.length > 0) {
+      refetchHashtags();
+      refetchUsers();
+    }
+  }, [debouncedQuery, refetchHashtags, refetchUsers]);
+
+  useEffect(() => {
+    setSuggestions([
+      ...(hashtagsData?.searchHashtags ?? []),
+      ...(mentionsData?.searchUsers ?? []),
+    ]);
+  }, [hashtagsData, mentionsData]);
+
+  const handleAutofill = () => {
+    if (activeSuggestionIndex === 0)
+      window.location.href = `/project2/search?q=${encodeURIComponent(
+        searchQuery,
+      )}`;
+    const selectedSuggestion = suggestions[activeSuggestionIndex - 1];
+    window.location.href = `/project2/${
+      selectedSuggestion.__typename === "User"
+        ? `user/${selectedSuggestion.username}`
+        : `hashtag/${selectedSuggestion.tag}`
+    }`;
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    if (!showSuggestions) {
+      setShowSuggestions(true);
+      setActiveSuggestionIndex(0);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (showSuggestions) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveSuggestionIndex((prevIndex) =>
+          prevIndex === suggestions.length - 2 ? 0 : prevIndex + 1,
+        );
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveSuggestionIndex((prevIndex) =>
+          prevIndex === 0 ? suggestions.length - 2 : prevIndex - 1,
+        );
+      } else if (e.key === "Enter" && suggestions.length > 0) {
+        e.preventDefault();
+        handleAutofill();
+      }
+    }
   };
 
   const login = () => {
@@ -22,7 +104,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed z-[100] flex h-20 w-full items-center justify-between bg-gray-200/40 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
+      <nav className="fixed z-[60] flex h-20 w-full items-center justify-between bg-gray-200/40 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
         <a
           href="/project2"
           className="group flex items-center justify-center gap-5 hover:scale-110 hover:text-gray-300"
@@ -35,16 +117,57 @@ const Navbar = () => {
         </a>
 
         <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg lg:justify-end">
-          <form onSubmit={navigateSearch}>
-            <input
-              type="search"
-              id="search"
-              maxLength={40}
-              placeholder="Search here..."
-              className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <form>
+            <Popover open={showSuggestions}>
+              <PopoverTrigger asChild>
+                <input
+                  type="search"
+                  id="search"
+                  maxLength={40}
+                  placeholder="Search here..."
+                  autoComplete="off"
+                  className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
+                  value={searchQuery}
+                  onKeyDown={handleKeyDown}
+                  onChange={handleInputChange}
+                />
+              </PopoverTrigger>
+              {suggestions.length > 0 && (
+                <PopoverContent
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                  className="z-[70] overflow-hidden p-0"
+                >
+                  {hashtagsLoading || mentionsLoading ? (
+                    <p className="w-full p-2">Loading...</p>
+                  ) : (
+                    <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
+                      {suggestions.slice(0, 5).map((suggestion, index) => (
+                        <div
+                          key={
+                            suggestion.__typename === "User"
+                              ? suggestion.id
+                              : suggestion.tag
+                          }
+                          className={`w-full cursor-pointer p-2 ${
+                            index + 1 === activeSuggestionIndex
+                              ? "bg-blue-500 text-white dark:bg-blue-800"
+                              : ""
+                          }`}
+                          onClick={handleAutofill}
+                          onMouseEnter={() =>
+                            setActiveSuggestionIndex(index + 1)
+                          }
+                        >
+                          {suggestion.__typename === "User"
+                            ? `@${suggestion.username}`
+                            : `#${suggestion.tag}`}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </PopoverContent>
+              )}
+            </Popover>
           </form>
           <div className="hidden items-center gap-2 lg:flex">
             <ThemeToggle />

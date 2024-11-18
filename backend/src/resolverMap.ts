@@ -393,9 +393,6 @@ export const resolvers: IResolvers = {
 
         const [posts, comments] = await Promise.all([postsPromise, commentsPromise]);
 
-        console.log('Posts:', posts);
-        console.log('Comments:', comments);
-
         const combined = [...posts, ...comments].sort(
           (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
         );

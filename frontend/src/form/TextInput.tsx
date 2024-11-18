@@ -37,19 +37,34 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
 
     const debouncedQuery = useDebounce(query, 300);
 
-    const { data: hashtagsData, loading: hashtagsLoading } = useQuery<{
+    const {
+      data: hashtagsData,
+      loading: hashtagsLoading,
+      refetch: refetchHashtags,
+    } = useQuery<{
       searchHashtags: HashtagType[];
     }>(SEARCH_HASHTAGS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: suggestionType !== "hashtags" || debouncedQuery.length < 1,
+      skip: debouncedQuery.length < 1,
     });
 
-    const { data: mentionsData, loading: mentionsLoading } = useQuery<{
+    const {
+      data: mentionsData,
+      loading: mentionsLoading,
+      refetch: refetchUsers,
+    } = useQuery<{
       searchUsers: UserType[];
     }>(SEARCH_USERS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: suggestionType !== "users" || debouncedQuery.length < 1,
+      skip: debouncedQuery.length < 1,
     });
+
+    useEffect(() => {
+      if (debouncedQuery.length > 0) {
+        refetchHashtags();
+        refetchUsers();
+      }
+    }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
     useEffect(() => {
       if (suggestionType === "users") {
