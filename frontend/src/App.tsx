@@ -203,7 +203,11 @@ const HomePage = () => {
         <section>
           <ToggleGroup
             value={filter}
-            onValueChange={(newFilter: FilterType) => setFilter(newFilter)}
+            onValueChange={(newFilter: FilterType) => {
+              if (newFilter) {
+                setFilter(newFilter);
+              }
+            }}
             type="single"
             variant="outline"
             className="mb-4 grid w-full grid-cols-2 gap-2 p-2 text-lg md:grid-cols-4"
