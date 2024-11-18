@@ -106,12 +106,10 @@ const Profile = () => {
   const likedContent: (PostType | CommentType)[] = [
     ...likedPosts,
     ...likedComments,
-  ].sort((a, b) => {
-    return (
-      new Date(parseInt(b.createdAt)).getTime() -
-      new Date(parseInt(a.createdAt)).getTime()
-    );
-  });
+  ].sort((a, b) => (
+    new Date(parseInt(b.createdAt)).getTime() -
+    new Date(parseInt(a.createdAt)).getTime()
+  ));
 
   const {
     data: likedParentsData,
@@ -190,12 +188,10 @@ const Profile = () => {
   const mentionedContent: (PostType | CommentType)[] = [
     ...mentionedPosts,
     ...mentionedComments,
-  ].sort((a, b) => {
-    return (
-      new Date(parseInt(b.createdAt)).getTime() -
-      new Date(parseInt(a.createdAt)).getTime()
-    );
-  });
+  ].sort((a, b) => (
+    new Date(parseInt(b.createdAt)).getTime() -
+    new Date(parseInt(a.createdAt)).getTime()
+  ));
 
   const {
     data: mentionedParentsData,
@@ -320,7 +316,7 @@ const Profile = () => {
             </div>
           </section>
 
-          <section>
+          <section className="w-full max-w-5xl justify-self-center">
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => handleViewChange(value)}
