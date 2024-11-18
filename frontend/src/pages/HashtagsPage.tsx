@@ -1,5 +1,6 @@
 import BackButton from "@/components/BackButton";
 import HashTagCard from "@/components/HashtagCard";
+import CardSkeleton from "@/components/Skeletons/CardSkeleton";
 import Divider from "@/components/ui/Divider";
 import { HashtagType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
@@ -68,10 +69,6 @@ const HashtagsPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMoreHashtags, hasMore, networkStatus]);
 
-  if (loading && networkStatus === 1) {
-    return <p className="mt-4 text-center">Loading hashtags...</p>;
-  }
-
   if (error) {
     return (
       <p className="mt-4 text-center text-red-500">
@@ -87,9 +84,15 @@ const HashtagsPage = () => {
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>
         <Divider />
         <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {hashtags.map((hashtag) => (
-            <HashTagCard hashtag={hashtag} key={hashtag.tag} />
-          ))}
+          {loading && networkStatus === 1
+            ? Array.from({ length: 16 }).map((_, index) => (
+                <div className="w-full max-w-xl" key={index}>
+                  <CardSkeleton />
+                </div>
+              ))
+            : hashtags.map((hashtag) => (
+                <HashTagCard hashtag={hashtag} key={hashtag.tag} />
+              ))}
         </div>
 
         {loading && networkStatus === 3 && (
