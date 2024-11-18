@@ -42,7 +42,7 @@ export const GET_COMMENT = gql`
 
 export const GET_COMMENTS_BY_IDS = gql`
   query GetCommentsByIds($ids: [ID!]!, $page: Int!) {
-    getCommentsByIds(ids: $ids, page: $page, limit: $limit) {
+    getCommentsByIds(ids: $ids, page: $page) {
       id
       parentID
       parentType

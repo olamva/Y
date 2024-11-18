@@ -76,9 +76,10 @@ const Profile = () => {
   const {
     data: postsData,
     loading: postsLoading,
-    error: postsError,
     fetchMore: fetchMorePosts,
-  } = useQuery(GET_POSTS_BY_IDS, {
+  } = useQuery<{
+    getPostsByIds: PostType[];
+  }>(GET_POSTS_BY_IDS, {
     variables: { ids: user?.postIds || [], page: postsPage },
     skip: !user || !user.postIds.length,
   });
@@ -88,9 +89,10 @@ const Profile = () => {
   const {
     data: commentsData,
     loading: commentsLoading,
-    error: commentsError,
     fetchMore: fetchMoreComments,
-  } = useQuery(GET_COMMENTS_BY_IDS, {
+  } = useQuery<{
+    getCommentsByIds: CommentType[];
+  }>(GET_COMMENTS_BY_IDS, {
     variables: { ids: user?.commentIds || [], page: commentsPage },
     skip: !user || !user.commentIds.length,
   });
@@ -100,7 +102,6 @@ const Profile = () => {
   const {
     data: likedPostsData,
     loading: likedPostsLoading,
-    error: likedPostsError,
     fetchMore: fetchMoreLikedPosts,
   } = useQuery(GET_POSTS_BY_IDS, {
     variables: { ids: user?.likedPostIds || [], page: likesPage },
@@ -112,7 +113,6 @@ const Profile = () => {
   const {
     data: likedCommentsData,
     loading: likedCommentsLoading,
-    error: likedCommentsError,
     fetchMore: fetchMoreLikedComments,
   } = useQuery(GET_COMMENTS_BY_IDS, {
     variables: { ids: user?.likedCommentIds || [], page: likesPage },
@@ -133,7 +133,6 @@ const Profile = () => {
   const {
     data: mentionedPostsData,
     loading: mentionedPostsLoading,
-    error: mentionedPostsError,
     fetchMore: fetchMoreMentionedPosts,
   } = useQuery(GET_POSTS_BY_IDS, {
     variables: { ids: user?.mentionedPostIds || [], page: mentionsPage },
@@ -144,7 +143,6 @@ const Profile = () => {
   const {
     data: mentionedCommentsData,
     loading: mentionedCommentsLoading,
-    error: mentionedCommentsError,
     fetchMore: fetchMoreMentionedComments,
   } = useQuery(GET_COMMENTS_BY_IDS, {
     variables: {
@@ -169,17 +167,12 @@ const Profile = () => {
     type: comment.parentType,
   }));
 
-  const {
-    data: parentPostsData,
-    loading: parentPostsLoading,
-    error: parentPostsError,
-  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
-    GET_PARENTS_BY_IDS,
-    {
-      variables: { parents, page: commentsPage },
-      skip: !parents.length,
-    },
-  );
+  const { data: parentPostsData } = useQuery<{
+    getParentsByIds: (PostType | CommentType)[];
+  }>(GET_PARENTS_BY_IDS, {
+    variables: { parents, page: commentsPage },
+    skip: !parents.length,
+  });
 
   const parentPosts: (PostType | CommentType)[] =
     parentPostsData?.getParentsByIds ?? [];
@@ -188,17 +181,12 @@ const Profile = () => {
     type: comment.parentType,
   }));
 
-  const {
-    data: likedParentsData,
-    loading: likedParentsLoading,
-    error: likedParentsError,
-  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
-    GET_PARENTS_BY_IDS,
-    {
-      variables: { parents: likedParents, page: likesPage },
-      skip: !likedParents.length,
-    },
-  );
+  const { data: likedParentsData } = useQuery<{
+    getParentsByIds: (PostType | CommentType)[];
+  }>(GET_PARENTS_BY_IDS, {
+    variables: { parents: likedParents, page: likesPage },
+    skip: !likedParents.length,
+  });
 
   const likedParentPosts: (PostType | CommentType)[] =
     likedParentsData?.getParentsByIds ?? [];
@@ -207,17 +195,12 @@ const Profile = () => {
     type: comment.parentType,
   }));
 
-  const {
-    data: mentionedParentsData,
-    loading: mentionedParentsLoading,
-    error: mentionedParentsError,
-  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
-    GET_PARENTS_BY_IDS,
-    {
-      variables: { parents: mentionedParents, page: mentionsPage },
-      skip: !mentionedParents.length,
-    },
-  );
+  const { data: mentionedParentsData } = useQuery<{
+    getParentsByIds: (PostType | CommentType)[];
+  }>(GET_PARENTS_BY_IDS, {
+    variables: { parents: mentionedParents, page: mentionsPage },
+    skip: !mentionedParents.length,
+  });
 
   const mentionedParentPosts: (PostType | CommentType)[] =
     mentionedParentsData?.getParentsByIds ?? [];
