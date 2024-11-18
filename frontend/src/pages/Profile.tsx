@@ -188,7 +188,10 @@ const Profile = () => {
       {loggedInUser && loggedInUser.username === username && (
         <div className="pt-5 text-center">
           <h2 className="mt-2 break-words text-3xl font-bold">
-            Welcome, {loggedInUser.username}
+            Welcome,{" "}
+            {loggedInUser.firstName
+              ? loggedInUser.firstName
+              : loggedInUser.username}
           </h2>
         </div>
       )}

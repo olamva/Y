@@ -60,6 +60,9 @@ type TrendingHashtag {
 type User {
   id: ID!
   username: String!
+  firstName: String
+  lastName: String
+  biography: String
   postIds: [ID!]!
   likedPostIds: [ID!]!
   mentionedPostIds: [ID!]!
@@ -89,4 +92,5 @@ type Mutation {
   login(username: String!, password: String!): String!
   changeProfilePicture(file: Upload): User!
   changeBackgroundPicture(file: Upload): User!
+  updateProfile(firstName: String, lastName: String, biography: String): User!
 }

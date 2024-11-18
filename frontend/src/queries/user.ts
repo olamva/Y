@@ -17,6 +17,9 @@ export const GET_USER_QUERY = gql`
     getUser(username: $username) {
       id
       username
+      firstName
+      lastName
+      biography
       postIds
       likedPostIds
       mentionedPostIds
@@ -42,6 +45,9 @@ export const GET_USERS = gql`
     getUsers(page: $page) {
       id
       username
+      firstName
+      lastName
+      biography
       postIds
       likedPostIds
       mentionedPostIds
@@ -58,6 +64,25 @@ export const GET_USERS = gql`
       }
       profilePicture
       backgroundPicture
+    }
+  }
+`;
+
+export const UPDATE_PROFILE_MUTATION = gql`
+  mutation UpdateProfile(
+    $firstName: String
+    $lastName: String
+    $biography: String
+  ) {
+    updateProfile(
+      firstName: $firstName
+      lastName: $lastName
+      biography: $biography
+    ) {
+      id
+      firstName
+      lastName
+      biography
     }
   }
 `;
