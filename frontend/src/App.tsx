@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import HashTagCard from "./components/HashtagCard";
 import ProfileCard from "./components/ProfileCard";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
+import PostSkeleton from "./components/Skeletons/PostSkeleton";
 
 const PAGE_SIZE = 10;
 
@@ -139,9 +140,6 @@ const HomePage = () => {
     }
   }, [filter]);
 
-  if (networkStatus === NetworkStatus.loading)
-    return <p className="mt-4 text-center">Loading...</p>;
-
   if (error || usersError)
     return (
       <p className="mt-4 text-center text-red-500">
@@ -262,9 +260,11 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            {posts.map((post) => (
-              <Post key={post.id} post={post} />
-            ))}
+            {posts.length === 0
+              ? Array.from({ length: 10 }).map((_, index) => (
+                  <PostSkeleton key={index} />
+                ))
+              : posts.map((post) => <Post key={post.id} post={post} />)}
           </div>
         )}
 
