@@ -208,41 +208,45 @@ const EditProfile = ({ user }: Props) => {
                   Edit Profile
                 </h3>
                 <div className="mt-2">
-                  <form onSubmit={handleSubmit}>
-                    <div className="mt-6">
-                      <label
-                        htmlFor="first-name"
-                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                      >
-                        First Name
-                      </label>
-                      <input
-                        ref={firstInputRef}
-                        type="text"
-                        id="first-name"
-                        defaultValue={user.firstName}
-                        placeholder="What's your first name?"
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
-                      />
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    <div className="flex w-full justify-start gap-4">
+                      <div className="w-full">
+                        <label
+                          htmlFor="first-name"
+                          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
+                          First Name
+                        </label>
+                        <input
+                          ref={firstInputRef}
+                          type="text"
+                          id="first-name"
+                          defaultValue={user.firstName}
+                          maxLength={20}
+                          placeholder="What's your first name?"
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm outline-none focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        />
+                      </div>
+                      <div className="w-full">
+                        <label
+                          htmlFor="last-name"
+                          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          id="last-name"
+                          defaultValue={user.lastName}
+                          maxLength={20}
+                          placeholder="What's your last name?"
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm outline-none focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        />
+                      </div>
                     </div>
-                    <div className="mt-6">
-                      <label
-                        htmlFor="last-name"
-                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                      >
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="last-name"
-                        defaultValue={user.lastName}
-                        placeholder="What's your last name?"
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
-                      />
-                    </div>
-                    <div className="mt-6">
+                    <div className="">
                       <label
                         htmlFor="biography"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -253,11 +257,16 @@ const EditProfile = ({ user }: Props) => {
                         id="biography"
                         defaultValue={user.biography}
                         placeholder="Tell us about yourself..."
-                        onChange={(e) => setBiography(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        onChange={(e) => {
+                          e.target.style.height = "auto";
+                          e.target.style.height = `${e.target.scrollHeight}px`;
+                          setBiography(e.target.value);
+                        }}
+                        maxLength={160}
+                        className="mt-1 block w-full resize-none overflow-hidden rounded-md border border-gray-400 bg-slate-100 p-1 shadow-sm outline-none focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
-                    <div className="my-6">
+                    <div>
                       <label
                         htmlFor="profile-picture"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -311,7 +320,7 @@ const EditProfile = ({ user }: Props) => {
                         />
                       </div>
                     </div>
-                    <div className="mb-6">
+                    <div>
                       <label
                         htmlFor="background-picture"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300"
