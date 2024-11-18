@@ -1,6 +1,7 @@
 import BackButton from "@/components/BackButton";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { GET_CONTENT_BY_HASHTAG } from "@/queries/hashtags";
@@ -73,9 +74,9 @@ const HashtagPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMorePosts, hasMore, networkStatus]);
 
-  if (loading && networkStatus === 1) {
-    return <p className="mt-4 text-center">Loading posts...</p>;
-  }
+  // if (loading && networkStatus === 1) {
+  //   return <p className="mt-4 text-center">Loading posts...</p>;
+  // }
 
   if (error) {
     return (
@@ -94,14 +95,20 @@ const HashtagPage = () => {
         </h1>
         <Divider />
         <div className="flex w-full flex-col items-center gap-4">
-          {posts.map((post) => {
-            if (post.__typename === "Post") {
-              return <Post key={post.id} post={post} />;
-            } else if (post.__typename === "Comment") {
-              return <Comment key={post.id} comment={post} />;
-            }
-            return null;
-          })}
+          {loading && networkStatus === 1
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <div className="w-full max-w-xl">
+                  <PostSkeleton key={index} />
+                </div>
+              ))
+            : posts.map((post) => {
+                if (post.__typename === "Post") {
+                  return <Post key={post.id} post={post} />;
+                } else if (post.__typename === "Comment") {
+                  return <Comment key={post.id} comment={post} />;
+                }
+                return null;
+              })}
         </div>
         {loading && networkStatus === 3 && (
           <p className="mt-4 text-center">Loading more posts...</p>

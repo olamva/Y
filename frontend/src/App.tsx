@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import HashTagCard from "./components/HashtagCard";
 import ProfileCard from "./components/ProfileCard";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
+import PostSkeleton from "./components/Skeletons/PostSkeleton";
+import CardSkeleton from "./components/Skeletons/CardSkeleton";
 
 const PAGE_SIZE = 10;
 
@@ -139,9 +141,6 @@ const HomePage = () => {
     }
   }, [filter]);
 
-  if (networkStatus === NetworkStatus.loading)
-    return <p className="mt-4 text-center">Loading...</p>;
-
   if (error || usersError)
     return (
       <p className="mt-4 text-center text-red-500">
@@ -161,21 +160,24 @@ const HomePage = () => {
           </p>
         )}
 
-        {hashtagsData && (
-          <div className="flex w-full flex-col items-center gap-5">
-            <h1 className="text-3xl font-extralight">Trending Hashtags</h1>
-            {hashtagsData.getTrendingHashtags.map((hashtag) => (
-              <HashTagCard hashtag={hashtag} key={hashtag.tag} />
-            ))}
-            <a
-              href={`/project2/hashtag`}
-              className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <HashtagIcon className="mr-2 h-5 w-5" aria-hidden="true" />
-              <span>View All Hashtags</span>
-            </a>
-          </div>
-        )}
+        <div className="flex w-full flex-col items-center gap-5">
+          <h1 className="text-3xl font-extralight">Trending Hashtags</h1>
+          {!hashtagsData
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <CardSkeleton key={index} />
+              ))
+            : hashtagsData?.getTrendingHashtags.map((hashtag) => (
+                <HashTagCard hashtag={hashtag} key={hashtag.tag} />
+              ))}
+
+          <a
+            href={`/project2/hashtag`}
+            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <HashtagIcon className="mr-2 h-5 w-5" aria-hidden="true" />
+            <span>View All Hashtags</span>
+          </a>
+        </div>
       </aside>
 
       <main className="w-full max-w-xl">
@@ -266,9 +268,11 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            {posts.map((post) => (
-              <Post key={post.id} post={post} />
-            ))}
+            {posts.length === 0
+              ? Array.from({ length: 10 }).map((_, index) => (
+                  <PostSkeleton key={index} />
+                ))
+              : posts.map((post) => <Post key={post.id} post={post} />)}
           </div>
         )}
 
@@ -286,9 +290,14 @@ const HomePage = () => {
       <aside className="hidden w-full max-w-64 py-8 lg:flex">
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl font-extralight">People to follow</h1>
-          {usersData?.getUsers.map((recommendedUser) => (
-            <ProfileCard user={recommendedUser} key={recommendedUser.id} />
-          ))}
+
+          {!usersData?.getUsers
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <CardSkeleton key={index} />
+              ))
+            : usersData?.getUsers.map((recommendedUser) => (
+                <ProfileCard user={recommendedUser} key={recommendedUser.id} />
+              ))}
           <a
             href={`/project2/users`}
             className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
