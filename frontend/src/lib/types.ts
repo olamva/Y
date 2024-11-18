@@ -29,6 +29,9 @@ export type UserType = {
   __typename: "User";
   id: string;
   username: string;
+  firstName?: string;
+  lastName?: string;
+  biography?: string;
   postIds: string[];
   likedPostIds: string[];
   mentionedPostIds: string[];

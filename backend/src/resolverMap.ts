@@ -424,6 +424,36 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating post');
       }
     },
+    updateProfile: async (_, { firstName, lastName, biography }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to update profile');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (firstName && firstName.length > 20) {
+        throw new UserInputError('First name must be at most 20 characters');
+      }
+      if (lastName && lastName.length > 20) {
+        throw new UserInputError('Last name must be at most 20 characters');
+      }
+
+      if (biography && biography.length > 160) {
+        throw new UserInputError('Biography must be at most 160 characters');
+      }
+
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      if (biography) user.biography = biography;
+
+      await user.save();
+
+      return user;
+    },
     changeProfilePicture: async (_, { file }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to change profile picture');

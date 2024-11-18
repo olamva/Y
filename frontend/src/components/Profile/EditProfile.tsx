@@ -3,6 +3,7 @@ import { UserType } from "@/lib/types";
 import {
   CHANGE_BACKGROUND_PICTURE,
   CHANGE_PROFILE_PICTURE,
+  UPDATE_PROFILE_MUTATION,
 } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import { XIcon } from "lucide-react";
@@ -25,6 +26,10 @@ const EditProfile = ({ user }: Props) => {
     null,
   );
 
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
+  const [biography, setBiography] = useState<string | null>(null);
+
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
   const lastButtonRef = useRef<HTMLButtonElement>(null);
@@ -36,6 +41,10 @@ const EditProfile = ({ user }: Props) => {
   );
   const [changeBackgroundPicture, { error: backgroundError }] = useMutation(
     CHANGE_BACKGROUND_PICTURE,
+  );
+
+  const [updateProfile, { error: updateProfileError }] = useMutation(
+    UPDATE_PROFILE_MUTATION,
   );
 
   useEffect(() => {
@@ -85,6 +94,18 @@ const EditProfile = ({ user }: Props) => {
     if (backgroundFile) {
       promises.push(
         changeBackgroundPicture({ variables: { file: backgroundFile } }),
+      );
+    }
+
+    if (firstName || lastName || biography) {
+      promises.push(
+        updateProfile({
+          variables: {
+            firstName: firstName || undefined,
+            lastName: lastName || undefined,
+            biography: biography || undefined,
+          },
+        }),
       );
     }
 
@@ -188,7 +209,52 @@ const EditProfile = ({ user }: Props) => {
                 </h3>
                 <div className="mt-2">
                   <form onSubmit={handleSubmit}>
-                    <div className="mb-6">
+                    <div className="mt-6">
+                      <label
+                        htmlFor="first-name"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        First Name
+                      </label>
+                      <input
+                        ref={firstInputRef}
+                        type="text"
+                        id="first-name"
+                        defaultValue={user.firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                      />
+                    </div>
+                    <div className="mt-6">
+                      <label
+                        htmlFor="last-name"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        id="last-name"
+                        defaultValue={user.lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                      />
+                    </div>
+                    <div className="mt-6">
+                      <label
+                        htmlFor="biography"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        Biography
+                      </label>
+                      <textarea
+                        id="biography"
+                        defaultValue={user.biography}
+                        onChange={(e) => setBiography(e.target.value)}
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                      />
+                    </div>
+                    <div className="my-6">
                       <label
                         htmlFor="profile-picture"
                         className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -312,10 +378,14 @@ const EditProfile = ({ user }: Props) => {
                         Cancel
                       </button>
                     </div>
-                    {(profileError || backgroundError) && (
+                    {(profileError ||
+                      backgroundError ||
+                      updateProfileError) && (
                       <p className="mt-4 text-red-500">
                         Error:{" "}
-                        {profileError?.message || backgroundError?.message}
+                        {profileError?.message ||
+                          backgroundError?.message ||
+                          updateProfileError?.message}
                       </p>
                     )}
                   </form>

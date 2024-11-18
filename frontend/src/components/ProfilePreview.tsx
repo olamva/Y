@@ -21,7 +21,9 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
       <Avatar noHref user={user} />
     </div>
     <div className="flex h-full flex-col items-center justify-center gap-1 p-2 pt-0">
-      <h2 className="text-lg">WIP: Full Name</h2>
+      <h2 className="text-lg">
+        {user?.firstName} {user?.lastName}
+      </h2>
       <p className="text-md break-words font-mono">
         <span className="font-sans">@</span>
         {user.username}

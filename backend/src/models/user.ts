@@ -4,6 +4,9 @@ import { Document, Schema, Types, model } from 'mongoose';
 export interface UserType extends Document {
   username: string;
   password: string;
+  firstName?: string;
+  lastName?: string;
+  biography?: string;
   postIds: string[];
   likedPostIds: string[];
   mentionedPostIds: string[];
@@ -20,6 +23,9 @@ export interface UserType extends Document {
 const UserSchema = new Schema<UserType>({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  firstName: { type: String, default: undefined },
+  lastName: { type: String, default: undefined },
+  biography: { type: String, default: undefined },
   postIds: { type: [String], default: [] },
   likedPostIds: { type: [String], default: [] },
   mentionedPostIds: { type: [String], default: [] },
