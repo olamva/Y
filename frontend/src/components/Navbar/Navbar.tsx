@@ -27,7 +27,7 @@ const Navbar = () => {
           href="/project2"
           className="group flex items-center justify-center gap-5 hover:scale-110 hover:text-gray-300"
         >
-          <h1 className="text-2xl font-semibold sm:text-2x lg:text-2xl xl:text-3xl">
+          <h1 className="sm:text-2x text-2xl font-semibold lg:text-2xl xl:text-3xl">
             <span className="group-hover:text-gray-600 group-hover:dark:text-gray-300">
               Y
             </span>
