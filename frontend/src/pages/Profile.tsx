@@ -16,6 +16,7 @@ import { UserIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
+import Divider from "@/components/ui/Divider";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -283,6 +284,33 @@ const Profile = () => {
                   )}
                 </div>
               </div>
+              <div className="my-2 mt-4 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
+                <div className="flex flex-col items-center justify-around sm:flex-row">
+                  <button
+                    onClick={() => openModal("Followers")}
+                    className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
+                    aria-label={`View ${user?.followers.length} followers`}
+                  >
+                    <UserIcon className="h-5 w-5" />
+                    <span className="text-lg font-semibold">
+                      {user?.followers.length}
+                    </span>
+                    <span className="text-sm">Followers</span>
+                  </button>
+
+                  <button
+                    onClick={() => openModal("Following")}
+                    className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
+                    aria-label={`View ${user?.following.length} following`}
+                  >
+                    <UsersIcon className="h-5 w-5" />
+                    <span className="text-lg font-semibold">
+                      {user?.following.length}
+                    </span>
+                    <span className="text-sm">Following</span>
+                  </button>
+                </div>
+              </div>
 
               <div className="mb-8 mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-600">
                 <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-200">
@@ -296,33 +324,6 @@ const Profile = () => {
           </section>
 
           <section>
-            <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
-              <div className="flex flex-col items-center justify-around sm:flex-row">
-                <button
-                  onClick={() => openModal("Followers")}
-                  className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
-                  aria-label={`View ${user?.followers.length} followers`}
-                >
-                  <UserIcon className="h-5 w-5" />
-                  <span className="text-lg font-semibold">
-                    {user?.followers.length}
-                  </span>
-                  <span className="text-sm">Followers</span>
-                </button>
-
-                <button
-                  onClick={() => openModal("Following")}
-                  className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
-                  aria-label={`View ${user?.following.length} following`}
-                >
-                  <UsersIcon className="h-5 w-5" />
-                  <span className="text-lg font-semibold">
-                    {user?.following.length}
-                  </span>
-                  <span className="text-sm">Following</span>
-                </button>
-              </div>
-            </div>
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => handleViewChange(value)}
