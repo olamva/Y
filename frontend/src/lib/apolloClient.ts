@@ -85,30 +85,6 @@ const client = new ApolloClient({
               return [...existing, ...incoming];
             },
           },
-          getCommentsByIds: {
-            keyArgs: false,
-            merge(existing = [], incoming = []) {
-              return [...existing, ...incoming];
-            },
-          },
-          getLikedPosts: {
-            keyArgs: false,
-            merge(existing = [], incoming = []) {
-              return [...existing, ...incoming];
-            },
-          },
-          getLikedComments: {
-            keyArgs: false,
-            merge(existing = [], incoming = []) {
-              return [...existing, ...incoming];
-            },
-          },
-          getMentionedPosts: {
-            keyArgs: false,
-            merge(existing = [], incoming = []) {
-              return [...existing, ...incoming];
-            },
-          },
         },
       },
     },

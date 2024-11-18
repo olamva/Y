@@ -2,20 +2,20 @@ import { useAuth } from "@/components/AuthContext";
 import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
-import Post from "@/components/Post/Post";
-import PostWithReply from "@/components/Post/PostWithReply";
 import Avatar from "@/components/Profile/Avatar";
 import EditProfile from "@/components/Profile/EditProfile";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
-import { CommentType, PostType, UserType } from "@/lib/types";
-import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
-import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
+import { UserType } from "@/lib/types";
 import { GET_USER_QUERY } from "@/queries/user";
 import { useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
+import MentionsView from "@/components/Profile/MentionsView";
+import CommentsView from "@/components/Profile/CommentsView";
+import PostsView from "@/components/Profile/PostsView";
+import LikesView from "@/components/Profile/LikesView";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -30,11 +30,6 @@ const Profile = () => {
   const [modalContent, setModalContent] = useState<{ title: string } | null>(
     null,
   );
-
-  const [postsPage, setPostsPage] = useState(1);
-  const [commentsPage, setCommentsPage] = useState(1);
-  const [likesPage, setLikesPage] = useState(1);
-  const [mentionsPage, setMentionsPage] = useState(1);
 
   const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
 
@@ -73,264 +68,6 @@ const Profile = () => {
 
   const user: UserType | undefined = userData?.getUser;
 
-  const {
-    data: postsData,
-    loading: postsLoading,
-    fetchMore: fetchMorePosts,
-  } = useQuery<{
-    getPostsByIds: PostType[];
-  }>(GET_POSTS_BY_IDS, {
-    variables: { ids: user?.postIds || [], page: postsPage },
-    skip: !user || !user.postIds.length,
-  });
-
-  const posts: PostType[] = postsData?.getPostsByIds || [];
-
-  const {
-    data: commentsData,
-    loading: commentsLoading,
-    fetchMore: fetchMoreComments,
-  } = useQuery<{
-    getCommentsByIds: CommentType[];
-  }>(GET_COMMENTS_BY_IDS, {
-    variables: { ids: user?.commentIds || [], page: commentsPage },
-    skip: !user || !user.commentIds.length,
-  });
-
-  const comments: CommentType[] = commentsData?.getCommentsByIds || [];
-
-  const {
-    data: likedPostsData,
-    loading: likedPostsLoading,
-    fetchMore: fetchMoreLikedPosts,
-  } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: user?.likedPostIds || [], page: likesPage },
-    skip: !user || !user.likedPostIds.length,
-  });
-
-  const likedPosts: PostType[] = likedPostsData?.getPostsByIds || [];
-
-  const {
-    data: likedCommentsData,
-    loading: likedCommentsLoading,
-    fetchMore: fetchMoreLikedComments,
-  } = useQuery(GET_COMMENTS_BY_IDS, {
-    variables: { ids: user?.likedCommentIds || [], page: likesPage },
-    skip: !user || !user.likedCommentIds.length,
-  });
-
-  const likedComments: CommentType[] =
-    likedCommentsData?.getCommentsByIds || [];
-
-  const likedContent: (PostType | CommentType)[] = [
-    ...likedPosts,
-    ...likedComments,
-  ].sort(
-    (a, b) =>
-      new Date(parseInt(b.createdAt)).getTime() -
-      new Date(parseInt(a.createdAt)).getTime(),
-  );
-  const {
-    data: mentionedPostsData,
-    loading: mentionedPostsLoading,
-    fetchMore: fetchMoreMentionedPosts,
-  } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: user?.mentionedPostIds || [], page: mentionsPage },
-    skip: !user || !user.mentionedPostIds.length,
-  });
-
-  const mentionedPosts: PostType[] = mentionedPostsData?.getPostsByIds || [];
-  const {
-    data: mentionedCommentsData,
-    loading: mentionedCommentsLoading,
-    fetchMore: fetchMoreMentionedComments,
-  } = useQuery(GET_COMMENTS_BY_IDS, {
-    variables: {
-      ids: user?.mentionedCommentIds || [],
-      page: mentionsPage,
-    },
-    skip: !user || !user.mentionedCommentIds.length,
-  });
-
-  const mentionedComments: CommentType[] =
-    mentionedCommentsData?.getCommentsByIds || [];
-  const mentionedContent: (PostType | CommentType)[] = [
-    ...mentionedPosts,
-    ...mentionedComments,
-  ].sort(
-    (a, b) =>
-      new Date(parseInt(b.createdAt)).getTime() -
-      new Date(parseInt(a.createdAt)).getTime(),
-  );
-  const parents = comments.map((comment) => ({
-    id: comment.parentID,
-    type: comment.parentType,
-  }));
-
-  const { data: parentPostsData } = useQuery<{
-    getParentsByIds: (PostType | CommentType)[];
-  }>(GET_PARENTS_BY_IDS, {
-    variables: { parents, page: commentsPage },
-    skip: !parents.length,
-  });
-
-  const parentPosts: (PostType | CommentType)[] =
-    parentPostsData?.getParentsByIds ?? [];
-  const likedParents = likedComments.map((comment) => ({
-    id: comment.parentID,
-    type: comment.parentType,
-  }));
-
-  const { data: likedParentsData } = useQuery<{
-    getParentsByIds: (PostType | CommentType)[];
-  }>(GET_PARENTS_BY_IDS, {
-    variables: { parents: likedParents, page: likesPage },
-    skip: !likedParents.length,
-  });
-
-  const likedParentPosts: (PostType | CommentType)[] =
-    likedParentsData?.getParentsByIds ?? [];
-  const mentionedParents = mentionedComments.map((comment) => ({
-    id: comment.parentID,
-    type: comment.parentType,
-  }));
-
-  const { data: mentionedParentsData } = useQuery<{
-    getParentsByIds: (PostType | CommentType)[];
-  }>(GET_PARENTS_BY_IDS, {
-    variables: { parents: mentionedParents, page: mentionsPage },
-    skip: !mentionedParents.length,
-  });
-
-  const mentionedParentPosts: (PostType | CommentType)[] =
-    mentionedParentsData?.getParentsByIds ?? [];
-  const loadMorePosts = () => {
-    if (postsLoading || !postsData?.getPostsByIds.length) return;
-    fetchMorePosts({
-      variables: { page: postsPage + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        setPostsPage(postsPage + 1);
-        return {
-          getPostsByIds: [
-            ...prev.getPostsByIds,
-            ...fetchMoreResult.getPostsByIds,
-          ],
-        };
-      },
-    });
-  };
-
-  const loadMoreComments = () => {
-    if (commentsLoading || !commentsData?.getCommentsByIds.length) return;
-    fetchMoreComments({
-      variables: { page: commentsPage + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        setCommentsPage(commentsPage + 1);
-        return {
-          getCommentsByIds: [
-            ...prev.getCommentsByIds,
-            ...fetchMoreResult.getCommentsByIds,
-          ],
-        };
-      },
-    });
-  };
-
-  const loadMoreLikes = () => {
-    if (
-      likedPostsLoading ||
-      likedCommentsLoading ||
-      (!likedPostsData?.getPostsByIds.length &&
-        !likedCommentsData?.getCommentsByIds.length)
-    )
-      return;
-
-    fetchMoreLikedPosts({
-      variables: { page: likesPage + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        setLikesPage(likesPage + 1);
-        return {
-          getPostsByIds: [
-            ...prev.getPostsByIds,
-            ...fetchMoreResult.getPostsByIds,
-          ],
-        };
-      },
-    });
-
-    fetchMoreLikedComments({
-      variables: { page: likesPage + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return {
-          getCommentsByIds: [
-            ...prev.getCommentsByIds,
-            ...fetchMoreResult.getCommentsByIds,
-          ],
-        };
-      },
-    });
-  };
-
-  const loadMoreMentions = () => {
-    if (
-      mentionedPostsLoading ||
-      mentionedCommentsLoading ||
-      (!mentionedPostsData?.getPostsByIds.length &&
-        !mentionedCommentsData?.getCommentsByIds.length)
-    )
-      return;
-
-    fetchMoreMentionedPosts({
-      variables: { page: mentionsPage + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        setMentionsPage(mentionsPage + 1);
-        return {
-          getPostsByIds: [
-            ...prev.getPostsByIds,
-            ...fetchMoreResult.getPostsByIds,
-          ],
-        };
-      },
-    });
-
-    fetchMoreMentionedComments({
-      variables: { page: mentionsPage + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return {
-          getCommentsByIds: [
-            ...prev.getCommentsByIds,
-            ...fetchMoreResult.getCommentsByIds,
-          ],
-        };
-      },
-    });
-  };
-  const handleScroll = () => {
-    const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-    if (scrollHeight - scrollTop === clientHeight) {
-      if (currentView === "posts") {
-        loadMorePosts();
-      } else if (currentView === "comments") {
-        loadMoreComments();
-      } else if (currentView === "likes") {
-        loadMoreLikes();
-      } else if (currentView === "mentions") {
-        loadMoreMentions();
-      }
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentView]);
-
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
   if (!user) return <p>User not found.</p>;
@@ -350,7 +87,9 @@ const Profile = () => {
       )}
       {username ? (
         <>
+          {/* User Profile Section */}
           <section className="mb-8">
+            {/* Background and Avatar */}
             <div className="relative h-64 md:h-96">
               <img
                 src={
@@ -362,6 +101,7 @@ const Profile = () => {
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
+            {/* User Info */}
             <div className="mx-auto max-w-5xl">
               <div className="relative -mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
                 <Avatar user={user} large={true} />
@@ -382,6 +122,7 @@ const Profile = () => {
                   )}
                 </div>
               </div>
+              {/* Mobile User Info */}
               <div className="mt-6 min-w-0 flex-1 sm:block md:hidden">
                 <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
                   {user?.firstName} {user?.lastName}
@@ -393,6 +134,7 @@ const Profile = () => {
                   )}
                 </div>
               </div>
+              {/* Followers and Following */}
               <div className="my-2 mt-4 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
                 <div className="flex flex-col items-center justify-around sm:flex-row">
                   <button
@@ -420,6 +162,7 @@ const Profile = () => {
                   </button>
                 </div>
               </div>
+              {/* Biography */}
               <div className="mb-8 mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-600">
                 <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-200">
                   Biography
@@ -430,6 +173,7 @@ const Profile = () => {
               </div>
             </div>
           </section>
+          {/* Toggle Group for Views */}
           <section className="w-full max-w-5xl justify-self-center">
             <ToggleGroup
               value={currentView}
@@ -479,72 +223,24 @@ const Profile = () => {
               </ToggleGroupItem>
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
-              {currentView === "posts" && (
-                <>
-                  {posts.map((post) => (
-                    <Post post={post} key={post.id} />
-                  ))}
-                  {postsLoading && <p>Loading more posts...</p>}
-                </>
-              )}
+              {currentView === "posts" && <PostsView postIds={user.postIds} />}
               {currentView === "comments" && (
-                <>
-                  {comments.map((comment) => (
-                    <PostWithReply
-                      key={comment.id}
-                      post={parentPosts.find(
-                        (post) => post.id === comment.parentID,
-                      )}
-                      reply={comment}
-                    />
-                  ))}
-                  {commentsLoading && <p>Loading more comments...</p>}
-                </>
+                <CommentsView commentIds={user.commentIds} />
               )}
               {currentView === "mentions" && (
-                <>
-                  {mentionedContent.map((item) =>
-                    item.__typename === "Post" ? (
-                      <Post post={item} key={item.id} />
-                    ) : (
-                      <PostWithReply
-                        key={item.id}
-                        post={mentionedParentPosts.find(
-                          (parent) => parent.id === item.parentID,
-                        )}
-                        reply={item}
-                      />
-                    ),
-                  )}
-                  {(mentionedPostsLoading || mentionedCommentsLoading) && (
-                    <p>Loading more mentions...</p>
-                  )}
-                </>
+                <MentionsView
+                  mentionedPostIds={user.mentionedPostIds}
+                  mentionedCommentIds={user.mentionedCommentIds}
+                />
               )}
               {currentView === "likes" && (
-                <>
-                  {likedContent.map((item) =>
-                    item.__typename === "Post" ? (
-                      <Post post={item} key={item.id} />
-                    ) : (
-                      <PostWithReply
-                        key={item.id}
-                        post={likedParentPosts.find(
-                          (parent) => parent.id === item.parentID,
-                        )}
-                        reply={item}
-                      />
-                    ),
-                  )}
-                  {(likedPostsLoading || likedCommentsLoading) && (
-                    <p>Loading more likes...</p>
-                  )}
-                </>
+                <LikesView
+                  likedPostIds={user.likedPostIds}
+                  likedCommentIds={user.likedCommentIds}
+                />
               )}
             </div>
           </section>
-
-          {/* Followers and Following Modal */}
           <FollowingUsersModal
             isOpen={!!modalContent}
             onClose={closeModal}
