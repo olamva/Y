@@ -1,7 +1,7 @@
 import Avatar from "@/components/Profile/Avatar";
 import { UserType } from "@/lib/types";
-import FollowButton from "./FollowButton";
 import { useAuth } from "./AuthContext";
+import FollowButton from "./FollowButton";
 import CoverPhoto from "/coverphoto.jpg";
 
 interface Props {
@@ -25,7 +25,7 @@ const ProfileCard = ({ user, large }: Props) => {
       >
         <div className="flex flex-col items-center gap-2">
           <div className="flex-shrink-0">
-            <Avatar noHref user={user} large={true} />
+            <Avatar noHref user={user} large />
           </div>
           <div className="flex-grow">
             <h2 className="break-words text-2xl font-bold">{user.username}</h2>

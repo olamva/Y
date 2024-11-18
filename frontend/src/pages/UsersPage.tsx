@@ -1,11 +1,11 @@
 import BackButton from "@/components/BackButton";
+import ProfileCard from "@/components/ProfileCard";
 import Divider from "@/components/ui/Divider";
 import { UserType } from "@/lib/types";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import ProfileCard from "@/components/ProfileCard";
 
 const UsersPage = () => {
   const [page, setPage] = useState(1);
@@ -81,9 +81,14 @@ const UsersPage = () => {
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All users</h1>
         <Divider />
-        <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex w-full flex-wrap justify-center gap-4">
           {users.map((user) => (
-            <ProfileCard user={user} key={user.id} large={true} />
+            <div
+              className="w-full min-w-24 max-w-56 md:min-w-64 md:max-w-72"
+              key={user.id}
+            >
+              <ProfileCard user={user} large />
+            </div>
           ))}
         </div>
 
