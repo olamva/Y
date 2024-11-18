@@ -287,28 +287,45 @@ const Profile = () => {
               onValueChange={(value: ViewState) => handleViewChange(value)}
               type="single"
               variant="outline"
-              className="flex justify-around gap-1"
+              className="grid grid-cols-2 gap-2 p-2"
             >
-              <ToggleGroupItem value="posts" aria-label="View Posts">
+              <ToggleGroupItem
+                value="posts"
+                aria-label="View Posts"
+                className="text-center"
+              >
                 <p>{user?.postIds.length} Posts</p>
               </ToggleGroupItem>
-              <ToggleGroupItem value="comments" aria-label="View Comments">
+              <ToggleGroupItem
+                value="comments"
+                aria-label="View Comments"
+                className="text-center"
+              >
                 <p>{user?.commentIds.length} Comments</p>
               </ToggleGroupItem>
-              <ToggleGroupItem value="mentions" aria-label="View Mentions">
+              <ToggleGroupItem
+                value="mentions"
+                aria-label="View Mentions"
+                className="text-center"
+              >
                 <p>
                   {user?.mentionedPostIds.length +
                     user.mentionedCommentIds.length}{" "}
                   Mentions
                 </p>
               </ToggleGroupItem>
-              <ToggleGroupItem value="likes" aria-label="View Likes">
+              <ToggleGroupItem
+                value="likes"
+                aria-label="View Likes"
+                className="text-center"
+              >
                 <p>
                   {user?.likedPostIds.length + user.likedCommentIds.length}{" "}
                   Likes
                 </p>
               </ToggleGroupItem>
             </ToggleGroup>
+
             <div className="mt-4 flex w-full flex-col items-center">
               {currentView === "posts" && (
                 <>
