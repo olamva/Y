@@ -16,7 +16,6 @@ import { UserIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import Divider from "@/components/ui/Divider";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -217,8 +216,6 @@ const Profile = () => {
 
   const mentionedParentPosts: (PostType | CommentType)[] =
     mentionedParentsData?.getParentsByIds ?? [];
-
-  console.log(mentionedParentPosts, likedParentPosts);
 
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;

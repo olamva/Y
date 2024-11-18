@@ -97,8 +97,6 @@ const EditProfile = ({ user }: Props) => {
       );
     }
 
-    console.log({ firstName, lastName, biography });
-
     if (firstName || lastName || biography) {
       promises.push(
         updateProfile({
