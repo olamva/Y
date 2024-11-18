@@ -163,7 +163,7 @@ const HomePage = () => {
 
         {hashtagsData && (
           <div className="flex w-full flex-col items-center gap-5">
-            <h1 className="text-3xl">Trending Hashtags</h1>
+            <h1 className="text-3xl font-extralight">Trending Hashtags</h1>
             {hashtagsData.getTrendingHashtags.map((hashtag) => (
               <HashTagCard hashtag={hashtag} key={hashtag.tag} />
             ))}
@@ -281,7 +281,7 @@ const HomePage = () => {
 
       <aside className="hidden w-full max-w-64 py-8 lg:flex">
         <div className="flex w-full flex-col items-center gap-5">
-          <h1 className="text-3xl">People to follow</h1>
+          <h1 className="text-3xl font-extralight">People to follow</h1>
           {usersData?.getUsers.map((recommendedUser) => (
             <ProfileCard user={recommendedUser} key={recommendedUser.id} />
           ))}
