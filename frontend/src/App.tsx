@@ -3,18 +3,21 @@ import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
 import Divider from "@/components/ui/Divider";
 import { HashtagType, PostType, UserType } from "@/lib/types";
+import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
-import React, { useCallback, useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
-import HashTagCard from "./components/HashtagCard";
 import { HashtagIcon } from "@heroicons/react/24/outline";
 import { Users } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import HashTagCard from "./components/HashtagCard";
 import ProfileCard from "./components/ProfileCard";
+import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
 
 const PAGE_SIZE = 10;
+
+type FilterType = "LATEST" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -23,9 +26,7 @@ const HomePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [filter, setFilter] = useState<
-    "FOR_YOU" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL"
-  >("FOR_YOU");
+  const [filter, setFilter] = useState<FilterType>("LATEST");
 
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getPosts: PostType[];
@@ -199,61 +200,50 @@ const HomePage = () => {
 
         <Divider />
 
-        <section className="mb-4 grid w-full grid-cols-2 gap-2 p-2 text-lg md:grid-cols-4">
-          <button
-            className={`w-full rounded-lg border p-4 ${
-              filter === "FOR_YOU"
-                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => setFilter("FOR_YOU")}
-            aria-pressed={filter === "FOR_YOU"}
+        <section>
+          <ToggleGroup
+            value={filter}
+            onValueChange={(newFilter: FilterType) => setFilter(newFilter)}
+            type="single"
+            variant="outline"
+            className="mb-4 grid w-full grid-cols-2 gap-2 p-2 text-lg md:grid-cols-4"
           >
-            For you
-          </button>
-
-          <button
-            className={`w-full rounded-lg border p-4 ${
-              filter === "FOLLOWING"
-                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => {
-              if (user) {
-                setFilter("FOLLOWING");
-              } else {
-                setFilter("FOLLOWING");
-                setShowLoginPrompt(true);
-              }
-            }}
-            aria-pressed={filter === "FOLLOWING"}
-          >
-            Following
-          </button>
-
-          <button
-            className={`w-full rounded-lg border p-4 ${
-              filter === "POPULAR"
-                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => setFilter("POPULAR")}
-            aria-pressed={filter === "POPULAR"}
-          >
-            Popular
-          </button>
-
-          <button
-            className={`w-full rounded-lg border p-4 ${
-              filter === "CONTROVERSIAL"
-                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
-                : "border-gray-400 bg-gray-300 hover:bg-gray-400 dark:border-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => setFilter("CONTROVERSIAL")}
-            aria-pressed={filter === "CONTROVERSIAL"}
-          >
-            Controversial
-          </button>
+            <ToggleGroupItem
+              value="LATEST"
+              aria-label="Latest"
+              aria-pressed={filter === "LATEST"}
+              className="text-center"
+            >
+              <p>Latest</p>
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="FOLLOWING"
+              aria-label="Following"
+              aria-pressed={filter === "FOLLOWING"}
+              className="text-center"
+              onClick={() => {
+                if (!user) setShowLoginPrompt(true);
+              }}
+            >
+              <p>Following</p>
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="POPULAR"
+              aria-label="Popular"
+              aria-pressed={filter === "POPULAR"}
+              className="text-center"
+            >
+              <p>Popular</p>
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="CONTROVERSIAL"
+              aria-label="Controversial"
+              aria-pressed={filter === "CONTROVERSIAL"}
+              className="text-center"
+            >
+              <p>Controversial</p>
+            </ToggleGroupItem>
+          </ToggleGroup>
         </section>
 
         {showLoginPrompt && (

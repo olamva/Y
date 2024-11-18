@@ -17,7 +17,7 @@ type Query {
 }
 
 enum PostFilter {
-  FOR_YOU
+  LATEST
   FOLLOWING
   POPULAR
   CONTROVERSIAL

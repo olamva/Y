@@ -26,7 +26,7 @@ export const resolvers: IResolvers = {
         let sort: Record<string, SortOrder> = { createdAt: -1 };
 
         switch (filter) {
-          case 'FOR_YOU':
+          case 'LATEST':
             query = {};
             break;
 
