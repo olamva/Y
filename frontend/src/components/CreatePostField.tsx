@@ -102,12 +102,12 @@ const CreatePostField = ({
         </div>
 
         <div className="flex justify-between">
-          <div className="mx-1 flex flex-grow items-center justify-start gap-2">
+          <div className="flex flex-grow items-center justify-start gap-1">
             <Tooltip>
               <TooltipTrigger>
                 <button
                   type="button"
-                  className="h-fit"
+                  className="h-fit px-1"
                   onClick={(e) => {
                     e.preventDefault();
                     const start = textInputRef.current?.selectionStart;
@@ -135,7 +135,7 @@ const CreatePostField = ({
               <TooltipTrigger>
                 <button
                   type="button"
-                  className="h-fit"
+                  className="h-fit px-1"
                   onClick={(e) => {
                     e.preventDefault();
                     const start = textInputRef.current?.selectionStart;
