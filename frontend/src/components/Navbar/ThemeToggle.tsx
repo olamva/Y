@@ -25,7 +25,7 @@ const ThemeToggle = () => {
 
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <button
           onClick={toggleTheme}
           className={`mx-4 h-10 w-16 rounded-full p-1 transition-colors duration-300 focus:outline-none ${
@@ -50,7 +50,7 @@ const ThemeToggle = () => {
           </div>
         </button>
       </div>
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <button
           className="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
           onClick={toggleTheme}
