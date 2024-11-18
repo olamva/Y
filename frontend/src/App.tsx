@@ -22,11 +22,14 @@ const HomePage = () => {
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
+  const [filter, setFilter] = useState<
+    "FOR_YOU" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL"
+  >("FOR_YOU");
 
-  const { data, loading, error, fetchMore, networkStatus } = useQuery<{
+  const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getPosts: PostType[];
   }>(GET_POSTS, {
-    variables: { page: 1 },
+    variables: { page: 1, filter },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
@@ -60,6 +63,7 @@ const HomePage = () => {
       setPostBody("");
       setFile(null);
       toast.success("Post added successfully!");
+      refetch();
     },
     refetchQueries: [{ query: GET_POSTS, variables: { page: 1 } }],
   });
@@ -120,6 +124,12 @@ const HomePage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loading, page, hasMore, networkStatus, loadMorePosts]);
 
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    refetch({ page: 1, filter });
+  }, [filter, refetch]);
+
   if (networkStatus === NetworkStatus.loading)
     return <p className="mt-4 text-center">Loading...</p>;
 
@@ -130,6 +140,8 @@ const HomePage = () => {
         {(error?.message ?? usersError?.message) || "Unknown error"}
       </p>
     );
+
+  const posts = data?.getPosts || [];
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
@@ -178,8 +190,54 @@ const HomePage = () => {
         </form>
 
         <Divider />
+
+        <section className="mb-4 flex w-full flex-row justify-between">
+          <button
+            className={`mx-2 flex-1 rounded-lg border p-4 ${
+              filter === "FOR_YOU"
+                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
+                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+            }`}
+            onClick={() => setFilter("FOR_YOU")}
+          >
+            For you
+          </button>
+          <button
+            className={`mx-2 flex-1 rounded-lg border p-4 ${
+              filter === "FOLLOWING"
+                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
+                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+            }`}
+            onClick={() => setFilter("FOLLOWING")}
+          >
+            Following
+          </button>
+          <button
+            className={`mx-2 flex-1 rounded-lg border p-4 ${
+              filter === "POPULAR"
+                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
+                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+            }`}
+            onClick={() => setFilter("POPULAR")}
+          >
+            Popular
+          </button>
+          <button
+            className={`mx-2 flex-1 rounded-lg border p-4 ${
+              filter === "CONTROVERSIAL"
+                ? "border-blue-500 bg-blue-300 dark:border-blue-500 dark:bg-blue-700"
+                : "border-gray-400 bg-gray-300 dark:border-gray-700 dark:bg-gray-600"
+            }`}
+            onClick={() => setFilter("CONTROVERSIAL")}
+          >
+            Controversial
+          </button>
+        </section>
+
         <div className="flex flex-col gap-4">
-          {data?.getPosts.map((post) => <Post key={post.id} post={post} />)}
+          {posts.map((post) => (
+            <Post key={post.id} post={post} />
+          ))}
         </div>
 
         {!hasMore && (

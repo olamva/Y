@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_POSTS = gql`
-  query GetPosts($page: Int!) {
-    getPosts(page: $page) {
+  query GetPosts($page: Int!, $filter: PostFilter!) {
+    getPosts(page: $page, filter: $filter) {
       id
       body
       originalBody
