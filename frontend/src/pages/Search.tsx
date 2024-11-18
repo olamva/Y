@@ -74,7 +74,6 @@ const SearchPage = () => {
       limit: RESULTS_PAGE_SIZE,
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
     skip: filterType !== "hashtags",
   });
 
@@ -177,16 +176,6 @@ const SearchPage = () => {
     loadMoreResults,
   ]);
 
-  useEffect(() => {
-    setPagePosts(1);
-    setPageUsers(1);
-    setPageHashtags(1);
-
-    setHasMorePosts(true);
-    setHasMoreUsers(true);
-    setHasMoreHashtags(true);
-  }, [searchQuery, filterType]);
-
   const isAnyLoading = postsLoading || usersLoading || hashtagsLoading;
   const isAnyError = postsError || usersError || hashtagsError;
 
@@ -194,13 +183,20 @@ const SearchPage = () => {
     <div className="w-full">
       <BackButton />
       <main className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center px-4">
-        {/* <h1 className="my-4 text-center text-2xl font-bold">
-          Search results for: {searchQuery}
-        </h1> */}
         <div className="mb-4 flex items-center gap-2">
           <ToggleGroup
             value={filterType}
-            onValueChange={(value: ViewState) => setFilterType(value)}
+            onValueChange={(value: ViewState) => {
+              setPagePosts(1);
+              setPageUsers(1);
+              setPageHashtags(1);
+
+              setHasMorePosts(true);
+              setHasMoreUsers(true);
+              setHasMoreHashtags(true);
+
+              setFilterType(value);
+            }}
             type="single"
             variant="outline"
             className="flex items-center justify-center gap-1"
@@ -259,15 +255,14 @@ const SearchPage = () => {
           </div>
         )}
 
-        {!isAnyLoading && !isAnyError && (
-          <>
-            {postsData?.searchPosts.length === 0 &&
-              usersData?.searchUsers.length === 0 &&
-              hashtagsData?.searchHashtags.length === 0 && (
-                <p className="text-center text-gray-500">No results found.</p>
-              )}
-          </>
-        )}
+        {!isAnyLoading &&
+          !isAnyError &&
+          postsData?.searchPosts.length === 0 &&
+          usersData?.searchUsers.length === 0 &&
+          hashtagsData?.searchHashtags.length === 0 && (
+            <p className="text-center text-gray-500">No results found.</p>
+          )}
+
         {/* Hashtags */}
         <div className="flex w-full flex-wrap justify-center gap-4">
           {filterType === "hashtags" &&
