@@ -224,7 +224,7 @@ const EditProfile = ({ user }: Props) => {
                         id="first-name"
                         defaultValue={user.firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
                     <div className="mt-6">
@@ -239,7 +239,7 @@ const EditProfile = ({ user }: Props) => {
                         id="last-name"
                         defaultValue={user.lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
                     <div className="mt-6">
@@ -253,7 +253,7 @@ const EditProfile = ({ user }: Props) => {
                         id="biography"
                         defaultValue={user.biography}
                         onChange={(e) => setBiography(e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border border-gray-400 bg-slate-100 py-1 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 sm:text-sm"
                       />
                     </div>
                     <div className="my-6">
