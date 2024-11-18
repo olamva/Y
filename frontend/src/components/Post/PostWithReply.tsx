@@ -14,7 +14,7 @@ const PostWithReply = ({
   replyDoesntRedirect = false,
 }: PostWithReplyProps) => (
   <div className="flex w-full flex-col items-center">
-    {post === undefined ? (
+    {!post ? (
       <DeletedPost />
     ) : "parentID" in post ? (
       <Comment comment={post} disableBottomMargin />
