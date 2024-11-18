@@ -1,4 +1,4 @@
-# Y (Twitter Clone)
+# Y (The new age of social media!)
 
 Dette prosjektet er tilgjengelig [på nett også!](http://it2810-06.idi.ntnu.no/project2/)
 
