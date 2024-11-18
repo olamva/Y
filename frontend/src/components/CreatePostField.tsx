@@ -94,74 +94,101 @@ const CreatePostField = ({
         )}
       </div>
 
-      <div className="flex justify-end gap-2">
-        <div className="flex items-center gap-1">
-          <label htmlFor="image-upload" className="cursor-pointer">
-            <ImageIcon className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500" />
-          </label>
-          <input
-            id="image-upload"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                setFile(e.target.files[0]);
-              }
+      <div className="flex justify-between">
+        <div className="mx-1 flex flex-grow items-center justify-start gap-2">
+          <button
+            type="button"
+            className="h-fit"
+            onClick={() => {
+              setValue(value + "@");
             }}
-            className="hidden"
-          />
-
-          <span
-            className="ml-1 select-none text-sm text-black dark:text-gray-500"
-            aria-live="polite"
           >
-            {value.length}/{MAX_CHARS}
-          </span>
-          <svg className="size-8" viewBox="0 0 36 36">
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              fill="none"
-              className="stroke-gray-300 dark:stroke-gray-600"
-              strokeWidth="2"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              fill="none"
-              className={
-                percentage === 100
-                  ? "stroke-red-600 dark:stroke-red-500"
-                  : percentage >= 90
-                    ? "stroke-yellow-600 dark:stroke-yellow-500"
-                    : "stroke-blue-600 dark:stroke-blue-500"
-              }
-              strokeWidth="2"
-              strokeDasharray="101"
-              strokeDashoffset={Math.ceil(101 - percentage * 1.01)}
-              transform="rotate(-90 18 18)"
-            />
-            <text
-              x="18"
-              y="22"
-              textAnchor="middle"
-              className="fill-current text-sm text-black dark:text-gray-500"
-            >
-              {percentage >= 90 ? MAX_CHARS - value.length : ""}
-            </text>
-          </svg>
+            <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
+              @
+            </h3>
+          </button>
+          <button
+            type="button"
+            className="h-fit"
+            onClick={() => {
+              setValue(value + "#");
+            }}
+          >
+            <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
+              #
+            </h3>
+          </button>
         </div>
+        <div className="flex-grow"></div>
+        <div className="flex justify-end gap-2">
+          <div className="flex items-center gap-1">
+            <label htmlFor="image-upload" className="cursor-pointer">
+              <ImageIcon className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500" />
+            </label>
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setFile(e.target.files[0]);
+                }
+              }}
+              className="hidden"
+            />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={`flex w-fit select-none gap-1 rounded-md border border-transparent p-1 font-thin text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${className}`}
-        >
-          <p className="font-semibold">Post</p>
-          <PaperAirplaneIcon className="size-6" />
-        </button>
+            <span
+              className="ml-1 select-none text-sm text-black dark:text-gray-500"
+              aria-live="polite"
+            >
+              {value.length}/{MAX_CHARS}
+            </span>
+            <svg className="size-8" viewBox="0 0 36 36">
+              <circle
+                cx="18"
+                cy="18"
+                r="16"
+                fill="none"
+                className="stroke-gray-300 dark:stroke-gray-600"
+                strokeWidth="2"
+              />
+              <circle
+                cx="18"
+                cy="18"
+                r="16"
+                fill="none"
+                className={
+                  percentage === 100
+                    ? "stroke-red-600 dark:stroke-red-500"
+                    : percentage >= 90
+                      ? "stroke-yellow-600 dark:stroke-yellow-500"
+                      : "stroke-blue-600 dark:stroke-blue-500"
+                }
+                strokeWidth="2"
+                strokeDasharray="101"
+                strokeDashoffset={Math.ceil(101 - percentage * 1.01)}
+                transform="rotate(-90 18 18)"
+              />
+              <text
+                x="18"
+                y="22"
+                textAnchor="middle"
+                className="fill-current text-sm text-black dark:text-gray-500"
+              >
+                {percentage >= 90 ? MAX_CHARS - value.length : ""}
+              </text>
+            </svg>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`flex w-fit select-none gap-1 rounded-md border border-transparent p-1 font-thin text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${className}`}
+          >
+            <p className="font-semibold">Post</p>
+            <PaperAirplaneIcon className="size-6" />
+          </button>
+        </div>
       </div>
     </div>
   );
