@@ -104,12 +104,11 @@ const CreatePostField = ({
         <div className="flex justify-between">
           <div className="flex flex-grow items-center justify-start gap-1">
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <button
                   type="button"
                   className="h-fit px-1"
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     const start = textInputRef.current?.selectionStart;
                     const end = textInputRef.current?.selectionEnd;
                     if (start !== undefined && end !== undefined) {
@@ -132,12 +131,11 @@ const CreatePostField = ({
               </TooltipContent>
             </Tooltip>
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <button
                   type="button"
                   className="h-fit px-1"
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     const start = textInputRef.current?.selectionStart;
                     const end = textInputRef.current?.selectionEnd;
                     if (start !== undefined && end !== undefined) {
@@ -164,7 +162,7 @@ const CreatePostField = ({
           <div className="flex justify-end gap-2">
             <div className="flex items-center gap-1">
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <label htmlFor="image-upload" className="cursor-pointer">
                     <ImageIcon className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500" />
                   </label>
@@ -178,7 +176,7 @@ const CreatePostField = ({
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
+                  if (e.target.files?.[0]) {
                     setFile(e.target.files[0]);
                   }
                 }}
