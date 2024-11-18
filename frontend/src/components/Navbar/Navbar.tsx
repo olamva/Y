@@ -58,11 +58,13 @@ const Navbar = () => {
     ]);
   }, [hashtagsData, mentionsData]);
 
-  const handleAutofill = () => {
-    if (activeSuggestionIndex === 0)
+  const handleSearch = () => {
+    if (activeSuggestionIndex === 0 || suggestions.length === 0) {
       window.location.href = `/project2/search?q=${encodeURIComponent(
         searchQuery,
       )}`;
+      return;
+    }
     const selectedSuggestion = suggestions[activeSuggestionIndex - 1];
     window.location.href = `/project2/${
       selectedSuggestion.__typename === "User"
@@ -80,6 +82,11 @@ const Navbar = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+      return;
+    }
     if (showSuggestions) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -91,9 +98,6 @@ const Navbar = () => {
         setActiveSuggestionIndex((prevIndex) =>
           prevIndex === 0 ? suggestions.length - 2 : prevIndex - 1,
         );
-      } else if (e.key === "Enter" && suggestions.length > 0) {
-        e.preventDefault();
-        handleAutofill();
       }
     }
   };
@@ -117,59 +121,55 @@ const Navbar = () => {
         </a>
 
         <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg lg:justify-end">
-          <form>
-            <Popover open={showSuggestions}>
-              <PopoverTrigger asChild>
-                <input
-                  type="search"
-                  id="search"
-                  maxLength={40}
-                  placeholder="Search here..."
-                  autoComplete="off"
-                  className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
-                  value={searchQuery}
-                  onKeyDown={handleKeyDown}
-                  onChange={handleInputChange}
-                />
-              </PopoverTrigger>
-              {suggestions.length > 0 && (
-                <PopoverContent
-                  onOpenAutoFocus={(e) => e.preventDefault()}
-                  className="z-[70] overflow-hidden p-0"
-                >
-                  {hashtagsLoading || mentionsLoading ? (
-                    <p className="w-full p-2">Loading...</p>
-                  ) : (
-                    <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
-                      {suggestions.slice(0, 5).map((suggestion, index) => (
-                        <div
-                          key={
-                            suggestion.__typename === "User"
-                              ? suggestion.id
-                              : suggestion.tag
-                          }
-                          className={`w-full cursor-pointer p-2 ${
-                            index + 1 === activeSuggestionIndex
-                              ? "bg-blue-500 text-white dark:bg-blue-800"
-                              : ""
-                          }`}
-                          onClick={handleAutofill}
-                          onMouseEnter={() =>
-                            setActiveSuggestionIndex(index + 1)
-                          }
-                        >
-                          {suggestion.__typename === "User"
-                            ? `@${suggestion.username}`
-                            : `#${suggestion.tag}`}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </PopoverContent>
-              )}
-            </Popover>
-          </form>
-          <div className="hidden items-center gap-2 lg:flex">
+          <Popover open={showSuggestions}>
+            <PopoverTrigger asChild>
+              <input
+                type="search"
+                id="search"
+                maxLength={40}
+                placeholder="Search here..."
+                autoComplete="off"
+                className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
+                value={searchQuery}
+                onKeyDown={handleKeyDown}
+                onChange={handleInputChange}
+              />
+            </PopoverTrigger>
+            {suggestions.length > 0 && (
+              <PopoverContent
+                onOpenAutoFocus={(e) => e.preventDefault()}
+                className="z-[70] overflow-hidden p-0"
+              >
+                {hashtagsLoading || mentionsLoading ? (
+                  <p className="w-full p-2">Loading...</p>
+                ) : (
+                  <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
+                    {suggestions.slice(0, 5).map((suggestion, index) => (
+                      <div
+                        key={
+                          suggestion.__typename === "User"
+                            ? suggestion.id
+                            : suggestion.tag
+                        }
+                        className={`w-full cursor-pointer p-2 ${
+                          index + 1 === activeSuggestionIndex
+                            ? "bg-blue-500 text-white dark:bg-blue-800"
+                            : ""
+                        }`}
+                        onClick={handleSearch}
+                        onMouseEnter={() => setActiveSuggestionIndex(index + 1)}
+                      >
+                        {suggestion.__typename === "User"
+                          ? `@${suggestion.username}`
+                          : `#${suggestion.tag}`}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </PopoverContent>
+            )}
+          </Popover>
+          <div className="hidden min-w-fit items-center gap-2 lg:flex">
             <ThemeToggle />
             <div className="flex items-center gap-2">
               {user && (

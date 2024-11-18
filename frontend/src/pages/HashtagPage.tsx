@@ -123,8 +123,8 @@ const HashtagPage = () => {
           {(loading && networkStatus === 1) ||
           (parentPostsLoading && parentPostsNetworkStatus === 1)
             ? Array.from({ length: 10 }).map((_, index) => (
-                <div className="w-full max-w-xl">
-                  <PostSkeleton key={index} />
+                <div className="w-full max-w-xl" key={index}>
+                  <PostSkeleton />
                 </div>
               ))
             : posts
