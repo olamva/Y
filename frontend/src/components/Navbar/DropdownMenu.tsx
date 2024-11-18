@@ -66,7 +66,7 @@ export const DropdownMenu = () => {
   }, [menuRef]);
 
   return (
-    <div className="relative block md:hidden" ref={menuRef}>
+    <div className="relative block lg:hidden" ref={menuRef}>
       <div
         onClick={toggleMenu}
         className="cursor-pointer transition-transform duration-300"

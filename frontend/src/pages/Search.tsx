@@ -1,24 +1,24 @@
 import BackButton from "@/components/BackButton";
+import HashtagCard from "@/components/HashtagCard";
 import Post from "@/components/Post/Post";
 import ProfileCard from "@/components/ProfileCard";
-import HashtagCard from "@/components/HashtagCard";
-import { PostType, UserType, HashtagType } from "@/lib/types";
-import { SEARCH_POSTS, SEARCH_USERS, SEARCH_HASHTAGS } from "@/queries/search";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import { HashtagType, PostType, UserType } from "@/lib/types";
+import { SEARCH_HASHTAGS, SEARCH_POSTS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
-import { FilterIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 
 const RESULTS_PAGE_SIZE = 10;
 
+type ViewState = "posts" | "users" | "hashtags";
+
 const SearchPage = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const searchQuery = params.get("q") || "";
-  const [filterType, setFilterType] = useState<
-    "all" | "post" | "user" | "hashtag"
-  >("all");
+  const [filterType, setFilterType] = useState<ViewState>("posts");
 
   const [pagePosts, setPagePosts] = useState(1);
   const [pageUsers, setPageUsers] = useState(1);
@@ -41,7 +41,7 @@ const SearchPage = () => {
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
-    skip: filterType === "user" || filterType === "hashtag",
+    skip: filterType !== "posts",
   });
 
   const {
@@ -57,7 +57,7 @@ const SearchPage = () => {
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
-    skip: filterType === "post" || filterType === "hashtag",
+    skip: filterType !== "users",
   });
 
   const {
@@ -73,15 +73,11 @@ const SearchPage = () => {
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
-    skip: filterType !== "hashtag" && filterType !== "all",
+    skip: filterType !== "hashtags",
   });
 
   const loadMoreResults = useCallback(async () => {
-    if (
-      (filterType === "post" || filterType === "all") &&
-      hasMorePosts &&
-      !postsLoading
-    ) {
+    if (filterType === "posts" && hasMorePosts && !postsLoading) {
       try {
         const { data: fetchMoreData } = await fetchMorePosts({
           variables: {
@@ -100,11 +96,7 @@ const SearchPage = () => {
       }
     }
 
-    if (
-      (filterType === "user" || filterType === "all") &&
-      hasMoreUsers &&
-      !usersLoading
-    ) {
+    if (filterType === "users" && hasMoreUsers && !usersLoading) {
       try {
         const { data: fetchMoreData } = await fetchMoreUsers({
           variables: {
@@ -123,11 +115,7 @@ const SearchPage = () => {
       }
     }
 
-    if (
-      (filterType === "hashtag" || filterType === "all") &&
-      hasMoreHashtags &&
-      !hashtagsLoading
-    ) {
+    if (filterType === "hashtags" && hasMoreHashtags && !hashtagsLoading) {
       try {
         const { data: fetchMoreData } = await fetchMoreHashtags({
           variables: {
@@ -208,21 +196,35 @@ const SearchPage = () => {
           Search results for: {searchQuery}
         </h1>
         <div className="mb-4 flex items-center gap-2">
-          <FilterIcon className="text-gray-800 dark:text-gray-200" />
-          <select
+          <ToggleGroup
             value={filterType}
-            onChange={(e) =>
-              setFilterType(
-                e.target.value as "all" | "post" | "user" | "hashtag",
-              )
-            }
-            className="rounded border border-gray-300 bg-white p-2 outline-none dark:bg-gray-800"
+            onValueChange={(value: ViewState) => setFilterType(value)}
+            type="single"
+            variant="outline"
+            className="flex items-center justify-center gap-2"
           >
-            <option value="all">All</option>
-            <option value="post">Posts</option>
-            <option value="user">Users</option>
-            <option value="hashtag">Hashtags</option>
-          </select>
+            <ToggleGroupItem
+              value="posts"
+              aria-label="View Posts"
+              className="text-center"
+            >
+              <p>Posts</p>
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="users"
+              aria-label="View Comments"
+              className="text-center"
+            >
+              <p>Users</p>
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="hashtags"
+              aria-label="View Mentions"
+              className="text-center"
+            >
+              <p>Hashtags</p>
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
 
         {isAnyError && (
@@ -257,44 +259,48 @@ const SearchPage = () => {
           </>
         )}
         {/* Hashtags */}
-        <div className="mb-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(filterType === "all" || filterType === "hashtag") &&
+        <div className="flex w-full flex-wrap justify-center gap-4">
+          {filterType === "hashtags" &&
             hashtagsData?.searchHashtags.map((hashtag) => (
               <div
                 key={hashtag.tag}
-                className="col-span-1 flex w-full justify-center"
+                className="flex w-[30%] min-w-36 justify-center"
               >
                 <HashtagCard hashtag={hashtag} />
               </div>
             ))}
         </div>
 
-        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Users */}
-          {(filterType === "all" || filterType === "user") &&
+        {/* Users */}
+        <div className="flex w-full flex-wrap justify-center gap-4">
+          {filterType === "users" &&
             usersData?.searchUsers.map((user) => (
-              <div key={user.id} className="col-span-1 flex justify-center">
+              <div
+                key={user.id}
+                className="flex w-[30%] min-w-36 justify-center"
+              >
                 <ProfileCard user={user} />
               </div>
             ))}
+        </div>
 
-          {/* Posts */}
-          {(filterType === "all" || filterType === "post") &&
+        {/* Posts */}
+        <div className="flex w-full flex-col gap-4">
+          {filterType === "posts" &&
             postsData?.searchPosts.map((post) => (
-              <div
-                key={post.id}
-                className="col-span-1 flex justify-center sm:col-span-2 lg:col-span-3"
-              >
+              <div key={post.id} className="flex justify-center">
                 <Post post={post} />
               </div>
             ))}
-
-          {!hasMorePosts && !hasMoreUsers && !hasMoreHashtags && (
-            <p className="col-span-1 mt-4 justify-self-center text-gray-500 dark:text-gray-400 sm:col-span-2 lg:col-span-3">
-              You've reached the end of the search results.
-            </p>
-          )}
         </div>
+
+        {((!hasMorePosts && filterType === "posts") ||
+          (!hasMoreUsers && filterType === "users") ||
+          (!hasMoreHashtags && filterType === "hashtags")) && (
+          <p className="col-span-1 mt-4 justify-self-center text-gray-500 dark:text-gray-400 sm:col-span-2 lg:col-span-3">
+            You've reached the end of the search results.
+          </p>
+        )}
       </main>
     </div>
   );

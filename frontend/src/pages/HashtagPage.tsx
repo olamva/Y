@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import Post from "@/components/Post/Post";
-import toast from "react-hot-toast";
-import Divider from "@/components/ui/Divider";
 import BackButton from "@/components/BackButton";
-import { GET_CONTENT_BY_HASHTAG } from "@/queries/hashtags";
-import { PostType, CommentType } from "@/lib/types";
 import Comment from "@/components/Post/Comment";
+import Post from "@/components/Post/Post";
+import Divider from "@/components/ui/Divider";
+import { CommentType, PostType } from "@/lib/types";
+import { GET_CONTENT_BY_HASHTAG } from "@/queries/hashtags";
+import { useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 type Content = PostType | CommentType;
@@ -89,7 +89,9 @@ const HashtagPage = () => {
     <div className="mx-auto w-full max-w-screen-xl px-5">
       <BackButton />
       <main className="flex w-full flex-col items-center justify-center">
-        <h1 className="my-4 text-3xl font-bold">#{hashtag?.toLowerCase()}</h1>
+        <h1 className="my-4 break-words text-3xl font-bold">
+          #{hashtag?.toLowerCase()}
+        </h1>
         <Divider />
         <div className="flex w-full flex-col items-center gap-4">
           {posts.map((post) => {
