@@ -99,23 +99,26 @@ Retrieves a user by their username.
 
 ---
 
-### `searchPosts(query: String!, page: Int!): [Post!]!`
+### `searchPosts(query: String!, page: Int!, limit: Int!): [Post!]!`
 
 Searches for posts and users matching the query.
 
 - **Parameters:**
   - `query` (String!): The search term.
   - `page` (Int!): The page number to retrieve for pagination.
+  - `limit` (Int!): The number of posts to retrieve per page.
 - **Returns:** An array of `Post` objects.
 
 ---
 
-### `searchUsers(query: String!): [User!]!`
+### `searchUsers(query: String!, page: Int!, limit: Int!): [User!]!`
 
 Searches for users matching the query.
 
 - **Parameters:**
   - `query` (String!): The search term.
+  - `page` (Int!): The page number to retrieve for pagination.
+  - `limit` (Int!): The number of posts to retrieve per page.
 - **Returns:** An array of `User` objects.
 
 ---
@@ -256,7 +259,6 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 - **getPost**: Retrieves a single post by its ID.
 - **getUser**: Finds a user by their username.
 - **getComments**: Retrieves comments for a specific post, sorted by creation date.
-- **searchAll**: Performs a search across both posts and users based on the query string.
 - **searchUsers**: Searches for users matching the query string.
 - **getPostsByIds**: Retrieves multiple posts based on an array of IDs.
 - **getComment**: Retrieves a single comment by its ID.
@@ -278,10 +280,6 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 - **unlikeComment**: Unlikes a comment if previously liked and updates the user's `likedCommentIds` array.
 - **register**: Registers a new user with a unique username and hashed password, returns a JWT token.
 - **login**: Authenticates a user and returns a JWT token.
-
-### Union Type Resolver
-
-- **SearchResult**: Determines the type (`User` or `Post`) for the `searchAll` query.
 
 ---
 

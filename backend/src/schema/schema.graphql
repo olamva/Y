@@ -5,7 +5,7 @@ type Query {
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!
   searchPosts(query: String!, page: Int!): [Post!]!
-  searchUsers(query: String!): [User!]!
+  searchUsers(query: String!, page: Int!, limit: Int!): [User!]!
   searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
   getPostsByIds(ids: [ID!]!): [Post!]!
   getComment(id: ID!): Comment
@@ -35,6 +35,7 @@ type Post {
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
+  mentionedUsers: [User!]!
 }
 
 type Comment {
@@ -48,6 +49,7 @@ type Comment {
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
+  mentionedUsers: [User!]!
 }
 
 type TrendingHashtag {
@@ -60,8 +62,10 @@ type User {
   username: String!
   postIds: [ID!]!
   likedPostIds: [ID!]!
-  likedCommentIds: [ID!]!
+  mentionedPostIds: [ID!]!
   commentIds: [ID!]!
+  likedCommentIds: [ID!]!
+  mentionedCommentIds: [ID!]!
   following: [User!]!
   followers: [User!]!
   profilePicture: String

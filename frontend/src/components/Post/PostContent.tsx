@@ -78,8 +78,8 @@ const PostContent = ({
                 e.stopPropagation();
               }}
             >
-              <p className="font-mono underline-offset-4 hover:underline">
-                <span className="break-words font-sans">@</span>
+              <p className="break-words font-mono underline-offset-4 hover:underline">
+                <span className="font-sans">@</span>
                 {post.author.username}
               </p>
             </a>

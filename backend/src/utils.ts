@@ -1,3 +1,6 @@
+import { Types } from 'mongoose';
+import { User } from './models/user';
+
 export const extractHashtags = (text: string): string[] => {
   const regex = /#(\w+)/g;
   const hashtags = new Set<string>();
@@ -11,4 +14,22 @@ export const extractHashtags = (text: string): string[] => {
   }
 
   return Array.from(hashtags);
+};
+
+export const extractMentions = async (text: string): Promise<Types.ObjectId[]> => {
+  const regex = /@(\w+)/g;
+  const mentions = new Set<Types.ObjectId>();
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    const mention = match[1];
+    if (mention.length <= 30) {
+      const user = await User.findOne({ username: mention });
+      if (user) {
+        mentions.add(user.id);
+      }
+    }
+  }
+
+  return Array.from(mentions);
 };

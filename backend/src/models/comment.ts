@@ -1,4 +1,4 @@
-import { Document, Schema, model, Types } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
 export interface CommentType extends Document {
   parentID: string;
@@ -11,6 +11,7 @@ export interface CommentType extends Document {
   createdAt: Date;
   imageUrl?: string;
   hashTags?: string[];
+  mentionedUsers?: Types.ObjectId[];
 }
 
 const CommentSchema = new Schema<CommentType>({
@@ -24,6 +25,7 @@ const CommentSchema = new Schema<CommentType>({
   createdAt: { type: Date, default: Date.now },
   imageUrl: { type: String, default: undefined },
   hashTags: { type: [String], default: undefined, index: true },
+  mentionedUsers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
 });
 
 export const Comment = model<CommentType>('Comment', CommentSchema);

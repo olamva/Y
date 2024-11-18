@@ -10,6 +10,7 @@ type ContentType = {
 };
 
 export type HashtagType = {
+  __typename: "Hashtag";
   tag: string;
   count: number;
 };
@@ -30,8 +31,10 @@ export type UserType = {
   username: string;
   postIds: string[];
   likedPostIds: string[];
-  likedCommentIds: string[];
+  mentionedPostIds: string[];
   commentIds: string[];
+  likedCommentIds: string[];
+  mentionedCommentIds: string[];
   followers: UserType[];
   following: UserType[];
   profilePicture?: string;

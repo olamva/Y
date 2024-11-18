@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/AuthContext";
-import Avatar from "@/components/Profile/Avatar";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
+import Avatar from "@/components/Profile/Avatar";
 import { FormEvent, useState } from "react";
 
 const Navbar = () => {
@@ -22,7 +22,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed z-10 flex h-20 w-full items-center justify-between bg-gray-200/40 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
+      <nav className="fixed z-[100] flex h-20 w-full items-center justify-between bg-gray-200/40 px-5 py-5 backdrop-blur-sm dark:bg-gray-950/80">
         <a
           href="/project2"
           className="group flex items-center justify-center gap-5 hover:scale-110 hover:text-gray-300"

@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
 
-type ViewState = "posts" | "likes" | "comments";
+type ViewState = "posts" | "comments" | "mentions" | "likes";
 
 const Profile = () => {
   const { username: paramUsername, view } = useParams<{
@@ -53,7 +53,7 @@ const Profile = () => {
   const handleViewChange = (value: ViewState) => {
     setCurrentView(value);
     navigate(
-      location.pathname.replace(/\/(posts|likes|comments)$/, "") +
+      location.pathname.replace(/\/(posts|comments|mentions|likes)$/, "") +
         (value === "posts" ? "" : `/${value}`),
     );
   };
@@ -92,6 +92,48 @@ const Profile = () => {
   const likedPosts: PostType[] = likedPostsData?.getPostsByIds || [];
 
   const {
+    data: likedCommentsData,
+    loading: likedCommentsLoading,
+    error: likedCommentsError,
+  } = useQuery(GET_COMMENTS_BY_IDS, {
+    variables: { ids: user?.likedCommentIds || [] },
+    skip: !user || !user.likedCommentIds.length,
+  });
+
+  const likedComments: CommentType[] =
+    likedCommentsData?.getCommentsByIds || [];
+
+  const likedContent: (PostType | CommentType)[] = [
+    ...likedPosts,
+    ...likedComments,
+  ].sort((a, b) => {
+    return (
+      new Date(parseInt(b.createdAt)).getTime() -
+      new Date(parseInt(a.createdAt)).getTime()
+    );
+  });
+
+  const {
+    data: likedParentsData,
+    loading: likedParentsLoading,
+    error: likedParentsError,
+  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
+    GET_PARENTS_BY_IDS,
+    {
+      variables: {
+        parents: likedComments.map((comment) => ({
+          id: comment.parentID,
+          type: comment.parentType,
+        })),
+      },
+      skip: !likedComments.length,
+    },
+  );
+
+  const likedParentPosts: (PostType | CommentType)[] =
+    likedParentsData?.getParentsByIds ?? [];
+
+  const {
     data: commentsData,
     loading: commentsLoading,
     error: commentsError,
@@ -121,6 +163,61 @@ const Profile = () => {
 
   const parentPosts: (PostType | CommentType)[] =
     parentPostsData?.getParentsByIds ?? [];
+
+  const {
+    data: mentionedPostsData,
+    loading: mentionedPostsLoading,
+    error: mentionedPostsError,
+  } = useQuery(GET_POSTS_BY_IDS, {
+    variables: { ids: user?.mentionedPostIds || [] },
+    skip: !user || !user.mentionedPostIds.length,
+  });
+
+  const mentionedPosts: PostType[] = mentionedPostsData?.getPostsByIds || [];
+
+  const {
+    data: mentionedCommentsData,
+    loading: mentionedCommentsLoading,
+    error: mentionedCommentsError,
+  } = useQuery(GET_COMMENTS_BY_IDS, {
+    variables: { ids: user?.mentionedCommentIds || [] },
+    skip: !user || !user.mentionedCommentIds.length,
+  });
+
+  const mentionedComments: CommentType[] =
+    mentionedCommentsData?.getCommentsByIds || [];
+
+  const mentionedContent: (PostType | CommentType)[] = [
+    ...mentionedPosts,
+    ...mentionedComments,
+  ].sort((a, b) => {
+    return (
+      new Date(parseInt(b.createdAt)).getTime() -
+      new Date(parseInt(a.createdAt)).getTime()
+    );
+  });
+
+  const {
+    data: mentionedParentsData,
+    loading: mentionedParentsLoading,
+    error: mentionedParentsError,
+  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
+    GET_PARENTS_BY_IDS,
+    {
+      variables: {
+        parents: mentionedComments.map((comment) => ({
+          id: comment.parentID,
+          type: comment.parentType,
+        })),
+      },
+      skip: !mentionedComments.length,
+    },
+  );
+
+  const mentionedParentPosts: (PostType | CommentType)[] =
+    mentionedParentsData?.getParentsByIds ?? [];
+
+  console.log(mentionedParentPosts, likedParentPosts);
 
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
@@ -205,11 +302,21 @@ const Profile = () => {
               <ToggleGroupItem value="posts" aria-label="View Posts">
                 <p>{user?.postIds.length} Posts</p>
               </ToggleGroupItem>
-              <ToggleGroupItem value="likes" aria-label="View Likes">
-                <p>{user?.likedPostIds.length} Likes</p>
-              </ToggleGroupItem>
               <ToggleGroupItem value="comments" aria-label="View Comments">
                 <p>{user?.commentIds.length} Comments</p>
+              </ToggleGroupItem>
+              <ToggleGroupItem value="mentions" aria-label="View Mentions">
+                <p>
+                  {user?.mentionedPostIds.length +
+                    user.mentionedCommentIds.length}{" "}
+                  Mentions
+                </p>
+              </ToggleGroupItem>
+              <ToggleGroupItem value="likes" aria-label="View Likes">
+                <p>
+                  {user?.likedPostIds.length + user.likedCommentIds.length}{" "}
+                  Likes
+                </p>
               </ToggleGroupItem>
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
@@ -224,20 +331,6 @@ const Profile = () => {
                   ))}
                   {!postsLoading && posts.length === 0 && (
                     <p>No posts to display.</p>
-                  )}
-                </>
-              )}
-              {currentView === "likes" && (
-                <>
-                  {likedPostsLoading && <p>Loading liked posts...</p>}
-                  {likedPostsError && (
-                    <p>Error loading liked posts: {likedPostsError.message}</p>
-                  )}
-                  {likedPosts.map((post) => (
-                    <Post post={post} key={post.id} />
-                  ))}
-                  {!likedPostsLoading && likedPosts.length === 0 && (
-                    <p>No liked posts to display.</p>
                   )}
                 </>
               )}
@@ -268,6 +361,90 @@ const Profile = () => {
                   {!commentsLoading && comments.length === 0 && (
                     <p>No comments to display.</p>
                   )}
+                </>
+              )}
+              {currentView === "mentions" && (
+                <>
+                  {(mentionedPostsLoading ||
+                    mentionedCommentsLoading ||
+                    mentionedParentsLoading) && <p>Loading liked posts...</p>}
+                  {(mentionedPostsError ||
+                    mentionedCommentsError ||
+                    mentionedParentsError) && (
+                    <p>
+                      Error loading mentions:{" "}
+                      {mentionedPostsError?.message ||
+                        mentionedCommentsError?.message ||
+                        mentionedParentsError?.message}
+                    </p>
+                  )}
+                  {mentionedContent
+                    .filter(
+                      (post) =>
+                        !mentionedParentPosts.some(
+                          (parent) => parent.id === post.id,
+                        ),
+                    )
+                    .map((post) =>
+                      post.__typename === "Post" ? (
+                        <Post post={post} key={post.id} />
+                      ) : (
+                        <PostWithReply
+                          post={mentionedParentPosts.find(
+                            (parent) => parent.id === post.parentID,
+                          )}
+                          reply={post}
+                          key={post.id}
+                        />
+                      ),
+                    )}
+                  {!mentionedPostsLoading &&
+                    !mentionedCommentsLoading &&
+                    mentionedContent.length === 0 && (
+                      <p>No mentions to display.</p>
+                    )}
+                </>
+              )}
+              {currentView === "likes" && (
+                <>
+                  {(likedPostsLoading ||
+                    likedCommentsLoading ||
+                    likedParentsLoading) && <p>Loading liked posts...</p>}
+                  {(likedPostsError ||
+                    likedCommentsError ||
+                    likedParentsError) && (
+                    <p>
+                      Error loading liked posts:{" "}
+                      {likedPostsError?.message ||
+                        likedCommentsError?.message ||
+                        likedParentsError?.message}
+                    </p>
+                  )}
+                  {likedContent
+                    .filter(
+                      (post) =>
+                        !likedParentPosts.some(
+                          (parent) => parent.id === post.id,
+                        ),
+                    )
+                    .map((post) =>
+                      post.__typename === "Post" ? (
+                        <Post post={post} key={post.id} />
+                      ) : (
+                        <PostWithReply
+                          post={likedParentPosts.find(
+                            (parent) => parent.id === post.parentID,
+                          )}
+                          reply={post}
+                          key={post.id}
+                        />
+                      ),
+                    )}
+                  {!likedPostsLoading &&
+                    !likedCommentsLoading &&
+                    likedContent.length === 0 && (
+                      <p>No liked posts to display.</p>
+                    )}
                 </>
               )}
             </div>
