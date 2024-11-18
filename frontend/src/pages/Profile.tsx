@@ -186,7 +186,7 @@ const Profile = () => {
     <div className="w-full px-5">
       <BackButton overrideRedirect="/project2/" />
       {loggedInUser && loggedInUser.username === username && (
-        <div className="pt-5 text-center">
+        <div className="mb-8 pt-5 text-center">
           <h2 className="mt-2 break-words text-3xl font-bold">
             Welcome,{" "}
             {loggedInUser.firstName
@@ -197,35 +197,63 @@ const Profile = () => {
       )}
       {username ? (
         <>
-          <section className="relative mb-36 py-6">
-            <img
-              src={
-                user.backgroundPicture
-                  ? `${BACKEND_URL}${user.backgroundPicture}`
-                  : CoverPhoto
-              }
-              alt="Cover photo"
-              className="h-56 w-full object-cover"
-            />
-            <div className="absolute -bottom-[3.75rem] left-[10%] flex-col items-center pl-6 md:-bottom-20">
-              <Avatar user={user} large disableHover />
-              <div className="flex items-center justify-center gap-2">
-                <h1 className="font-mono text-lg">
-                  <span className="font-sans">@</span>
-                  {user?.username || "Unknown User"}
-                </h1>
+          <section className="mb-8">
+            <div className="relative h-64 md:h-96">
+              <img
+                src={
+                  user.backgroundPicture
+                    ? `${BACKEND_URL}${user.backgroundPicture}`
+                    : CoverPhoto
+                }
+                alt="Background"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
 
-                {loggedInUser?.username !== username && (
-                  <FollowButton targetUsername={username || ""} />
-                )}
+            <div className="mx-auto max-w-5xl">
+              <div className="relative -mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+                <Avatar user={user} large={true} />
+                <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                  <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
+                    <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
+                      {user?.firstName} {user?.lastName}
+                    </h1>
+                    <div className="flex flex-row gap-2">
+                      <p className="text-md text-gray-500">@{user.username}</p>
+                      {loggedInUser?.username !== username && (
+                        <FollowButton targetUsername={username || ""} />
+                      )}
+                    </div>
+                  </div>
+                  {loggedInUser && loggedInUser.username === username && (
+                    <EditProfile user={user} />
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 min-w-0 flex-1 sm:block md:hidden">
+                <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
+                  {user?.firstName} {user?.lastName}
+                </h1>
+                <div className="flex flex-row gap-2">
+                  <p className="text-md text-gray-500">@{user.username}</p>
+                  {loggedInUser?.username !== username && (
+                    <FollowButton targetUsername={username || ""} />
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-8 mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-600">
+                <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-200">
+                  Biography
+                </h2>
+                <p className="text-gray-600 dark:text-gray-200">
+                  {user?.biography}
+                </p>
               </div>
             </div>
-            {loggedInUser && loggedInUser.username === username && (
-              <div className="absolute right-[10%] top-[105%]">
-                <EditProfile user={user} />
-              </div>
-            )}
           </section>
+
           <section>
             <div className="mb-8 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
               <div className="flex flex-col items-center justify-around sm:flex-row">
