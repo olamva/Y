@@ -247,6 +247,15 @@ Logs in an existing user.
   - `password` (String!): The user's password.
 - **Returns:** A JWT token as a `String`.
 
+### `deleteUser(username: String!): User!`
+
+Deletes a user.
+
+- **Parameters:**
+  - `username` (String!): The username of the user to delete.
+- **Requires Authentication:** Yes (User must be the author or admin)
+- **Returns:** The deleted `User` object.
+
 ---
 
 ## Resolvers

@@ -87,16 +87,17 @@ const Navbar = () => {
       handleSearch();
       return;
     }
+    const maxIndex = suggestions.length > 5 ? 5 : suggestions.length;
     if (showSuggestions) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setActiveSuggestionIndex((prevIndex) =>
-          prevIndex === suggestions.length - 2 ? 0 : prevIndex + 1,
+          prevIndex === maxIndex ? 0 : prevIndex + 1,
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setActiveSuggestionIndex((prevIndex) =>
-          prevIndex === 0 ? suggestions.length - 2 : prevIndex - 1,
+          prevIndex === 0 ? maxIndex : prevIndex - 1,
         );
       }
     }

@@ -1,7 +1,7 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { GraphQLUpload } from 'graphql-upload-minimal';
-import { Types, SortOrder } from 'mongoose';
+import { SortOrder, Types } from 'mongoose';
 import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
@@ -738,6 +738,96 @@ export const resolvers: IResolvers = {
       }
       const token = signToken(user);
       return token;
+    },
+
+    deleteUser: async (_, { username }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to delete a user');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      if (user.username !== username && user.username !== 'admin') {
+        throw new AuthenticationError('You are not authorized to delete this user');
+      }
+
+      try {
+        const deletedUser = await User.findOneAndDelete({ username });
+        if (!deletedUser) {
+          throw new Error('User not found');
+        }
+
+        const userPosts = await Post.find({ author: deletedUser.id });
+        const userComments = await Comment.find({ author: deletedUser.id });
+
+        for (const post of userPosts) {
+          if (post.imageUrl) {
+            const deleteResult = await deleteFile(post.imageUrl);
+            if (!deleteResult.success) {
+              console.warn(`Failed to delete file: ${deleteResult.message}`);
+            }
+          }
+
+          if (post.mentionedUsers) {
+            post.mentionedUsers.forEach(
+              async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: post.id } })
+            );
+          }
+
+          if (post.amtLikes > 0) {
+            await User.updateMany({ $pull: { likedPostIds: post.id } });
+          }
+        }
+
+        for (const comment of userComments) {
+          if (comment.imageUrl) {
+            const deleteResult = await deleteFile(comment.imageUrl);
+            if (!deleteResult.success) {
+              console.warn(`Failed to delete file: ${deleteResult.message}`);
+            }
+          }
+
+          if (comment.mentionedUsers) {
+            comment.mentionedUsers.forEach(
+              async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: comment.id } })
+            );
+          }
+
+          if (comment.parentType === 'post') {
+            await Post.findByIdAndUpdate(comment.parentID, { $inc: { amtComments: -1 } });
+          } else {
+            await Comment.findByIdAndUpdate(comment.parentID, { $inc: { amtComments: -1 } });
+          }
+
+          if (comment.amtLikes > 0) {
+            await User.updateMany({ $pull: { likedCommentIds: comment.id } });
+          }
+        }
+
+        await Post.deleteMany({ author: deletedUser.id });
+        await Comment.deleteMany({ author: deletedUser.id });
+
+        if (deletedUser.profilePicture) {
+          const deleteResult = await deleteFile(deletedUser.profilePicture);
+          if (!deleteResult.success) {
+            console.warn(`Failed to delete file: ${deleteResult.message}`);
+          }
+        }
+
+        if (deletedUser.backgroundPicture) {
+          const deleteResult = await deleteFile(deletedUser.backgroundPicture);
+          if (!deleteResult.success) {
+            console.warn(`Failed to delete file: ${deleteResult.message}`);
+          }
+        }
+
+        return deletedUser;
+      } catch (err) {
+        throw new Error(`Error deleting user: ${(err as Error).message}`);
+      }
     },
 
     createComment: async (_, { body, parentID, parentType, file }, context) => {

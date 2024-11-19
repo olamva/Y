@@ -138,3 +138,12 @@ export const CHANGE_BACKGROUND_PICTURE = gql`
     }
   }
 `;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($username: String!) {
+    deleteUser(username: $username) {
+      id
+      username
+    }
+  }
+`;
