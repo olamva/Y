@@ -3,7 +3,11 @@ import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
 import Avatar from "@/components/Profile/Avatar";
+import CommentsView from "@/components/Profile/CommentsView";
 import EditProfile from "@/components/Profile/EditProfile";
+import LikesView from "@/components/Profile/LikesView";
+import MentionsView from "@/components/Profile/MentionsView";
+import PostsView from "@/components/Profile/PostsView";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { UserType } from "@/lib/types";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
@@ -13,10 +17,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import MentionsView from "@/components/Profile/MentionsView";
-import CommentsView from "@/components/Profile/CommentsView";
-import PostsView from "@/components/Profile/PostsView";
-import LikesView from "@/components/Profile/LikesView";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -111,9 +111,9 @@ const Profile = () => {
         </div>
       )}
       {username ? (
-        <>
+        <div className="flex flex-col items-center">
           {/* User Profile Section */}
-          <section className="mb-8">
+          <section className="mb-8 w-full max-w-5xl">
             {/* Background and Avatar */}
             <div className="relative h-64 md:h-96">
               <img
@@ -212,7 +212,7 @@ const Profile = () => {
             </div>
           </section>
           {/* Toggle Group for Views */}
-          <section className="w-full max-w-5xl m-auto">
+          <section className="w-full max-w-5xl">
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => {
@@ -291,7 +291,7 @@ const Profile = () => {
                   : []
             }
           />
-        </>
+        </div>
       ) : (
         <div className="flex w-full flex-col items-center gap-4">
           <h1 className="text-4xl">You are not logged in</h1>
