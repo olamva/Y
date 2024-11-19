@@ -15,26 +15,31 @@ export const GET_CONTENT_BY_HASHTAG = gql`
       ... on Post {
         id
         body
+        originalBody
         author {
           id
           username
+          profilePicture
         }
+        amtLikes
+        amtComments
+        imageUrl
         createdAt
-        hashTags
-        # ... other Post fields
       }
       ... on Comment {
         id
+        parentID
+        parentType
         body
         author {
           id
           username
+          profilePicture
         }
-        parentID
-        parentType
+        amtLikes
+        amtComments
         createdAt
-        hashTags
-        # ... other Comment fields
+        imageUrl
       }
     }
   }

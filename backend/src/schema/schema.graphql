@@ -9,9 +9,9 @@ type Query {
   searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!, page: Int!, limit: Int!): [User!]!
   searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
-  getPostsByIds(ids: [ID!]!): [Post!]!
+  getPostsByIds(ids: [ID!]!, page: Int!): [Post!]!
   getComment(id: ID!): Comment
-  getCommentsByIds(ids: [ID!]!): [Comment!]!
+  getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
   getTrendingHashtags(page: Int!): [TrendingHashtag!]!

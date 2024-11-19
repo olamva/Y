@@ -19,6 +19,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
+import MentionsView from "@/components/Profile/MentionsView";
+import CommentsView from "@/components/Profile/CommentsView";
+import PostsView from "@/components/Profile/PostsView";
+import LikesView from "@/components/Profile/LikesView";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -29,217 +33,13 @@ const Profile = () => {
   }>();
   const { user: loggedInUser } = useAuth();
   const navigate = useNavigate();
-  const [modalContent, setModalContent] = useState<{
-    title: string;
-  } | null>(null);
-
-  const openModal = (title: string) => {
-    setModalContent({ title });
-  };
-
-  const closeModal = () => {
-    setModalContent(null);
-  };
-
-  const username = paramUsername ?? loggedInUser?.username;
-  const BACKEND_URL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
-
-  if (!paramUsername && username) {
-    window.location.href = `/project2/user/${username}`;
-  }
-
   const location = useLocation();
+  const [modalContent, setModalContent] = useState<{ title: string } | null>(
+    null,
+  );
 
   const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
-
-  const handleViewChange = (value: ViewState) => {
-    setCurrentView(value);
-    navigate(
-      location.pathname.replace(/\/(posts|comments|mentions|likes)$/, "") +
-        (value === "posts" ? "" : `/${value}`),
-    );
-  };
-
-  const {
-    data: userData,
-    loading: userLoading,
-    error: userError,
-  } = useQuery(GET_USER_QUERY, {
-    variables: { username },
-    skip: !username,
-  });
-
-  const user: UserType | undefined = userData?.getUser;
-
-  const {
-    data: postsData,
-    loading: postsLoading,
-    error: postsError,
-  } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: user?.postIds || [] },
-    skip: !user || !user.postIds.length,
-  });
-
-  const {
-    data: repostsData,
-    loading: repostsLoading,
-    error: repostsError,
-  } = useQuery<{ getRepostsByUser: RepostType[] }>(GET_REPOSTS_BY_USER, {
-    variables: { username: user?.username },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
-    skip: !user?.username,
-  });
-
-  const posts: PostType[] = postsData?.getPostsByIds || [];
-
-  const reposts: RepostType[] = repostsData?.getRepostsByUser ?? [];
-
-  const combinedPosts = [...posts, ...reposts].sort(
-    (a, b) =>
-      new Date(
-        parseInt(b.__typename === "Repost" ? b.repostedAt : b.createdAt),
-      ).getTime() -
-      new Date(
-        parseInt(a.__typename === "Repost" ? a.repostedAt : a.createdAt),
-      ).getTime(),
-  );
-
-  const {
-    data: likedPostsData,
-    loading: likedPostsLoading,
-    error: likedPostsError,
-  } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: user?.likedPostIds || [] },
-    skip: !user || !user.likedPostIds.length,
-  });
-
-  const likedPosts: PostType[] = likedPostsData?.getPostsByIds || [];
-
-  const {
-    data: likedCommentsData,
-    loading: likedCommentsLoading,
-    error: likedCommentsError,
-  } = useQuery(GET_COMMENTS_BY_IDS, {
-    variables: { ids: user?.likedCommentIds || [] },
-    skip: !user || !user.likedCommentIds.length,
-  });
-
-  const likedComments: CommentType[] =
-    likedCommentsData?.getCommentsByIds || [];
-
-  const likedContent: (PostType | CommentType)[] = [
-    ...likedPosts,
-    ...likedComments,
-  ].sort(
-    (a, b) =>
-      new Date(parseInt(b.createdAt)).getTime() -
-      new Date(parseInt(a.createdAt)).getTime(),
-  );
-
-  const {
-    data: likedParentsData,
-    loading: likedParentsLoading,
-    error: likedParentsError,
-  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
-    GET_PARENTS_BY_IDS,
-    {
-      variables: {
-        parents: likedComments.map((comment) => ({
-          id: comment.parentID,
-          type: comment.parentType,
-        })),
-      },
-      skip: !likedComments.length,
-    },
-  );
-
-  const likedParentPosts: (PostType | CommentType)[] =
-    likedParentsData?.getParentsByIds ?? [];
-
-  const {
-    data: commentsData,
-    loading: commentsLoading,
-    error: commentsError,
-  } = useQuery(GET_COMMENTS_BY_IDS, {
-    variables: { ids: user?.commentIds || [] },
-    skip: !user || !user.commentIds.length,
-  });
-
-  const comments: CommentType[] = commentsData?.getCommentsByIds || [];
-
-  const parents = comments.map((comment) => ({
-    id: comment.parentID,
-    type: comment.parentType,
-  }));
-
-  const {
-    data: parentPostsData,
-    loading: parentPostsLoading,
-    error: parentPostsError,
-  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
-    GET_PARENTS_BY_IDS,
-    {
-      variables: { parents: parents },
-      skip: !parents.length,
-    },
-  );
-
-  const parentPosts: (PostType | CommentType)[] =
-    parentPostsData?.getParentsByIds ?? [];
-
-  const {
-    data: mentionedPostsData,
-    loading: mentionedPostsLoading,
-    error: mentionedPostsError,
-  } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: user?.mentionedPostIds || [] },
-    skip: !user || !user.mentionedPostIds.length,
-  });
-
-  const mentionedPosts: PostType[] = mentionedPostsData?.getPostsByIds || [];
-
-  const {
-    data: mentionedCommentsData,
-    loading: mentionedCommentsLoading,
-    error: mentionedCommentsError,
-  } = useQuery(GET_COMMENTS_BY_IDS, {
-    variables: { ids: user?.mentionedCommentIds || [] },
-    skip: !user || !user.mentionedCommentIds.length,
-  });
-
-  const mentionedComments: CommentType[] =
-    mentionedCommentsData?.getCommentsByIds || [];
-
-  const mentionedContent: (PostType | CommentType)[] = [
-    ...mentionedPosts,
-    ...mentionedComments,
-  ].sort(
-    (a, b) =>
-      new Date(parseInt(b.createdAt)).getTime() -
-      new Date(parseInt(a.createdAt)).getTime(),
-  );
-
-  const {
-    data: mentionedParentsData,
-    loading: mentionedParentsLoading,
-    error: mentionedParentsError,
-  } = useQuery<{ getParentsByIds: (PostType | CommentType)[] }>(
-    GET_PARENTS_BY_IDS,
-    {
-      variables: {
-        parents: mentionedComments.map((comment) => ({
-          id: comment.parentID,
-          type: comment.parentType,
-        })),
-      },
-      skip: !mentionedComments.length,
-    },
-  );
-
-  const mentionedParentPosts: (PostType | CommentType)[] =
-    mentionedParentsData?.getParentsByIds ?? [];
+  const username = paramUsername ?? loggedInUser?.username;
 
   const [deleteUser, { loading: deleteLoading }] = useMutation(DELETE_USER, {
     variables: { username },
@@ -265,6 +65,40 @@ const Profile = () => {
     }
   };
 
+  const handleViewChange = (value: ViewState) => {
+    setCurrentView(value);
+    navigate(
+      location.pathname.replace(/\/(posts|comments|mentions|likes)$/, "") +
+        (value === "posts" ? "" : `/${value}`),
+    );
+  };
+
+  const openModal = (title: string) => {
+    setModalContent({ title });
+  };
+
+  const closeModal = () => {
+    setModalContent(null);
+  };
+
+  const BACKEND_URL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+
+  if (!paramUsername && username) {
+    window.location.href = `/project2/user/${username}`;
+  }
+
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useQuery(GET_USER_QUERY, {
+    variables: { username },
+    skip: !username,
+  });
+
+  const user: UserType | undefined = userData?.getUser;
+
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
   if (!user) return <p>User not found.</p>;
@@ -284,7 +118,9 @@ const Profile = () => {
       )}
       {username ? (
         <>
+          {/* User Profile Section */}
           <section className="mb-8">
+            {/* Background and Avatar */}
             <div className="relative h-64 md:h-96">
               <img
                 src={
@@ -296,7 +132,7 @@ const Profile = () => {
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
-
+            {/* User Info */}
             <div className="mx-auto max-w-5xl">
               <div className="relative -mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
                 <Avatar user={user} large={true} />
@@ -330,7 +166,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-
+              {/* Mobile User Info */}
               <div className="mt-6 min-w-0 flex-1 sm:block md:hidden">
                 <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
                   {user?.firstName} {user?.lastName}
@@ -342,6 +178,7 @@ const Profile = () => {
                   )}
                 </div>
               </div>
+              {/* Followers and Following */}
               <div className="my-2 mt-4 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
                 <div className="flex flex-col items-center justify-around sm:flex-row">
                   <button
@@ -369,7 +206,7 @@ const Profile = () => {
                   </button>
                 </div>
               </div>
-
+              {/* Biography */}
               <div className="mb-8 mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-600">
                 <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-200">
                   Biography
@@ -380,11 +217,15 @@ const Profile = () => {
               </div>
             </div>
           </section>
-
+          {/* Toggle Group for Views */}
           <section className="w-full max-w-5xl justify-self-center">
             <ToggleGroup
               value={currentView}
-              onValueChange={(value: ViewState) => handleViewChange(value)}
+              onValueChange={(value: ViewState) => {
+                if (value) {
+                  handleViewChange(value);
+                }
+              }}
               type="single"
               variant="outline"
               className="grid grid-cols-2 gap-2 p-2 md:grid-cols-4"
@@ -425,141 +266,22 @@ const Profile = () => {
                 </p>
               </ToggleGroupItem>
             </ToggleGroup>
-
             <div className="mt-4 flex w-full flex-col items-center">
-              {currentView === "posts" && (
-                <>
-                  {(postsLoading || repostsLoading) && <p>Loading posts...</p>}
-                  {(postsError || repostsError) && (
-                    <p>
-                      Error loading posts:{" "}
-                      {postsError?.message ?? repostsError?.message}
-                    </p>
-                  )}
-                  {combinedPosts.map((post) =>
-                    post.__typename === "Post" ? (
-                      <Post post={post} key={post.id} />
-                    ) : (
-                      <Repost repost={post} key={post.id} />
-                    ),
-                  )}
-                  {!postsLoading && !repostsLoading && posts.length === 0 && (
-                    <p>No posts to display.</p>
-                  )}
-                </>
-              )}
+              {currentView === "posts" && <PostsView postIds={user.postIds} />}
               {currentView === "comments" && (
-                <>
-                  {(commentsLoading || parentPostsLoading) && (
-                    <p>Loading comments...</p>
-                  )}
-                  {commentsError && (
-                    <p>Error loading comments: {commentsError.message}</p>
-                  )}
-                  {parentPostsError && (
-                    <p>
-                      Error loading parent posts: {parentPostsError.message}
-                    </p>
-                  )}
-                  <div className="flex w-full flex-col gap-6">
-                    {comments.map((comment) => (
-                      <PostWithReply
-                        key={comment.id}
-                        post={parentPosts.find(
-                          (post) => post.id === comment.parentID,
-                        )}
-                        reply={comment}
-                      />
-                    ))}
-                  </div>
-                  {!commentsLoading && comments.length === 0 && (
-                    <p>No comments to display.</p>
-                  )}
-                </>
+                <CommentsView commentIds={user.commentIds} />
               )}
               {currentView === "mentions" && (
-                <>
-                  {(mentionedPostsLoading ||
-                    mentionedCommentsLoading ||
-                    mentionedParentsLoading) && <p>Loading liked posts...</p>}
-                  {(mentionedPostsError ||
-                    mentionedCommentsError ||
-                    mentionedParentsError) && (
-                    <p>
-                      Error loading mentions:{" "}
-                      {mentionedPostsError?.message ||
-                        mentionedCommentsError?.message ||
-                        mentionedParentsError?.message}
-                    </p>
-                  )}
-                  {mentionedContent
-                    .filter(
-                      (post) =>
-                        !mentionedParentPosts.some(
-                          (parent) => parent.id === post.id,
-                        ),
-                    )
-                    .map((post) =>
-                      post.__typename === "Post" ? (
-                        <Post post={post} key={post.id} />
-                      ) : (
-                        <PostWithReply
-                          post={mentionedParentPosts.find(
-                            (parent) => parent.id === post.parentID,
-                          )}
-                          reply={post}
-                          key={post.id}
-                        />
-                      ),
-                    )}
-                  {!mentionedPostsLoading &&
-                    !mentionedCommentsLoading &&
-                    mentionedContent.length === 0 && (
-                      <p>No mentions to display.</p>
-                    )}
-                </>
+                <MentionsView
+                  mentionedPostIds={user.mentionedPostIds}
+                  mentionedCommentIds={user.mentionedCommentIds}
+                />
               )}
               {currentView === "likes" && (
-                <>
-                  {(likedPostsLoading ||
-                    likedCommentsLoading ||
-                    likedParentsLoading) && <p>Loading liked posts...</p>}
-                  {(likedPostsError ||
-                    likedCommentsError ||
-                    likedParentsError) && (
-                    <p>
-                      Error loading liked posts:{" "}
-                      {likedPostsError?.message ||
-                        likedCommentsError?.message ||
-                        likedParentsError?.message}
-                    </p>
-                  )}
-                  {likedContent
-                    .filter(
-                      (post) =>
-                        !likedParentPosts.some(
-                          (parent) => parent.id === post.id,
-                        ),
-                    )
-                    .map((post) =>
-                      post.__typename === "Post" ? (
-                        <Post post={post} key={post.id} />
-                      ) : (
-                        <PostWithReply
-                          post={likedParentPosts.find(
-                            (parent) => parent.id === post.parentID,
-                          )}
-                          reply={post}
-                          key={post.id}
-                        />
-                      ),
-                    )}
-                  {!likedPostsLoading &&
-                    !likedCommentsLoading &&
-                    likedContent.length === 0 && (
-                      <p>No liked posts to display.</p>
-                    )}
-                </>
+                <LikesView
+                  likedPostIds={user.likedPostIds}
+                  likedCommentIds={user.likedCommentIds}
+                />
               )}
             </div>
           </section>
@@ -574,7 +296,7 @@ const Profile = () => {
                   ? (user?.following ?? [])
                   : []
             }
-          ></FollowingUsersModal>
+          />
         </>
       ) : (
         <div className="flex w-full flex-col items-center gap-4">

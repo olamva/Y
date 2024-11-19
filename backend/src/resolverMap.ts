@@ -228,11 +228,16 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments');
       }
     },
-    getPostsByIds: async (_, { ids }) => {
+    getPostsByIds: async (_, { ids, page }) => {
+      const limit = 10;
       try {
-        return await Post.find({ _id: { $in: ids } })
+        const posts = await Post.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
           .populate('author');
+
+        return posts;
       } catch (err) {
         throw new Error('Error fetching posts by IDs');
       }
@@ -247,10 +252,13 @@ export const resolvers: IResolvers = {
       }
     },
 
-    getCommentsByIds: async (_, { ids }) => {
+    getCommentsByIds: async (_, { ids, page }) => {
+      const limit = 10;
       try {
         return await Comment.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
           .populate('author');
       } catch (err) {
         throw new Error('Error fetching comments by IDs');

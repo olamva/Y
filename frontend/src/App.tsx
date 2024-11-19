@@ -340,7 +340,7 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            {combinedPosts.length === 0
+            {combinedPosts.length === 0 && loading && repostsLoading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
                 ))
