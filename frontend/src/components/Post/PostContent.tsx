@@ -226,7 +226,8 @@ const PostContent = ({
             <HeartIcon className="size-6 group-hover:scale-110" />
           )}
           <span className="flex select-none gap-1">
-          <p className="font-extrabold">{amtLikes}</p> <p className="hidden md:block">Likes</p>
+            <p className="font-extrabold">{amtLikes}</p>{" "}
+            <p className="hidden font-extralight md:block">Likes</p>
           </span>
         </button>
         <button
@@ -243,13 +244,15 @@ const PostContent = ({
             className={`size-6 transition-all group-hover:scale-110 ${hasReposted ? "text-green-600 group-hover:text-red-600" : "group-hover:text-green-600"}`}
           />
           <span className="flex select-none gap-1">
-            <p className="font-extrabold">{amtReposts}</p> <p className="hidden md:block">Reposts</p>
+            <p className="font-extrabold">{amtReposts}</p>{" "}
+            <p className="hidden font-extralight md:block">Reposts</p>
           </span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
           <span className="flex select-none gap-1">
-          <p className="font-extrabold">{post.amtComments}</p> <p className="hidden md:block">Comments</p>
+            <p className="font-extrabold">{post.amtComments}</p>{" "}
+            <p className="hidden font-extralight md:block">Comments</p>
           </span>
         </div>
       </footer>
