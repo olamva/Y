@@ -34,9 +34,7 @@ const Avatar = ({
     user.profilePicture || "",
   );
 
-  const generateCacheBuster = () => {
-    return `cb=${new Date().getTime()}`;
-  };
+  const generateCacheBuster = () => `cb=${new Date().getTime()}`;
 
   const imageUrl = user.profilePicture
     ? profilePictureHasExtension
@@ -52,10 +50,6 @@ const Avatar = ({
     }
   };
 
-  const handleLoad = () => {
-    setIsLoaded(true);
-  };
-
   useEffect(() => {
     setCurrentExtensionIndex(0);
     setHasImage(!!user.profilePicture);
@@ -63,7 +57,7 @@ const Avatar = ({
     setCacheBuster(generateCacheBuster());
   }, [user.profilePicture]);
 
-  const sizeClasses = large ? "h-24 w-24 md:h-36 md:w-36" : "h-8 w-8";
+  const sizeClasses = large ? "size-24 md:size-36" : "size-8";
 
   const containerClasses = `relative flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
     disableHover ? "" : "hover:scale-105"
@@ -93,12 +87,13 @@ const Avatar = ({
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
           onError={handleError}
-          onLoad={handleLoad}
+          onLoad={() => {
+            setIsLoaded(true);
+          }}
           loading="lazy"
         />
       )}
-      {hasImage && !isLoaded && <FirstLetterAvatar />}
-      {!hasImage && <FirstLetterAvatar />}
+      {!(hasImage && isLoaded) && <FirstLetterAvatar />}
     </Tag>
   );
 };

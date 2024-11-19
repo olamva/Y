@@ -1,3 +1,4 @@
+import Avatar from "@/components/Profile/Avatar";
 import {
   Popover,
   PopoverContent,
@@ -12,6 +13,7 @@ import {
   KeyboardEvent,
   forwardRef,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -35,6 +37,8 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
     >([]);
     const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
 
+    const popoverRef = useRef<HTMLDivElement>(null);
+
     const debouncedQuery = useDebounce(query, 300);
 
     const {
@@ -45,7 +49,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       searchHashtags: HashtagType[];
     }>(SEARCH_HASHTAGS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: debouncedQuery.length < 1,
+      skip: suggestionType === "users",
     });
 
     const {
@@ -56,13 +60,14 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       searchUsers: UserType[];
     }>(SEARCH_USERS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: debouncedQuery.length < 1,
+      skip: suggestionType === "hashtags",
     });
 
     useEffect(() => {
-      if (debouncedQuery.length > 0) {
-        refetchHashtags();
+      if (suggestionType === "users") {
         refetchUsers();
+      } else {
+        refetchHashtags();
       }
     }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
@@ -78,6 +83,26 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       hashtagsData?.searchHashtags,
     ]);
 
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          ref &&
+          "current" in ref &&
+          ref.current &&
+          !ref.current.contains(event.target as Node) &&
+          popoverRef.current &&
+          !popoverRef.current.contains(event.target as Node)
+        ) {
+          setShowSuggestions(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+
     const handleAutofill = () => {
       const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
       if (!selectedSuggestion) {
@@ -88,14 +113,16 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
         } as ChangeEvent<HTMLTextAreaElement>);
         return;
       }
-      const currentValue = value.split(" ");
-      currentValue.pop();
+      const lastAt = value.lastIndexOf("@");
+      const lastHash = value.lastIndexOf("#");
+      const lastSymbol = Math.max(lastAt, lastHash);
+
       const finalSuggestion =
         selectedSuggestion.__typename === "User"
           ? `@${selectedSuggestion.username} `
           : `#${selectedSuggestion.tag} `;
-      currentValue.push(finalSuggestion);
-      const newValue = currentValue.join(" ");
+
+      const newValue = value.substring(0, lastSymbol) + finalSuggestion;
       if (newValue.length <= maxChars) {
         handleInputChange({
           target: {
@@ -148,24 +175,26 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
         ref.current.style.height = "auto";
         ref.current.style.height = `${ref.current.scrollHeight}px`;
       }
-      if (value === "") {
-        setShowSuggestions(false);
-      }
     }, [value, ref]);
 
     const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       onChange(e);
       const value = e.target.value;
-      const lastWord = value.split(" ").pop();
+      const selectionStart = e.target.selectionStart;
+      const textBeforeCaret = value.substring(0, selectionStart);
+      const lastAt = textBeforeCaret.lastIndexOf("@");
+      const lastHash = textBeforeCaret.lastIndexOf("#");
+      const lastSymbol = Math.max(lastAt, lastHash);
 
       if (
-        (lastWord?.startsWith("@") || lastWord?.startsWith("#")) &&
-        lastWord.length > 1 &&
-        /^[a-zA-Z0-9]+$/.test(lastWord.slice(-1))
+        lastSymbol !== -1 &&
+        /^[a-zA-Z0-9]*$/.test(textBeforeCaret.slice(lastSymbol + 1))
       ) {
         setShowSuggestions(true);
-        setQuery(lastWord?.slice(1));
-        setSuggestionType(lastWord?.startsWith("@") ? "users" : "hashtags");
+        setQuery(textBeforeCaret.slice(lastSymbol + 1));
+        setSuggestionType(
+          textBeforeCaret[lastSymbol] === "@" ? "users" : "hashtags",
+        );
         setActiveSuggestionIndex(0);
 
         if (ref && "current" in ref && ref.current && !showSuggestions) {
@@ -223,15 +252,17 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           <PopoverTrigger asChild>
             <textarea
               ref={ref}
+              name="Post creation field"
               value={value}
               maxLength={maxChars}
-              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
+              onInput={handleInputChange}
               className="mt-1 block min-h-12 w-full max-w-xl resize-none rounded-md bg-transparent outline-none"
             />
           </PopoverTrigger>
           <PopoverContent
+            ref={popoverRef}
             side="bottom"
             sideOffset={popoverPosition.top < 50 ? popoverPosition.top - 24 : 0}
             alignOffset={popoverPosition.left}
@@ -243,26 +274,37 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
               <p className="w-full p-2">Loading...</p>
             ) : currentSuggestions.length > 0 ? (
               <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
-                {currentSuggestions.map((suggestion, index) => (
-                  <div
-                    key={
-                      suggestion.__typename === "User"
-                        ? suggestion.id
-                        : suggestion.tag
-                    }
-                    className={`w-full cursor-pointer p-2 ${
-                      index === activeSuggestionIndex
-                        ? "bg-blue-500 text-white dark:bg-blue-800"
-                        : ""
-                    }`}
-                    onClick={handleAutofill}
-                    onMouseEnter={() => setActiveSuggestionIndex(index)}
-                  >
-                    {suggestion.__typename === "User"
-                      ? suggestion.username
-                      : suggestion.tag}
-                  </div>
-                ))}
+                {currentSuggestions.map((suggestion, index) => {
+                  const isUser = suggestion.__typename === "User";
+                  return (
+                    <div
+                      key={isUser ? suggestion.id : suggestion.tag}
+                      className={`w-full cursor-pointer p-2 ${
+                        index === activeSuggestionIndex
+                          ? "bg-blue-500 text-white dark:bg-blue-800"
+                          : ""
+                      }`}
+                      onClick={handleAutofill}
+                      onMouseEnter={() => setActiveSuggestionIndex(index)}
+                    >
+                      <div className="flex items-center gap-1">
+                        {isUser ? (
+                          <Avatar noHref user={suggestion} />
+                        ) : (
+                          <p className="flex h-full items-center justify-center">
+                            #
+                          </p>
+                        )}
+
+                        <p>
+                          {isUser
+                            ? `${suggestion.username}`
+                            : `${suggestion.tag}`}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="w-full p-2">No matching {suggestionType}</p>

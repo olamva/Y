@@ -6,7 +6,7 @@ import {
 } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import { Check, UserPlus, X } from "lucide-react";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useState } from "react";
 import toast from "react-hot-toast";
 
 interface FollowButtonProps {
@@ -14,14 +14,8 @@ interface FollowButtonProps {
 }
 
 const FollowButton = ({ targetUsername }: FollowButtonProps) => {
-  const { user, refetchUser } = useAuth();
-  const [isFollowing, setIsFollowing] = useState(false);
+  const { refetchUser, following, setFollowing } = useAuth();
   const [isHovering, setIsHovering] = useState(false);
-
-  useEffect(() => {
-    const followingUsernames = user?.following?.map((u) => u.username) ?? [];
-    setIsFollowing(followingUsernames.includes(targetUsername));
-  }, [user, targetUsername]);
 
   const [followUserMutation] = useMutation(FOLLOW_USER_MUTATION, {
     variables: { username: targetUsername },
@@ -29,7 +23,7 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
       { query: GET_USER_QUERY, variables: { username: targetUsername } },
     ],
     onCompleted: () => {
-      setIsFollowing(true);
+      setFollowing([...following, targetUsername]);
       toast.success(`You are now following ${targetUsername}`);
       refetchUser();
     },
@@ -44,7 +38,7 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
       { query: GET_USER_QUERY, variables: { username: targetUsername } },
     ],
     onCompleted: () => {
-      setIsFollowing(false);
+      setFollowing(following.filter((u) => u !== targetUsername));
       toast.success(`You have unfollowed ${targetUsername}`);
       refetchUser();
     },
@@ -72,6 +66,8 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
       toast.error(`Error unfollowing user: ${(error as Error).message}`);
     }
   };
+
+  const isFollowing = following.includes(targetUsername);
 
   return (
     <button

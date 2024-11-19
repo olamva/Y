@@ -112,12 +112,17 @@ const CreatePostField = ({
                     const start = textInputRef.current?.selectionStart;
                     const end = textInputRef.current?.selectionEnd;
                     if (start !== undefined && end !== undefined) {
-                      setValue(
-                        value.substring(0, start) +
+                      if (textInputRef.current) {
+                        const newValue =
+                          value.substring(0, start) +
                           "@" +
                           value.substring(start, end) +
-                          value.substring(end),
-                      );
+                          value.substring(end);
+                        textInputRef.current.value = newValue;
+                        textInputRef.current.dispatchEvent(
+                          new Event("input", { bubbles: true }),
+                        );
+                      }
                     }
                   }}
                 >
@@ -139,12 +144,17 @@ const CreatePostField = ({
                     const start = textInputRef.current?.selectionStart;
                     const end = textInputRef.current?.selectionEnd;
                     if (start !== undefined && end !== undefined) {
-                      setValue(
-                        value.substring(0, start) +
+                      if (textInputRef.current) {
+                        const newValue =
+                          value.substring(0, start) +
                           "#" +
                           value.substring(start, end) +
-                          value.substring(end),
-                      );
+                          value.substring(end);
+                        textInputRef.current.value = newValue;
+                        textInputRef.current.dispatchEvent(
+                          new Event("input", { bubbles: true }),
+                        );
+                      }
                     }
                   }}
                 >

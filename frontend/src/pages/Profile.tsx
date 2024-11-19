@@ -6,10 +6,11 @@ import Avatar from "@/components/Profile/Avatar";
 import EditProfile from "@/components/Profile/EditProfile";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import { UserType } from "@/lib/types";
-import { GET_USER_QUERY } from "@/queries/user";
-import { useQuery } from "@apollo/client";
+import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
+import { useMutation, useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
 import MentionsView from "@/components/Profile/MentionsView";
@@ -105,7 +106,7 @@ const Profile = () => {
             <div className="mx-auto max-w-5xl">
               <div className="relative -mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
                 <Avatar user={user} large={true} />
-                <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                <div className="sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
                     <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
                       {user?.firstName} {user?.lastName}
@@ -117,9 +118,22 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  {loggedInUser && loggedInUser.username === username && (
-                    <EditProfile user={user} />
-                  )}
+                  <div className="flex gap-2 md:mt-0">
+                    {loggedInUser &&
+                      (loggedInUser.username === username ||
+                        loggedInUser.username === "admin") && (
+                        <button
+                          onClick={handleDelete}
+                          disabled={deleteLoading}
+                          className="transform rounded-md bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-red-600 hover:to-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 dark:from-red-400 dark:to-red-500 dark:hover:from-red-500 dark:hover:to-red-600"
+                        >
+                          Delete User
+                        </button>
+                      )}
+                    {loggedInUser && loggedInUser.username === username && (
+                      <EditProfile user={user} />
+                    )}
+                  </div>
                 </div>
               </div>
               {/* Mobile User Info */}

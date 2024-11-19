@@ -25,7 +25,7 @@ const PostWithReply = ({
     <Comment
       comment={reply}
       doesntRedirect={replyDoesntRedirect}
-      redirectToParentOnDelete
+      redirectToParentOnDelete={!!post}
       disableTopMargin
       maxWidth="max-w-lg"
     />

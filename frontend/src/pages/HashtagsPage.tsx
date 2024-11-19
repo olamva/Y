@@ -83,15 +83,17 @@ const HashtagsPage = () => {
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>
         <Divider />
-        <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex w-full flex-wrap justify-center gap-4">
           {loading && networkStatus === 1
             ? Array.from({ length: 16 }).map((_, index) => (
-                <div className="w-full max-w-xl" key={index}>
+                <div className="w-[30%] min-w-36" key={index}>
                   <CardSkeleton />
                 </div>
               ))
             : hashtags.map((hashtag) => (
-                <HashTagCard hashtag={hashtag} key={hashtag.tag} />
+                <div className="w-[30%] min-w-48" key={hashtag.tag}>
+                  <HashTagCard hashtag={hashtag} />
+                </div>
               ))}
         </div>
 

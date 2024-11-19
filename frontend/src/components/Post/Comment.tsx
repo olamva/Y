@@ -71,6 +71,8 @@ const Comment = ({
       await deleteComment();
       if (redirectToParentOnDelete) {
         window.location.href = `/project2/${comment.parentType}/${comment.parentID}`;
+      } else {
+        window.location.reload();
       }
     } catch (error) {
       toast.error(`Error deleting comment: ${(error as Error).message}`);
