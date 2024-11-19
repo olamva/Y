@@ -19,12 +19,41 @@ describe("View All Users", () => {
   it("navigates to the All Users page", () => {
     cy.viewport(1920, 1080);
     cy.visit("/");
-    cy.wait(2000);
+    cy.wait(1000);
 
     cy.get("a").contains("View All Users").click();
 
     cy.url().should("include", "/project2/users");
 
     cy.contains("All users");
+  });
+});
+
+describe("Search Functionality", () => {
+  it("should perform a search and redirect to the search results page", () => {
+    cy.visit("/");
+    const searchQuery = "test";
+
+    cy.get("input#search").type(`${searchQuery}{enter}`);
+    cy.get('div[data-state="closed"]').should("not.exist");
+    cy.url().should(
+      "include",
+      `/project2/search?q=${encodeURIComponent(searchQuery)}`,
+    );
+  });
+
+  it("should test the auto suggestion", () => {
+    cy.visit("/");
+
+    cy.get("input#search").type("#sigma");
+
+    cy.get('div[data-state="open"]')
+      .should("be.visible")
+      .within(() => {
+        cy.contains("#sigma").click();
+      });
+    cy.get('div[data-state="closed"]').should("not.exist");
+    cy.contains("#sigma");
+    cy.url().should("include", "/project2/hashtag/sigma");
   });
 });
