@@ -39,6 +39,7 @@ type Post {
   author: User!
   amtLikes: Int!
   amtComments: Int!
+  amtReposts: Int!
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
@@ -53,6 +54,7 @@ type Comment {
   parentType: String!
   amtLikes: Int!
   amtComments: Int!
+  amtReposts: Int!
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
@@ -82,8 +84,27 @@ type User {
   backgroundPicture: String
 }
 
+type Repost {
+  id: ID!
+  author: User!
+  originalID: ID!
+  originalType: String!
+  originalAuthor: User!
+  repostedAt: String!
+  body: String
+  originalBody: String
+  amtLikes: Int!
+  amtComments: Int!
+  amtReposts: Int!
+  createdAt: String!
+  imageUrl: String
+  hashTags: [String!]!
+  mentionedUsers: [User!]!
+}
+
 type Mutation {
   createPost(body: String, file: Upload): Post!
+  repost(id: ID!, type: String!): Repost!
   editPost(id: ID!, body: String, file: Upload): Post!
   editComment(id: ID!, body: String, file: Upload): Comment!
   createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!

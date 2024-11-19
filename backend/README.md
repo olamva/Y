@@ -278,6 +278,7 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 ### Mutation Resolvers
 
 - **createPost**: Creates a new post authored by the authenticated user and updates the user's `postIds` array.
+- **repost** : Reposts a post.
 - **editPost**: Edits an existing post (if the user is the author).
 - **editComment**: Edits an existing comment (if the user is the author).
 - **createComment**: Creates a new comment on a specified post, increments `amtComments` on the parent post, and updates the user's `commentIds` array.

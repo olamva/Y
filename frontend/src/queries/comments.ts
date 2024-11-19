@@ -14,6 +14,7 @@ export const GET_COMMENTS = gql`
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }
@@ -34,6 +35,7 @@ export const GET_COMMENT = gql`
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }
@@ -54,6 +56,7 @@ export const GET_COMMENTS_BY_IDS = gql`
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }

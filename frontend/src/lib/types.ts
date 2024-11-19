@@ -5,6 +5,7 @@ type ContentType = {
   author: UserType;
   amtLikes: number;
   amtComments: number;
+  amtReposts: number;
   imageUrl?: string;
   createdAt: string;
 };
@@ -23,6 +24,15 @@ export type CommentType = ContentType & {
   __typename: "Comment";
   parentID: string;
   parentType: "post" | "reply";
+};
+
+export type RepostType = ContentType & {
+  __typename: "Repost";
+  originalPost: PostType;
+  originalAuthor: UserType;
+  originalID: string;
+  originalType: "post" | "reply";
+  repostedAt: string;
 };
 
 export type UserType = {

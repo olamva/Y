@@ -13,6 +13,7 @@ export const SEARCH_POSTS = gql`
         }
         amtLikes
         amtComments
+        amtReposts
         createdAt
       }
     }

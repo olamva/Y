@@ -3,12 +3,14 @@ import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
 import Avatar from "@/components/Profile/Avatar";
 import { formatTimestamp } from "@/lib/dateUtils";
-import { CommentType, PostType } from "@/lib/types";
-import { ApolloError } from "@apollo/client";
+import { CommentType, PostType, RepostType } from "@/lib/types";
+import { REPOST_MUTATION } from "@/queries/reposts";
+import { ApolloError, useMutation } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { HeartIcon, PencilIcon, RecycleIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent, useState } from "react";
+import toast from "react-hot-toast";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -40,7 +42,6 @@ const PostContent = ({
   disableBottomMargin,
 }: PostContentProps) => {
   const { user } = useAuth();
-  const isComment = "parentID" in post;
   const [showOriginal, setShowOriginal] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const BACKEND_URL =
@@ -53,6 +54,18 @@ const PostContent = ({
     if (showOriginal) setIsHovering(false);
   };
 
+  const [repost, { loading: repostLoading }] = useMutation<{
+    repost: RepostType;
+  }>(REPOST_MUTATION, {
+    variables: { id: post.id, type: post.__typename },
+    onCompleted: () => {
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast.error(`Error reposting: ${error.message}`);
+    },
+  });
+
   return (
     <article
       className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${
@@ -64,7 +77,7 @@ const PostContent = ({
         e.preventDefault();
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}`;
+          document.location.href = `/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`;
         }
       }}
     >
@@ -116,7 +129,7 @@ const PostContent = ({
                 onClick={(e: MouseEvent | TouchEvent) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  window.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}/edit`;
+                  window.location.href = `/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}/edit`;
                 }}
               >
                 <PencilIcon className="size-5" />
@@ -187,6 +200,18 @@ const PostContent = ({
             <HeartIcon className="size-6 group-hover:scale-110" />
           )}
           <span className="select-none">{amtLikes}</span>
+        </button>
+        <button
+          className="group flex items-center gap-1 p-2"
+          disabled={repostLoading}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            repost();
+          }}
+        >
+          <RecycleIcon className="size-6 text-green-600 group-hover:scale-110" />
+          <span className="select-none">{post.amtReposts}</span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
