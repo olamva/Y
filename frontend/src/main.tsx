@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     element: <LoginForm view="register" />,
   },
   {
-    path: "project2/users",
+    path: "/project2/users",
     element: <UsersPage />,
   },
   {
