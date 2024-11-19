@@ -79,6 +79,59 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching post');
       }
     },
+    getReposts: async (_, { page }, context) => {
+      const REPOSTS_PER_PAGE = 10;
+      const skip = (page - 1) * REPOSTS_PER_PAGE;
+
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to view reposts');
+      }
+
+      try {
+        const reposts = await Repost.find({ author: context.user.id })
+          .sort({ repostedAt: -1 })
+          .skip(skip)
+          .limit(REPOSTS_PER_PAGE)
+          .populate('originalID');
+
+        const repostedPosts = await Promise.all(
+          reposts.map(async (repost) => {
+            let originalPost: PostType | CommentType | null = null;
+            if (repost.originalType === 'Post') {
+              originalPost = await Post.findById(repost.originalID);
+            } else if (repost.originalType === 'Comment') {
+              originalPost = await Comment.findById(repost.originalID);
+            }
+            if (!originalPost) {
+              throw new Error('Original post not found');
+            }
+            const originalAuthor = await User.findById(originalPost.author);
+
+            return {
+              id: repost.id,
+              author: context.user,
+              originalID: originalPost.id,
+              originalType: repost.originalType,
+              originalAuthor,
+              repostedAt: repost.repostedAt,
+              body: originalPost.body,
+              originalBody: originalPost.originalBody,
+              amtLikes: originalPost.amtLikes,
+              amtComments: originalPost.amtComments,
+              amtReposts: originalPost.amtReposts,
+              createdAt: originalPost.createdAt,
+              imageUrl: originalPost.imageUrl,
+              hashTags: originalPost.hashTags,
+              mentionedUsers: originalPost.mentionedUsers,
+            };
+          })
+        );
+
+        return repostedPosts;
+      } catch (err) {
+        throw new Error('Error fetching reposts');
+      }
+    },
     getUser: async (_, { username }) => {
       try {
         return await User.findOne({ username: username });
@@ -467,6 +520,12 @@ export const resolvers: IResolvers = {
       const user = await User.findById(context.user.id);
       if (!user || !user.id) {
         throw new UserInputError('User not found');
+      }
+
+      // if this user has already reposted this post, throw an error
+      const existingRepost = await Repost.findOne({ author: user.id, originalID: id });
+      if (existingRepost) {
+        throw new UserInputError('You have already reposted this post');
       }
 
       let originalPost: PostType | CommentType | null = null;

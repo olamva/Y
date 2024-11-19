@@ -210,7 +210,7 @@ const PostContent = ({
             repost();
           }}
         >
-          <RecycleIcon className="size-6 text-green-600 group-hover:scale-110" />
+          <RecycleIcon className="size-6 transition-all hover:text-green-600 group-hover:scale-110" />
           <span className="select-none">{post.amtReposts}</span>
         </button>
         <div className="flex items-center gap-1">

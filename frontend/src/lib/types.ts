@@ -28,7 +28,6 @@ export type CommentType = ContentType & {
 
 export type RepostType = ContentType & {
   __typename: "Repost";
-  originalPost: PostType;
   originalAuthor: UserType;
   originalID: string;
   originalType: "post" | "reply";

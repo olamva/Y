@@ -29,8 +29,8 @@ export const REPOST_MUTATION = gql`
 `;
 
 export const GET_REPOSTS = gql`
-  query GetReposts($id: ID!) {
-    getReposts(id: $id) {
+  query GetReposts($page: Int!) {
+    getReposts(page: $page) {
       originalAuthor {
         id
         username

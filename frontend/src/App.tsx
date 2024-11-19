@@ -2,7 +2,7 @@ import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
 import Divider from "@/components/ui/Divider";
-import { HashtagType, PostType, UserType } from "@/lib/types";
+import { HashtagType, PostType, RepostType, UserType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
@@ -12,10 +12,12 @@ import { Users } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import HashTagCard from "./components/HashtagCard";
+import Repost from "./components/Post/Repost";
 import ProfileCard from "./components/ProfileCard";
-import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
-import PostSkeleton from "./components/Skeletons/PostSkeleton";
 import CardSkeleton from "./components/Skeletons/CardSkeleton";
+import PostSkeleton from "./components/Skeletons/PostSkeleton";
+import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
+import { GET_REPOSTS } from "./queries/reposts";
 
 const PAGE_SIZE = 10;
 
@@ -37,6 +39,19 @@ const HomePage = () => {
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
     skip: filter === "FOLLOWING" && !user,
+  });
+
+  const {
+    data: repostsData,
+    loading: repostsLoading,
+    // error: repostsError,
+    // fetchMore: fetchMoreReposts,
+    // networkStatus: repostsNetworkStatus,
+  } = useQuery<{
+    getReposts: RepostType[];
+  }>(GET_REPOSTS, {
+    variables: { page: 1 },
+    notifyOnNetworkStatusChange: true,
   });
 
   const { data: usersData, error: usersError } = useQuery<{
@@ -149,7 +164,18 @@ const HomePage = () => {
       </p>
     );
 
-  const posts = data?.getPosts || [];
+  const normalPosts = data?.getPosts ?? [];
+  const reposts = repostsData?.getReposts ?? [];
+
+  const posts = [...normalPosts, ...reposts].sort((a, b) => {
+    const aDate = new Date(
+      parseInt(a.__typename === "Post" ? a.createdAt : a.repostedAt),
+    ).getTime();
+    const bDate = new Date(
+      parseInt(b.__typename === "Post" ? b.createdAt : b.repostedAt),
+    ).getTime();
+    return bDate - aDate;
+  });
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
@@ -218,7 +244,7 @@ const HomePage = () => {
               value="LATEST"
               aria-label="Latest"
               aria-pressed={filter === "LATEST"}
-              className="text-center xl:text-lg p-5"
+              className="p-5 text-center xl:text-lg"
             >
               <p>Latest</p>
             </ToggleGroupItem>
@@ -226,7 +252,7 @@ const HomePage = () => {
               value="FOLLOWING"
               aria-label="Following"
               aria-pressed={filter === "FOLLOWING"}
-              className="text-center xl:text-lg p-5"
+              className="p-5 text-center xl:text-lg"
               onClick={() => {
                 if (!user) setShowLoginPrompt(true);
               }}
@@ -237,7 +263,7 @@ const HomePage = () => {
               value="POPULAR"
               aria-label="Popular"
               aria-pressed={filter === "POPULAR"}
-              className="text-center xl:text-lg p-5"
+              className="p-5 text-center xl:text-lg"
             >
               <p>Popular</p>
             </ToggleGroupItem>
@@ -245,7 +271,7 @@ const HomePage = () => {
               value="CONTROVERSIAL"
               aria-label="Controversial"
               aria-pressed={filter === "CONTROVERSIAL"}
-              className="text-center xl:text-lg p-5"
+              className="p-5 text-center xl:text-lg"
             >
               <p>Controversial</p>
             </ToggleGroupItem>
@@ -272,7 +298,15 @@ const HomePage = () => {
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
                 ))
-              : posts.map((post) => <Post key={post.id} post={post} />)}
+              : !loading &&
+                !repostsLoading &&
+                posts.map((post) =>
+                  post.__typename === "Post" ? (
+                    <Post key={post.id} post={post} />
+                  ) : (
+                    <Repost key={post.id} repost={post} />
+                  ),
+                )}
           </div>
         )}
 

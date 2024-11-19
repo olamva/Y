@@ -1,6 +1,7 @@
 type Query {
   getPosts(page: Int!, filter: PostFilter!): [Post!]!
   getPost(id: ID!): Post
+  getReposts(page: Int!): [Repost!]!
   getComments(postID: ID!, page: Int!): [Comment!]!
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!

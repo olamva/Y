@@ -78,6 +78,16 @@ Retrieves a single post by its ID.
 
 ---
 
+### `getReposts(page: Int!): [Post!]!`
+
+Fetches a paginated list of the latest reposts.
+
+- **Parameters:**
+  - `page` (Int!): The page number to retrieve.
+- **Returns:** An array of `Post` objects.
+
+---
+
 ### `getComments(postID: ID!, page: Int!): [Comment!]!`
 
 Fetches comments associated with a specific post.
