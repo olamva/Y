@@ -43,6 +43,13 @@ describe("User Page", () => {
     cy.get('[aria-label="Delete post"]').first().click();
   });
 
+  it("Should follow and unfollow a user", () => {
+    cy.visit("/user/olamva");
+    cy.get("button").contains("Follow").click();
+    cy.wait(1000);
+    cy.get("button").contains("Following").click();
+  });
+
   it("Should like/dislike a post", () => {
     cy.visit("/");
 
