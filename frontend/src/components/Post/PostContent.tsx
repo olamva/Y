@@ -9,7 +9,7 @@ import { ApolloError, useMutation } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, PencilIcon, RecycleIcon, TrashIcon } from "lucide-react";
-import { MouseEvent, TouchEvent, useState } from "react";
+import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface PostContentProps {
@@ -43,6 +43,7 @@ const PostContent = ({
 }: PostContentProps) => {
   const { user } = useAuth();
   const [amtReposts, setAmtReposts] = useState(post.amtReposts);
+  const [hasReposted, setHasReposted] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const BACKEND_URL =
@@ -55,13 +56,20 @@ const PostContent = ({
     if (showOriginal) setIsHovering(false);
   };
 
+  useEffect(() => {
+    setHasReposted(user?.repostedPostIds.includes(post.id) ?? false);
+  }, [user?.repostedPostIds, post.id]);
+
   const [repost, { loading: repostLoading }] = useMutation<{
     repost: RepostType;
   }>(REPOST_MUTATION, {
     variables: { id: post.id, type: post.__typename },
     onCompleted: () => {
-      if (post.__typename === "Comment") setAmtReposts(amtReposts + 1);
-      else window.location.reload();
+      toast.success("Reposted successfully");
+      if (doesntRedirect) {
+        setAmtReposts(amtReposts + 1);
+        setHasReposted(true);
+      } else window.location.reload();
     },
     onError: (error) => {
       toast.error(`Error reposting: ${error.message}`);
@@ -73,14 +81,16 @@ const PostContent = ({
   }>(UNREPOST_MUTATION, {
     variables: { id: post.id, type: post.__typename },
     onCompleted: () => {
-      window.location.reload();
+      toast.success("Unreposted successfully");
+      if (doesntRedirect) {
+        setAmtReposts(amtReposts - 1);
+        setHasReposted(false);
+      } else window.location.reload();
     },
     onError: (error) => {
       toast.error(`Error unreposting: ${error.message}`);
     },
   });
-
-  const hasReposted = user?.repostedPostIds.includes(post.id);
 
   return (
     <article
@@ -215,7 +225,9 @@ const PostContent = ({
           ) : (
             <HeartIcon className="size-6 group-hover:scale-110" />
           )}
-          <span className="select-none">{amtLikes}</span>
+          <span className="flex select-none gap-1">
+          <p className="font-extrabold">{amtLikes}</p> <p className="hidden md:block">Likes</p>
+          </span>
         </button>
         <button
           className="group flex items-center gap-1 p-2"
@@ -230,11 +242,15 @@ const PostContent = ({
           <RecycleIcon
             className={`size-6 transition-all group-hover:scale-110 ${hasReposted ? "text-green-600 group-hover:text-red-600" : "group-hover:text-green-600"}`}
           />
-          <span className="select-none">{amtReposts}</span>
+          <span className="flex select-none gap-1">
+            <p className="font-extrabold">{amtReposts}</p> <p className="hidden md:block">Reposts</p>
+          </span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
-          <span className="select-none">{post.amtComments}</span>
+          <span className="flex select-none gap-1">
+          <p className="font-extrabold">{post.amtComments}</p> <p className="hidden md:block">Comments</p>
+          </span>
         </div>
       </footer>
 

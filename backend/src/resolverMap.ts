@@ -628,7 +628,13 @@ export const resolvers: IResolvers = {
         throw new AuthenticationError('You are not authorized to unrepost this post');
       }
 
-      const originalPost = await Post.findById(repost.originalID);
+      let originalPost: PostType | CommentType | null = null;
+
+      if (repost.originalType === 'Post') {
+        originalPost = await Post.findById(id);
+      } else if (repost.originalType === 'Comment') {
+        originalPost = await Comment.findById(id);
+      }
 
       if (!originalPost) {
         throw new UserInputError('Original post not found');
