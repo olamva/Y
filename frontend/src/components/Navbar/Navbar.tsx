@@ -150,7 +150,7 @@ const Navbar = () => {
                       return (
                         <a
                           key={isUser ? suggestion.id : suggestion.tag}
-                          className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
+                          className={`flex w-full cursor-pointer items-center gap-2 p-2 ${
                             index + 1 === activeSuggestionIndex
                               ? "bg-blue-500 text-white dark:bg-blue-800"
                               : ""
