@@ -122,9 +122,11 @@ const MentionsView: React.FC<MentionsViewProps> = ({
     postsLoading,
     commentsLoading,
     hasMore,
+    mentionedCommentIds.length,
+    mentionedPostIds.length,
+    page,
     fetchMorePosts,
     fetchMoreComments,
-    page,
   ]);
 
   const handleScroll = useCallback(() => {
