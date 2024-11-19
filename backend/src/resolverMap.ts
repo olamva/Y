@@ -587,14 +587,9 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating post');
       }
     },
-    repost: async (_, { id, type }, context) => {
-      if (!context.user) {
+    repost: async (_, { id, type }, { user }) => {
+      if (!user) {
         throw new AuthenticationError('You must be logged in to repost');
-      }
-
-      const user = await User.findById(context.user.id);
-      if (!user || !user.id) {
-        throw new UserInputError('User not found');
       }
 
       // if this user has already reposted this post, throw an error
@@ -631,9 +626,11 @@ export const resolvers: IResolvers = {
 
         const originalAuthor = await User.findById(originalPost.author);
 
+        console.log(user.id);
+
         const combinedPost = {
           id: repost.id,
-          author: repost.author,
+          author: user,
           originalID: originalPost.id,
           originalType: type,
           originalAuthor,
@@ -1085,16 +1082,14 @@ export const resolvers: IResolvers = {
       }
     },
 
-    createComment: async (_, { body, parentID, parentType, file }, context) => {
-      if (!context.user) {
+    createComment: async (_, { body, parentID, parentType, file }, { user }) => {
+      if (!user) {
         throw new AuthenticationError('You must be logged in to create a comment');
       }
 
       if (body.length < 1 && !file) {
         throw new UserInputError('Comment must have a body or an image');
       }
-
-      const user = await User.findById(context.user.id);
 
       if (!user) {
         throw new UserInputError('User not found');
