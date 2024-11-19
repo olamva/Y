@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@apollo/client";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
@@ -17,6 +17,7 @@ const MentionsView: React.FC<MentionsViewProps> = ({
   mentionedCommentIds,
 }) => {
   const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const {
     data: postsData,
@@ -25,6 +26,7 @@ const MentionsView: React.FC<MentionsViewProps> = ({
   } = useQuery(GET_POSTS_BY_IDS, {
     variables: { ids: mentionedPostIds, page },
     skip: !mentionedPostIds.length,
+    notifyOnNetworkStatusChange: true,
   });
 
   const {
@@ -34,6 +36,7 @@ const MentionsView: React.FC<MentionsViewProps> = ({
   } = useQuery(GET_COMMENTS_BY_IDS, {
     variables: { ids: mentionedCommentIds, page },
     skip: !mentionedCommentIds.length,
+    notifyOnNetworkStatusChange: true,
   });
 
   const mentionedPosts: PostType[] = postsData?.getPostsByIds || [];
@@ -61,54 +64,76 @@ const MentionsView: React.FC<MentionsViewProps> = ({
       new Date(parseInt(a.createdAt)).getTime(),
   );
 
-  const loadMoreMentions = () => {
-    if (
-      postsLoading ||
-      commentsLoading ||
-      (!postsData?.getPostsByIds.length &&
-        !commentsData?.getCommentsByIds.length)
-    )
-      return;
+  const loadMoreMentions = useCallback(async () => {
+    if (postsLoading || commentsLoading || !hasMore) return;
 
-    fetchMorePosts({
-      variables: { page: page + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        setPage(page + 1);
-        return {
-          getPostsByIds: [
-            ...prev.getPostsByIds,
-            ...fetchMoreResult.getPostsByIds,
-          ],
-        };
-      },
-    });
+    try {
+      const nextPage = page + 1;
 
-    fetchMoreComments({
-      variables: { page: page + 1 },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return {
-          getCommentsByIds: [
-            ...prev.getCommentsByIds,
-            ...fetchMoreResult.getCommentsByIds,
-          ],
-        };
-      },
-    });
-  };
+      const postsResult = await fetchMorePosts({
+        variables: { page: nextPage },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult.getPostsByIds.length) {
+            setHasMore(false);
+            return prev;
+          }
+          setPage((prevPage) => prevPage + 1);
+          return {
+            getPostsByIds: [
+              ...prev.getPostsByIds,
+              ...fetchMoreResult.getPostsByIds,
+            ],
+          };
+        },
+      });
 
-  const handleScroll = () => {
+      const commentsResult = await fetchMoreComments({
+        variables: { page: nextPage },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult.getCommentsByIds.length) {
+            setHasMore(false);
+            return prev;
+          }
+          return {
+            getCommentsByIds: [
+              ...prev.getCommentsByIds,
+              ...fetchMoreResult.getCommentsByIds,
+            ],
+          };
+        },
+      });
+
+      if (
+        !postsResult.data.getPostsByIds.length &&
+        !commentsResult.data.getCommentsByIds.length
+      ) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Error fetching more mentions:", error);
+    }
+  }, [
+    postsLoading,
+    commentsLoading,
+    hasMore,
+    fetchMorePosts,
+    fetchMoreComments,
+    page,
+  ]);
+
+  const handleScroll = useCallback(() => {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-    if (scrollHeight - scrollTop === clientHeight) {
+    const threshold = 300;
+
+    if (scrollHeight - scrollTop - clientHeight < threshold) {
       loadMoreMentions();
     }
-  };
+  }, [loadMoreMentions]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [mentionedContent]);
+  }, [handleScroll]);
 
   return (
     <>
@@ -124,6 +149,7 @@ const MentionsView: React.FC<MentionsViewProps> = ({
         ),
       )}
       {(postsLoading || commentsLoading) && <p>Loading more mentions...</p>}
+      {!hasMore && <p>No more mentions to load.</p>}
     </>
   );
 };
