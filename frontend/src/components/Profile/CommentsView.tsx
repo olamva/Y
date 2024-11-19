@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@apollo/client";
 import PostWithReply from "@/components/Post/PostWithReply";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
@@ -10,11 +10,13 @@ interface CommentsViewProps {
 }
 
 const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
-  const [page, setPage] = useState(1);
+  const currentPage = useRef(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, fetchMore } = useQuery(GET_COMMENTS_BY_IDS, {
-    variables: { ids: commentIds, page },
+    variables: { ids: commentIds, page: 1 },
     skip: !commentIds.length,
+    notifyOnNetworkStatusChange: true,
   });
 
   const comments: CommentType[] = data?.getCommentsByIds || [];
@@ -32,13 +34,20 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
   const parentPosts: (PostType | CommentType)[] =
     parentData?.getParentsByIds || [];
 
-  const loadMoreComments = () => {
-    if (loading || !data?.getCommentsByIds.length) return;
-    const nextPage = page + 1;
+  const loadMoreComments = useCallback(() => {
+    if (loading || !hasMore) return;
+
     fetchMore({
-      variables: { page: nextPage },
+      variables: {
+        ids: commentIds,
+        page: currentPage.current + 1,
+      },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult || fetchMoreResult.getCommentsByIds.length === 0) {
+          setHasMore(false);
+          return prev;
+        }
+        currentPage.current += 1;
         return {
           getCommentsByIds: [
             ...prev.getCommentsByIds,
@@ -46,21 +55,25 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
           ],
         };
       },
+    }).catch((e) => {
+      console.error("Error fetching more posts:", e);
+      setHasMore(false);
     });
-    setPage(nextPage);
-  };
+  }, [fetchMore, hasMore, loading, commentIds]);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-    if (scrollHeight - scrollTop === clientHeight) {
+    const threshold = 300;
+
+    if (scrollHeight - scrollTop - clientHeight < threshold) {
       loadMoreComments();
     }
-  };
+  }, [loadMoreComments]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   return (
     <>
@@ -72,6 +85,7 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
         />
       ))}
       {loading && <p>Loading more comments...</p>}
+      {!hasMore && <p>No more comments to load.</p>}
     </>
   );
 };
