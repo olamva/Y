@@ -268,7 +268,7 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            {posts.length === 0
+            {posts.length === 0 && loading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
                 ))
