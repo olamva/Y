@@ -165,7 +165,7 @@ const EditProfile = ({ user }: Props) => {
   };
 
   return (
-    <div className="p-4">
+    <div>
       <button
         onClick={() => setIsOpen(true)}
         className="transform rounded-md bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600"

@@ -97,6 +97,7 @@ type Mutation {
   unfollowUser(username: String!): User!
   register(username: String!, password: String!): String!
   login(username: String!, password: String!): String!
+  deleteUser(username: String!): User!
   changeProfilePicture(file: Upload): User!
   changeBackgroundPicture(file: Upload): User!
   updateProfile(firstName: String, lastName: String, biography: String): User!
