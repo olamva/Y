@@ -28,6 +28,14 @@ export const REPOST_MUTATION = gql`
   }
 `;
 
+export const UNREPOST_MUTATION = gql`
+  mutation Unrepost($id: ID!) {
+    unrepost(id: $id) {
+      id
+    }
+  }
+`;
+
 export const GET_REPOSTS = gql`
   query GetReposts($page: Int!) {
     getReposts(page: $page) {

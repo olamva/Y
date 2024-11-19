@@ -552,6 +552,8 @@ export const resolvers: IResolvers = {
         originalPost.amtReposts += 1;
         await originalPost.save();
 
+        await User.findByIdAndUpdate(user.id, { $push: { repostedPostIds: repost.originalID } });
+
         const originalAuthor = await User.findById(originalPost.author);
 
         const combinedPost = {
@@ -575,6 +577,45 @@ export const resolvers: IResolvers = {
         return combinedPost;
       } catch (err) {
         throw new Error('Error reposting');
+      }
+    },
+    unrepost: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unrepost');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const repost = await Repost.findOneAndDelete({ originalID: id });
+
+      if (!repost) {
+        throw new UserInputError('Repost not found');
+      }
+
+      if (!repost.author.equals(user.id)) {
+        throw new AuthenticationError('You are not authorized to unrepost this post');
+      }
+
+      const originalPost = await Post.findById(repost.originalID);
+
+      if (!originalPost) {
+        throw new UserInputError('Original post not found');
+      }
+
+      try {
+        await Repost.findByIdAndDelete(id);
+
+        originalPost.amtReposts -= 1;
+        await originalPost.save();
+
+        await User.findByIdAndUpdate(user.id, { $pull: { repostedPostIds: repost.originalID } });
+
+        return repost;
+      } catch (err) {
+        throw new Error('Error unreposting');
       }
     },
     updateProfile: async (_, { firstName, lastName, biography }, context) => {

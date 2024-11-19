@@ -44,6 +44,7 @@ export type UserType = {
   postIds: string[];
   likedPostIds: string[];
   mentionedPostIds: string[];
+  repostedPostIds: string[];
   commentIds: string[];
   likedCommentIds: string[];
   mentionedCommentIds: string[];

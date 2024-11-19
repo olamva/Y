@@ -4,7 +4,7 @@ import PostBody from "@/components/Post/PostBody";
 import Avatar from "@/components/Profile/Avatar";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
-import { REPOST_MUTATION } from "@/queries/reposts";
+import { REPOST_MUTATION, UNREPOST_MUTATION } from "@/queries/reposts";
 import { ApolloError, useMutation } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
@@ -65,6 +65,20 @@ const PostContent = ({
       toast.error(`Error reposting: ${error.message}`);
     },
   });
+
+  const [unrepost, { loading: unrepostLoading }] = useMutation<{
+    unrepost: RepostType;
+  }>(UNREPOST_MUTATION, {
+    variables: { id: post.id, type: post.__typename },
+    onCompleted: () => {
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast.error(`Error unreposting: ${error.message}`);
+    },
+  });
+
+  const hasReposted = user?.repostedPostIds.includes(post.id);
 
   return (
     <article
@@ -189,7 +203,7 @@ const PostContent = ({
         />
       )}
 
-      <footer className="flex w-full justify-around">
+      <footer className="flex w-full justify-evenly">
         <button
           className="group flex items-center gap-1 p-2"
           onClick={toggleLike}
@@ -203,14 +217,17 @@ const PostContent = ({
         </button>
         <button
           className="group flex items-center gap-1 p-2"
-          disabled={repostLoading}
+          disabled={repostLoading || unrepostLoading}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            repost();
+            if (hasReposted) unrepost();
+            else repost();
           }}
         >
-          <RecycleIcon className="size-6 transition-all hover:text-green-600 group-hover:scale-110" />
+          <RecycleIcon
+            className={`size-6 transition-all group-hover:scale-110 ${hasReposted ? "text-green-600 group-hover:text-red-600" : "group-hover:text-green-600"}`}
+          />
           <span className="select-none">{post.amtReposts}</span>
         </button>
         <div className="flex items-center gap-1">

@@ -76,6 +76,7 @@ type User {
   postIds: [ID!]!
   likedPostIds: [ID!]!
   mentionedPostIds: [ID!]!
+  repostedPostIds: [ID!]!
   commentIds: [ID!]!
   likedCommentIds: [ID!]!
   mentionedCommentIds: [ID!]!
@@ -106,6 +107,7 @@ type Repost {
 type Mutation {
   createPost(body: String, file: Upload): Post!
   repost(id: ID!, type: String!): Repost!
+  unrepost(id: ID!): Repost!
   editPost(id: ID!, body: String, file: Upload): Post!
   editComment(id: ID!, body: String, file: Upload): Comment!
   createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!

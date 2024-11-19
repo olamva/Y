@@ -287,7 +287,9 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                       onClick={handleAutofill}
                       onMouseEnter={() => setActiveSuggestionIndex(index)}
                     >
-                      <div className="flex items-center gap-1">
+                      <div
+                        className={`flex items-center ${isUser ? "gap-1" : ""}`}
+                      >
                         {isUser ? (
                           <Avatar noHref user={suggestion} />
                         ) : (
