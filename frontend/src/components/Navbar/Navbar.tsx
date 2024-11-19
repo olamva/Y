@@ -148,27 +148,36 @@ const Navbar = () => {
                     {suggestions.slice(0, 5).map((suggestion, index) => {
                       const isUser = suggestion.__typename === "User";
                       return (
-                        <div
+                        <a
                           key={isUser ? suggestion.id : suggestion.tag}
                           className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
                             index + 1 === activeSuggestionIndex
                               ? "bg-blue-500 text-white dark:bg-blue-800"
                               : ""
                           }`}
-                          onClick={handleSearch}
+                          href={`/project2/${
+                            isUser
+                              ? `user/${suggestion.username}`
+                              : `hashtag/${suggestion.tag}`
+                          }`}
                           onMouseEnter={() =>
                             setActiveSuggestionIndex(index + 1)
                           }
                         >
-                          <p className={`${isUser ? "" : "text-lg"}`}>
-                            {isUser ? "@" : "#"}
-                          </p>
+                          {isUser ? (
+                            <Avatar noHref user={suggestion} />
+                          ) : (
+                            <p className="flex size-8 h-full items-center justify-center text-2xl">
+                              #
+                            </p>
+                          )}
+
                           <p>
                             {isUser
                               ? `${suggestion.username}`
                               : `${suggestion.tag}`}
                           </p>
-                        </div>
+                        </a>
                       );
                     })}
                   </div>
