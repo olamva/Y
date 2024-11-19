@@ -102,6 +102,8 @@ type Repost {
   imageUrl: String
   hashTags: [String!]!
   mentionedUsers: [User!]!
+  parentID: ID
+  parentType: String
 }
 
 type Mutation {

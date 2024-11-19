@@ -86,6 +86,8 @@ Fetches a paginated list of the latest reposts.
 
 - **Parameters:**
   - `page` (Int!): The page number to retrieve.
+  - `filter` (PageFilter!): The filter to apply to the reposts.
+  - `limit` (Int!): The number of reposts to retrieve per page.
 - **Returns:** An array of `Post` objects.
 
 ---

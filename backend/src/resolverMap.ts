@@ -150,6 +150,8 @@ export const resolvers: IResolvers = {
               imageUrl: originalPost.imageUrl,
               hashTags: originalPost.hashTags,
               mentionedUsers: originalPost.mentionedUsers,
+              parentID: (originalPost as CommentType).parentID,
+              parentType: (originalPost as CommentType).parentType,
             };
           })
         );

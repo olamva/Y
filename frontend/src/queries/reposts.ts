@@ -60,6 +60,8 @@ export const GET_REPOSTS = gql`
       amtReposts
       imageUrl
       createdAt
+      parentID
+      parentType
     }
   }
 `;

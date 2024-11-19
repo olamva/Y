@@ -31,6 +31,8 @@ export type RepostType = ContentType & {
   originalAuthor: UserType;
   originalID: string;
   originalType: "post" | "reply";
+  parentID?: string;
+  parentType?: "post" | "reply";
   repostedAt: string;
 };
 

@@ -42,6 +42,7 @@ const PostContent = ({
   disableBottomMargin,
 }: PostContentProps) => {
   const { user } = useAuth();
+  const [amtReposts, setAmtReposts] = useState(post.amtReposts);
   const [showOriginal, setShowOriginal] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const BACKEND_URL =
@@ -59,7 +60,8 @@ const PostContent = ({
   }>(REPOST_MUTATION, {
     variables: { id: post.id, type: post.__typename },
     onCompleted: () => {
-      window.location.reload();
+      if (post.__typename === "Comment") setAmtReposts(amtReposts + 1);
+      else window.location.reload();
     },
     onError: (error) => {
       toast.error(`Error reposting: ${error.message}`);
@@ -228,7 +230,7 @@ const PostContent = ({
           <RecycleIcon
             className={`size-6 transition-all group-hover:scale-110 ${hasReposted ? "text-green-600 group-hover:text-red-600" : "group-hover:text-green-600"}`}
           />
-          <span className="select-none">{post.amtReposts}</span>
+          <span className="select-none">{amtReposts}</span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
