@@ -92,12 +92,14 @@ Fetches a paginated list of the latest reposts.
 
 ---
 
-### `getRepostsByUser(username: String!): [Post!]!`
+### `getRepostsByUser(username: String!, page: Int!, limit: Int!): [Post!]!`
 
 Retrieves multiple reposts by their IDs.
 
 - **Parameters:**
   - `username` (String!): The username of the user.
+  - `page` (Int!): The page number to retrieve for pagination.
+  - `limit` (Int!): The number of reposts to retrieve per page.
 - **Returns:** An array of `Post` objects.
 
 ---

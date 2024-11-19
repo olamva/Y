@@ -2,14 +2,14 @@ type Query {
   getPosts(page: Int!, filter: PostFilter!, limit: Int!): [Post!]!
   getPost(id: ID!): Post
   getReposts(page: Int!, filter: PostFilter!, limit: Int!): [Repost!]!
-  getRepostsByUser(username: String!): [Repost!]!
+  getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!
   getComments(postID: ID!, page: Int!): [Comment!]!
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!
   searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!, page: Int!, limit: Int!): [User!]!
   searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
-  getPostsByIds(ids: [ID!]!, page: Int!): [Post!]!
+  getPostsByIds(ids: [ID!]!, page: Int!, limit: Int!): [Post!]!
   getComment(id: ID!): Comment
   getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent

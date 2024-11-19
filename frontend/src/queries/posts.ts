@@ -41,8 +41,8 @@ export const GET_POST = gql`
 `;
 
 export const GET_POSTS_BY_IDS = gql`
-  query GetPostsByIds($ids: [ID!]!, $page: Int!) {
-    getPostsByIds(ids: $ids, page: $page) {
+  query GetPostsByIds($ids: [ID!]!, $page: Int!, $limit: Int!) {
+    getPostsByIds(ids: $ids, page: $page, limit: $limit) {
       id
       body
       originalBody

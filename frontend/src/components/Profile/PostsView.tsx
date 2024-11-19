@@ -1,60 +1,109 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useQuery } from "@apollo/client";
 import Post from "@/components/Post/Post";
+import { PostType, RepostType } from "@/lib/types";
 import { GET_POSTS_BY_IDS } from "@/queries/posts";
-import { PostType } from "@/lib/types";
+import { GET_REPOSTS_BY_USER } from "@/queries/reposts";
+import { NetworkStatus, useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import Repost from "../Post/Repost";
+
+const PAGE_SIZE = 16;
 
 interface PostsViewProps {
   postIds: string[];
+  username?: string;
 }
-
-const PostsView: React.FC<PostsViewProps> = ({ postIds }) => {
-  const currentPage = useRef(1);
+const PostsView: React.FC<PostsViewProps> = ({ postIds, username }) => {
+  const [page, setPage] = useState(1);
+  const [repostsPage, setRepostsPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [repostsHasMore, setRepostsHasMore] = useState(true);
 
-  const { data, loading, fetchMore, error } = useQuery<{
+  const { data, loading, fetchMore, error, networkStatus } = useQuery<{
     getPostsByIds: PostType[];
   }>(GET_POSTS_BY_IDS, {
-    variables: { ids: postIds, page: 1 },
+    variables: { ids: postIds, page: 1, limit: PAGE_SIZE },
     skip: !postIds.length,
+    notifyOnNetworkStatusChange: true,
+  });
+  const {
+    data: repostsData,
+    loading: repostsLoading,
+    error: repostsError,
+    fetchMore: fetchMoreReposts,
+    networkStatus: repostsNetworkStatus,
+  } = useQuery<{ getRepostsByUser: RepostType[] }>(GET_REPOSTS_BY_USER, {
+    variables: { username: username, page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
   });
 
   const posts: PostType[] = data?.getPostsByIds || [];
 
-  const loadMorePosts = useCallback(() => {
-    if (loading || !hasMore) return;
+  const reposts: RepostType[] = repostsData?.getRepostsByUser ?? [];
 
-    fetchMore({
-      variables: {
-        ids: postIds,
-        page: currentPage.current + 1,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult || fetchMoreResult.getPostsByIds.length === 0) {
+  const combinedPosts = [...posts, ...reposts].sort(
+    (a, b) =>
+      new Date(
+        parseInt(b.__typename === "Repost" ? b.repostedAt : b.createdAt),
+      ).getTime() -
+      new Date(
+        parseInt(a.__typename === "Repost" ? a.repostedAt : a.createdAt),
+      ).getTime(),
+  );
+
+  const loadMorePosts = useCallback(async () => {
+    if (!hasMore || loading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMore({
+        variables: { page: page + 1 },
+      });
+
+      if (fetchMoreData?.getPostsByIds) {
+        if (fetchMoreData.getPostsByIds.length < PAGE_SIZE) {
           setHasMore(false);
-          return prev;
         }
-        currentPage.current += 1;
-        return {
-          getPostsByIds: [
-            ...prev.getPostsByIds,
-            ...fetchMoreResult.getPostsByIds,
-          ],
-        };
-      },
-    }).catch((e) => {
-      console.error("Error fetching more posts:", e);
-      setHasMore(false);
-    });
-  }, [fetchMore, hasMore, loading, postIds]);
+        setPage((prev) => prev + 1);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  }, [fetchMore, hasMore, loading, page]);
+
+  const loadMoreReposts = useCallback(async () => {
+    if (!repostsHasMore || repostsLoading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMoreReposts({
+        variables: { page: repostsPage + 1 },
+      });
+
+      if (fetchMoreData?.getRepostsByUser) {
+        if (fetchMoreData.getRepostsByUser.length < PAGE_SIZE) {
+          setRepostsHasMore(false);
+        }
+        setRepostsPage((prev) => prev + 1);
+      } else {
+        setRepostsHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  }, [fetchMoreReposts, repostsHasMore, repostsLoading, repostsPage]);
 
   const handleScroll = useCallback(() => {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
     const threshold = 300;
 
-    if (scrollHeight - scrollTop - clientHeight < threshold) {
+    if (
+      scrollHeight - scrollTop - clientHeight < threshold &&
+      ((networkStatus !== NetworkStatus.fetchMore && hasMore) ||
+        (repostsNetworkStatus !== NetworkStatus.fetchMore && repostsHasMore))
+    ) {
       loadMorePosts();
+      loadMoreReposts();
     }
   }, [loadMorePosts]);
 
@@ -63,17 +112,20 @@ const PostsView: React.FC<PostsViewProps> = ({ postIds }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  if (error) {
-    return <p>Error loading posts.</p>;
-  }
-
   return (
     <>
-      {posts.map((post) => (
-        <Post post={post} key={post.id} />
-      ))}
-      {loading && <p>Loading more posts...</p>}
-      {!hasMore && <p>No more posts to load.</p>}
+      {(error || repostsError) && (
+        <p>Error loading posts:{error?.message || repostsError?.message} </p>
+      )}
+      {combinedPosts.map((post) =>
+        post.__typename === "Post" ? (
+          <Post post={post} key={post.id} />
+        ) : (
+          <Repost repost={post} key={post.id} />
+        ),
+      )}
+      {(loading || repostsLoading) && <p>Loading more posts...</p>}
+      {!hasMore && !repostsHasMore && <p>No more posts to load.</p>}
     </>
   );
 };

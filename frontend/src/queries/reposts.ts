@@ -67,8 +67,8 @@ export const GET_REPOSTS = gql`
 `;
 
 export const GET_REPOSTS_BY_USER = gql`
-  query getRepostsByUser($username: String!) {
-    getRepostsByUser(username: $username) {
+  query getRepostsByUser($username: String!, $page: Int!, $limit: Int!) {
+    getRepostsByUser(username: $username, page: $page, limit: $limit) {
       originalAuthor {
         id
         username

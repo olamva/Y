@@ -2,16 +2,14 @@ import { useAuth } from "@/components/AuthContext";
 import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
-import Post from "@/components/Post/Post";
-import PostWithReply from "@/components/Post/PostWithReply";
-import Repost from "@/components/Post/Repost";
 import Avatar from "@/components/Profile/Avatar";
+import CommentsView from "@/components/Profile/CommentsView";
 import EditProfile from "@/components/Profile/EditProfile";
+import LikesView from "@/components/Profile/LikesView";
+import MentionsView from "@/components/Profile/MentionsView";
+import PostsView from "@/components/Profile/PostsView";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
-import { CommentType, PostType, RepostType, UserType } from "@/lib/types";
-import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
-import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
-import { GET_REPOSTS_BY_USER } from "@/queries/reposts";
+import { UserType } from "@/lib/types";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
@@ -19,10 +17,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import MentionsView from "@/components/Profile/MentionsView";
-import CommentsView from "@/components/Profile/CommentsView";
-import PostsView from "@/components/Profile/PostsView";
-import LikesView from "@/components/Profile/LikesView";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -267,7 +261,9 @@ const Profile = () => {
               </ToggleGroupItem>
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
-              {currentView === "posts" && <PostsView postIds={user.postIds} />}
+              {currentView === "posts" && (
+                <PostsView postIds={user.postIds} username={user.username} />
+              )}
               {currentView === "comments" && (
                 <CommentsView commentIds={user.commentIds} />
               )}
