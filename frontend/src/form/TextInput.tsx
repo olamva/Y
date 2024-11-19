@@ -254,7 +254,6 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
               ref={ref}
               value={value}
               maxLength={maxChars}
-              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               onInput={handleInputChange}
