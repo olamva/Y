@@ -252,6 +252,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           <PopoverTrigger asChild>
             <textarea
               ref={ref}
+              name="Post creation field"
               value={value}
               maxLength={maxChars}
               onKeyDown={handleKeyDown}
