@@ -13,6 +13,7 @@ import {
   KeyboardEvent,
   forwardRef,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -36,6 +37,8 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
     >([]);
     const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
 
+    const popoverRef = useRef<HTMLDivElement>(null);
+
     const debouncedQuery = useDebounce(query, 300);
 
     const {
@@ -46,7 +49,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       searchHashtags: HashtagType[];
     }>(SEARCH_HASHTAGS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: debouncedQuery.length < 1,
+      skip: suggestionType === "users",
     });
 
     const {
@@ -57,13 +60,14 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       searchUsers: UserType[];
     }>(SEARCH_USERS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: debouncedQuery.length < 1,
+      skip: suggestionType === "hashtags",
     });
 
     useEffect(() => {
-      if (debouncedQuery.length > 0) {
-        refetchHashtags();
+      if (suggestionType === "users") {
         refetchUsers();
+      } else {
+        refetchHashtags();
       }
     }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
@@ -78,6 +82,26 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       mentionsData?.searchUsers,
       hashtagsData?.searchHashtags,
     ]);
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          ref &&
+          "current" in ref &&
+          ref.current &&
+          !ref.current.contains(event.target as Node) &&
+          popoverRef.current &&
+          !popoverRef.current.contains(event.target as Node)
+        ) {
+          setShowSuggestions(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
     const handleAutofill = () => {
       const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
@@ -165,8 +189,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
 
       if (
         lastSymbol !== -1 &&
-        textBeforeCaret.length > lastSymbol + 1 &&
-        /^[a-zA-Z0-9]+$/.test(textBeforeCaret.slice(lastSymbol + 1))
+        /^[a-zA-Z0-9]*$/.test(textBeforeCaret.slice(lastSymbol + 1))
       ) {
         setShowSuggestions(true);
         setQuery(textBeforeCaret.slice(lastSymbol + 1));
@@ -239,6 +262,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
             />
           </PopoverTrigger>
           <PopoverContent
+            ref={popoverRef}
             side="bottom"
             sideOffset={popoverPosition.top < 50 ? popoverPosition.top - 24 : 0}
             alignOffset={popoverPosition.left}
@@ -263,7 +287,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                       onClick={handleAutofill}
                       onMouseEnter={() => setActiveSuggestionIndex(index)}
                     >
-                      <div className="flex gap-1 items-center">
+                      <div className="flex items-center gap-1">
                         {isUser ? (
                           <Avatar noHref user={suggestion} />
                         ) : (

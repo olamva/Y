@@ -6,7 +6,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const Navbar = () => {
@@ -19,6 +19,8 @@ const Navbar = () => {
   const [suggestions, setSuggestions] = useState<(HashtagType | UserType)[]>(
     [],
   );
+  const inputRef = useRef<HTMLInputElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const debouncedQuery = useDebounce(searchQuery, 300);
 
@@ -26,29 +28,21 @@ const Navbar = () => {
     data: hashtagsData,
     loading: hashtagsLoading,
     refetch: refetchHashtags,
-  } = useQuery<{
-    searchHashtags: HashtagType[];
-  }>(SEARCH_HASHTAGS, {
+  } = useQuery<{ searchHashtags: HashtagType[] }>(SEARCH_HASHTAGS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
-    skip: debouncedQuery.length < 1,
   });
 
   const {
     data: mentionsData,
     loading: mentionsLoading,
     refetch: refetchUsers,
-  } = useQuery<{
-    searchUsers: UserType[];
-  }>(SEARCH_USERS, {
+  } = useQuery<{ searchUsers: UserType[] }>(SEARCH_USERS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
-    skip: debouncedQuery.length < 1,
   });
 
   useEffect(() => {
-    if (debouncedQuery.length > 0) {
-      refetchHashtags();
-      refetchUsers();
-    }
+    refetchHashtags();
+    refetchUsers();
   }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
   useEffect(() => {
@@ -57,6 +51,24 @@ const Navbar = () => {
       ...(mentionsData?.searchUsers ?? []),
     ]);
   }, [hashtagsData, mentionsData]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node) &&
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSearch = () => {
     if (activeSuggestionIndex === 0 || suggestions.length === 0) {
@@ -124,6 +136,7 @@ const Navbar = () => {
           <Popover open={showSuggestions}>
             <PopoverTrigger asChild>
               <input
+                ref={inputRef}
                 type="search"
                 id="search"
                 maxLength={40}
@@ -133,13 +146,16 @@ const Navbar = () => {
                 value={searchQuery}
                 onKeyDown={handleKeyDown}
                 onChange={handleInputChange}
+                onClick={() => setShowSuggestions(true)}
                 onMouseEnter={() => setActiveSuggestionIndex(0)}
               />
             </PopoverTrigger>
             {suggestions.length > 0 && (
               <PopoverContent
+                ref={popoverRef}
                 onOpenAutoFocus={(e) => e.preventDefault()}
                 className="z-[70] overflow-hidden p-0"
+                align="start"
               >
                 {hashtagsLoading || mentionsLoading ? (
                   <p className="w-full p-2">Loading...</p>
