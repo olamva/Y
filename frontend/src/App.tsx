@@ -17,16 +17,19 @@ import ProfileCard from "./components/ProfileCard";
 import CardSkeleton from "./components/Skeletons/CardSkeleton";
 import PostSkeleton from "./components/Skeletons/PostSkeleton";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
+import { GET_REPOSTS } from "./queries/reposts";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 16;
 
 type FilterType = "LATEST" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL";
 
 const HomePage = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
+  const [repostsPage, setRepostsPage] = useState(1);
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
+  const [repostsHasMore, setRepostsHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [filter, setFilter] = useState<FilterType>("LATEST");
@@ -34,7 +37,21 @@ const HomePage = () => {
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getPosts: (PostType | RepostType)[];
   }>(GET_POSTS, {
-    variables: { page: 1, filter, includeReposts: true },
+    variables: { page: 1, filter, limit: PAGE_SIZE },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+    skip: filter === "FOLLOWING" && !user,
+  });
+
+  const {
+    data: repostsData,
+    loading: repostsLoading,
+    error: repostsError,
+    fetchMore: fetchMoreReposts,
+    networkStatus: repostsNetworkStatus,
+    refetch: refetchReposts,
+  } = useQuery<{ getReposts: RepostType[] }>(GET_REPOSTS, {
+    variables: { page: 1, filter, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
     skip: filter === "FOLLOWING" && !user,
@@ -70,6 +87,7 @@ const HomePage = () => {
       setFile(null);
       toast.success("Post added successfully!");
       refetch();
+      refetchReposts();
     },
     refetchQueries: [{ query: GET_POSTS, variables: { page: 1 } }],
   });
@@ -115,26 +133,59 @@ const HomePage = () => {
     }
   }, [fetchMore, hasMore, loading, page]);
 
+  const loadMoreReposts = useCallback(async () => {
+    if (!repostsHasMore || repostsLoading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMoreReposts({
+        variables: { page: repostsPage + 1 },
+      });
+
+      if (fetchMoreData?.getReposts) {
+        if (fetchMoreData.getReposts.length < PAGE_SIZE) {
+          setRepostsHasMore(false);
+        }
+        setRepostsPage((prev) => prev + 1);
+      } else {
+        setRepostsHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  }, [fetchMoreReposts, repostsHasMore, repostsLoading, repostsPage]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 200 &&
-        networkStatus !== NetworkStatus.fetchMore &&
-        hasMore
+        ((networkStatus !== NetworkStatus.fetchMore && hasMore) ||
+          (repostsNetworkStatus !== NetworkStatus.fetchMore && repostsHasMore))
       ) {
         loadMorePosts();
+        loadMoreReposts();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, page, hasMore, networkStatus, loadMorePosts]);
+  }, [
+    hasMore,
+    networkStatus,
+    loadMorePosts,
+    loadMoreReposts,
+    repostsHasMore,
+    repostsNetworkStatus,
+  ]);
 
   useEffect(() => {
     setPage(1);
     setHasMore(true);
     refetch({ page: 1, filter });
-  }, [filter, refetch]);
+
+    setRepostsPage(1);
+    setRepostsHasMore(true);
+    refetchReposts({ page: 1, filter });
+  }, [filter, refetch, refetchReposts]);
 
   useEffect(() => {
     if (filter !== "FOLLOWING") {
@@ -142,15 +193,35 @@ const HomePage = () => {
     }
   }, [filter]);
 
-  if (error || usersError)
+  if (error || repostsError || usersError)
     return (
       <p className="mt-4 text-center text-red-500">
         Error loading posts:{" "}
-        {(error?.message ?? usersError?.message) || "Unknown error"}
+        {(error?.message ?? repostsError?.message ?? usersError?.message) ||
+          "Unknown error"}
       </p>
     );
 
   const posts = data?.getPosts ?? [];
+  const reposts = repostsData?.getReposts ?? [];
+
+  const combinedPosts = [...posts, ...reposts].sort((a, b) => {
+    switch (filter) {
+      case "POPULAR":
+        return b.amtLikes - a.amtLikes;
+      case "CONTROVERSIAL":
+        return b.amtComments - a.amtComments;
+      default:
+        return (
+          new Date(
+            parseInt(b.__typename === "Repost" ? b.repostedAt : b.createdAt),
+          ).getTime() -
+          new Date(
+            parseInt(a.__typename === "Repost" ? a.repostedAt : a.createdAt),
+          ).getTime()
+        );
+    }
+  });
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
@@ -269,11 +340,11 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            {posts.length === 0
+            {combinedPosts.length === 0
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
                 ))
-              : posts.map((post) =>
+              : combinedPosts.map((post) =>
                   post.__typename === "Post" ? (
                     <Post key={post.id} post={post} />
                   ) : (
@@ -283,13 +354,13 @@ const HomePage = () => {
           </div>
         )}
 
-        {!hasMore && (
+        {!hasMore && !repostsHasMore && (
           <p className="mt-4 justify-self-center text-gray-500 dark:text-gray-400">
             You've reached the end of the posts.
           </p>
         )}
 
-        {!loading && data?.getPosts.length === 0 && (
+        {!loading && !repostsLoading && combinedPosts.length === 0 && (
           <p className="mt-4">No posts available.</p>
         )}
       </main>

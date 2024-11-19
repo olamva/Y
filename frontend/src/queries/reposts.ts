@@ -37,8 +37,8 @@ export const UNREPOST_MUTATION = gql`
 `;
 
 export const GET_REPOSTS = gql`
-  query GetReposts($page: Int!) {
-    getReposts(page: $page) {
+  query GetReposts($page: Int!, $filter: PostFilter!, $limit: Int!) {
+    getReposts(page: $page, filter: $filter, limit: $limit) {
       originalAuthor {
         id
         username

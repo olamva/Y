@@ -58,12 +58,14 @@ npm run start:dev
 
 ## Queries
 
-### `getPosts(page: Int!): [Post!]!`
+### `getPosts(page: Int!, filter: PageFilter!, limit: Int!): [Post!]!`
 
 Fetches a paginated list of the latest posts.
 
 - **Parameters:**
   - `page` (Int!): The page number to retrieve.
+  - `filter` (PageFilter!): The filter to apply to the posts.
+  - `limit` (Int!): The number of posts to retrieve per page.
 - **Returns:** An array of `Post` objects.
 
 ---
@@ -78,7 +80,7 @@ Retrieves a single post by its ID.
 
 ---
 
-### `getReposts(page: Int!): [Post!]!`
+### `getReposts(page: Int!, filter: PageFilter!, limit: Int!): [Post!]!`
 
 Fetches a paginated list of the latest reposts.
 

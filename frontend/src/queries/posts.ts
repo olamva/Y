@@ -1,46 +1,21 @@
 import { gql } from "@apollo/client";
 
 export const GET_POSTS = gql`
-  query GetPosts($page: Int!, $filter: PostFilter!, $includeReposts: Boolean) {
-    getPosts(page: $page, filter: $filter, includeReposts: $includeReposts) {
-      ... on Post {
+  query GetPosts($page: Int!, $filter: PostFilter!, $limit: Int!) {
+    getPosts(page: $page, filter: $filter, limit: $limit) {
+      id
+      body
+      originalBody
+      author {
         id
-        body
-        originalBody
-        author {
-          id
-          username
-          profilePicture
-        }
-        amtLikes
-        amtComments
-        amtReposts
-        imageUrl
-        createdAt
+        username
+        profilePicture
       }
-      ... on Repost {
-        originalAuthor {
-          id
-          username
-          profilePicture
-        }
-        originalID
-        originalType
-        repostedAt
-        id
-        body
-        originalBody
-        author {
-          id
-          username
-          profilePicture
-        }
-        amtLikes
-        amtComments
-        amtReposts
-        imageUrl
-        createdAt
-      }
+      amtLikes
+      amtComments
+      amtReposts
+      imageUrl
+      createdAt
     }
   }
 `;

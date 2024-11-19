@@ -14,8 +14,8 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page, filter, includeReposts }, { user }) => {
-      const POSTS_PER_PAGE = 10;
+    getPosts: async (_, { page, filter, limit }, { user }) => {
+      const POSTS_PER_PAGE = limit ?? 10;
       const skip = (page - 1) * POSTS_PER_PAGE;
 
       if (!user && filter === 'FOLLOWING') {
@@ -52,59 +52,6 @@ export const resolvers: IResolvers = {
 
         const posts = await Post.find(query).sort(sort).skip(skip).limit(POSTS_PER_PAGE).populate('author');
 
-        if (includeReposts) {
-          const reposts = await Repost.find(query).sort(sort).populate('author');
-
-          const repostedPosts = await Promise.all(
-            reposts.map(async (repost) => {
-              let originalPost: PostType | CommentType | null = null;
-              if (repost.originalType === 'Post') {
-                originalPost = await Post.findById(repost.originalID);
-              } else if (repost.originalType === 'Comment') {
-                originalPost = await Comment.findById(repost.originalID);
-              }
-              if (!originalPost) {
-                throw new Error('Original post not found');
-              }
-              const originalAuthor = await User.findById(originalPost.author);
-
-              return {
-                id: repost.id,
-                author: repost.author,
-                originalID: originalPost.id,
-                originalType: repost.originalType,
-                originalAuthor,
-                repostedAt: repost.repostedAt,
-                body: originalPost.body,
-                originalBody: originalPost.originalBody,
-                amtLikes: originalPost.amtLikes,
-                amtComments: originalPost.amtComments,
-                amtReposts: originalPost.amtReposts,
-                createdAt: originalPost.createdAt,
-                imageUrl: originalPost.imageUrl,
-                hashTags: originalPost.hashTags,
-                mentionedUsers: originalPost.mentionedUsers,
-              };
-            })
-          );
-
-          return [...posts, ...repostedPosts]
-            .sort((a, b) => {
-              switch (filter) {
-                case 'POPULAR':
-                  return b.amtLikes - a.amtLikes;
-                case 'CONTROVERSIAL':
-                  return b.amtComments - a.amtComments;
-                default:
-                  return (
-                    ('repostedAt' in b ? b.repostedAt : b.createdAt).getTime() -
-                    ('repostedAt' in a ? a.repostedAt : a.createdAt).getTime()
-                  );
-              }
-            })
-            .slice(skip, skip + POSTS_PER_PAGE);
-        }
-
         return posts;
       } catch (err) {
         console.error(err);
@@ -132,8 +79,8 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching post');
       }
     },
-    getReposts: async (_, { page }, context) => {
-      const REPOSTS_PER_PAGE = 10;
+    getReposts: async (_, { page, filter, limit }, context) => {
+      const REPOSTS_PER_PAGE = limit ?? 10;
       const skip = (page - 1) * REPOSTS_PER_PAGE;
 
       if (!context.user) {
@@ -141,11 +88,38 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        const reposts = await Repost.find({ author: context.user.id })
-          .sort({ repostedAt: -1 })
+        let query: any = {};
+        let sort: Record<string, SortOrder> = { createdAt: -1 };
+
+        switch (filter) {
+          case 'LATEST':
+            query = {};
+            break;
+
+          case 'FOLLOWING':
+            const followingIds = context.user.following.map((followedUser: UserType) => followedUser._id);
+            query = { author: { $in: followingIds } };
+            break;
+
+          case 'POPULAR':
+            sort = { amtLikes: -1, createdAt: -1 };
+            query = {};
+            break;
+
+          case 'CONTROVERSIAL':
+            sort = { amtComments: -1, createdAt: -1 };
+            query = {};
+            break;
+
+          default:
+            throw new UserInputError('Invalid filter type.');
+        }
+
+        const reposts = await Repost.find(query)
+          .sort(sort)
           .skip(skip)
           .limit(REPOSTS_PER_PAGE)
-          .populate('originalID');
+          .populate('author');
 
         const repostedPosts = await Promise.all(
           reposts.map(async (repost) => {
@@ -975,6 +949,7 @@ export const resolvers: IResolvers = {
 
         const userPosts = await Post.find({ author: deletedUser.id });
         const userComments = await Comment.find({ author: deletedUser.id });
+        const userReposts = await Repost.find({ author: deletedUser.id });
 
         for (const post of userPosts) {
           if (post.imageUrl) {
@@ -1020,8 +995,21 @@ export const resolvers: IResolvers = {
           }
         }
 
+        for (const repost of userReposts) {
+          const originalPost = await Post.findById(repost.originalID);
+          if (!originalPost) {
+            throw new Error('Original post not found');
+          }
+
+          originalPost.amtReposts -= 1;
+          await originalPost.save();
+
+          await User.findByIdAndUpdate(repost.author, { $pull: { repostedPostIds: repost.originalID } });
+        }
+
         await Post.deleteMany({ author: deletedUser.id });
         await Comment.deleteMany({ author: deletedUser.id });
+        await Repost.deleteMany({ author: deletedUser.id });
 
         if (deletedUser.profilePicture) {
           const deleteResult = await deleteFile(deletedUser.profilePicture);
@@ -1373,11 +1361,6 @@ export const resolvers: IResolvers = {
     },
   },
 
-  AllPosts: {
-    __resolveType(AllTypes: { repostedAt?: Date; body?: string }) {
-      return AllTypes.repostedAt ? 'Repost' : 'Post';
-    },
-  },
   User: {
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });
