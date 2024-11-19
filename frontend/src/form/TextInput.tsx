@@ -1,3 +1,4 @@
+import Avatar from "@/components/Profile/Avatar";
 import {
   Popover,
   PopoverContent,
@@ -156,16 +157,22 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
     const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       onChange(e);
       const value = e.target.value;
-      const lastWord = value.split(" ").pop();
+      const selectionStart = e.target.selectionStart;
+      const textBeforeCaret = value.substring(0, selectionStart);
+      const lastAt = textBeforeCaret.lastIndexOf("@");
+      const lastHash = textBeforeCaret.lastIndexOf("#");
+      const lastSymbol = Math.max(lastAt, lastHash);
 
       if (
-        (lastWord?.startsWith("@") || lastWord?.startsWith("#")) &&
-        lastWord.length > 1 &&
-        /^[a-zA-Z0-9]+$/.test(lastWord.slice(-1))
+        lastSymbol !== -1 &&
+        textBeforeCaret.length > lastSymbol + 1 &&
+        /^[a-zA-Z0-9]+$/.test(textBeforeCaret.slice(lastSymbol + 1))
       ) {
         setShowSuggestions(true);
-        setQuery(lastWord?.slice(1));
-        setSuggestionType(lastWord?.startsWith("@") ? "users" : "hashtags");
+        setQuery(textBeforeCaret.slice(lastSymbol + 1));
+        setSuggestionType(
+          textBeforeCaret[lastSymbol] === "@" ? "users" : "hashtags",
+        );
         setActiveSuggestionIndex(0);
 
         if (ref && "current" in ref && ref.current && !showSuggestions) {
@@ -243,26 +250,37 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
               <p className="w-full p-2">Loading...</p>
             ) : currentSuggestions.length > 0 ? (
               <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
-                {currentSuggestions.map((suggestion, index) => (
-                  <div
-                    key={
-                      suggestion.__typename === "User"
-                        ? suggestion.id
-                        : suggestion.tag
-                    }
-                    className={`w-full cursor-pointer p-2 ${
-                      index === activeSuggestionIndex
-                        ? "bg-blue-500 text-white dark:bg-blue-800"
-                        : ""
-                    }`}
-                    onClick={handleAutofill}
-                    onMouseEnter={() => setActiveSuggestionIndex(index)}
-                  >
-                    {suggestion.__typename === "User"
-                      ? suggestion.username
-                      : suggestion.tag}
-                  </div>
-                ))}
+                {currentSuggestions.map((suggestion, index) => {
+                  const isUser = suggestion.__typename === "User";
+                  return (
+                    <div
+                      key={isUser ? suggestion.id : suggestion.tag}
+                      className={`w-full cursor-pointer p-2 ${
+                        index === activeSuggestionIndex
+                          ? "bg-blue-500 text-white dark:bg-blue-800"
+                          : ""
+                      }`}
+                      onClick={handleAutofill}
+                      onMouseEnter={() => setActiveSuggestionIndex(index)}
+                    >
+                      <div className="flex gap-1 items-center">
+                        {isUser ? (
+                          <Avatar noHref user={suggestion} />
+                        ) : (
+                          <p className="flex h-full items-center justify-center">
+                            #
+                          </p>
+                        )}
+
+                        <p>
+                          {isUser
+                            ? `${suggestion.username}`
+                            : `${suggestion.tag}`}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="w-full p-2">No matching {suggestionType}</p>
