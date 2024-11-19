@@ -179,6 +179,7 @@ const PostContent = ({
       <footer className="flex w-full justify-around">
         <button
           className="group flex items-center gap-1 p-2"
+          aria-label="Like post"
           onClick={toggleLike}
         >
           {isLiked ? (
