@@ -6,7 +6,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const Navbar = () => {
@@ -19,6 +19,8 @@ const Navbar = () => {
   const [suggestions, setSuggestions] = useState<(HashtagType | UserType)[]>(
     [],
   );
+  const inputRef = useRef<HTMLInputElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const debouncedQuery = useDebounce(searchQuery, 300);
 
@@ -26,29 +28,21 @@ const Navbar = () => {
     data: hashtagsData,
     loading: hashtagsLoading,
     refetch: refetchHashtags,
-  } = useQuery<{
-    searchHashtags: HashtagType[];
-  }>(SEARCH_HASHTAGS, {
+  } = useQuery<{ searchHashtags: HashtagType[] }>(SEARCH_HASHTAGS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
-    skip: debouncedQuery.length < 1,
   });
 
   const {
     data: mentionsData,
     loading: mentionsLoading,
     refetch: refetchUsers,
-  } = useQuery<{
-    searchUsers: UserType[];
-  }>(SEARCH_USERS, {
+  } = useQuery<{ searchUsers: UserType[] }>(SEARCH_USERS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
-    skip: debouncedQuery.length < 1,
   });
 
   useEffect(() => {
-    if (debouncedQuery.length > 0) {
-      refetchHashtags();
-      refetchUsers();
-    }
+    refetchHashtags();
+    refetchUsers();
   }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
   useEffect(() => {
@@ -57,6 +51,24 @@ const Navbar = () => {
       ...(mentionsData?.searchUsers ?? []),
     ]);
   }, [hashtagsData, mentionsData]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node) &&
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSearch = () => {
     if (activeSuggestionIndex === 0 || suggestions.length === 0) {
@@ -125,6 +137,7 @@ const Navbar = () => {
           <Popover open={showSuggestions}>
             <PopoverTrigger asChild>
               <input
+                ref={inputRef}
                 type="search"
                 id="search"
                 maxLength={40}
@@ -134,13 +147,16 @@ const Navbar = () => {
                 value={searchQuery}
                 onKeyDown={handleKeyDown}
                 onChange={handleInputChange}
+                onClick={() => setShowSuggestions(true)}
                 onMouseEnter={() => setActiveSuggestionIndex(0)}
               />
             </PopoverTrigger>
             {suggestions.length > 0 && (
               <PopoverContent
+                ref={popoverRef}
                 onOpenAutoFocus={(e) => e.preventDefault()}
                 className="z-[70] overflow-hidden p-0"
+                align="start"
               >
                 {hashtagsLoading || mentionsLoading ? (
                   <p className="w-full p-2">Loading...</p>
@@ -149,27 +165,36 @@ const Navbar = () => {
                     {suggestions.slice(0, 5).map((suggestion, index) => {
                       const isUser = suggestion.__typename === "User";
                       return (
-                        <div
+                        <a
                           key={isUser ? suggestion.id : suggestion.tag}
-                          className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
+                          className={`flex w-full cursor-pointer items-center gap-2 p-2 ${
                             index + 1 === activeSuggestionIndex
                               ? "bg-blue-500 text-white dark:bg-blue-800"
                               : ""
                           }`}
-                          onClick={handleSearch}
+                          href={`/project2/${
+                            isUser
+                              ? `user/${suggestion.username}`
+                              : `hashtag/${suggestion.tag}`
+                          }`}
                           onMouseEnter={() =>
                             setActiveSuggestionIndex(index + 1)
                           }
                         >
-                          <p className={`${isUser ? "" : "text-lg"}`}>
-                            {isUser ? "@" : "#"}
-                          </p>
+                          {isUser ? (
+                            <Avatar noHref user={suggestion} />
+                          ) : (
+                            <p className="flex size-8 h-full items-center justify-center text-2xl">
+                              #
+                            </p>
+                          )}
+
                           <p>
                             {isUser
                               ? `${suggestion.username}`
                               : `${suggestion.tag}`}
                           </p>
-                        </div>
+                        </a>
                       );
                     })}
                   </div>

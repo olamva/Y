@@ -218,7 +218,7 @@ const HomePage = () => {
               value="LATEST"
               aria-label="Latest"
               aria-pressed={filter === "LATEST"}
-              className="text-center text-lg p-5"
+              className="text-center xl:text-lg p-5"
             >
               <p>Latest</p>
             </ToggleGroupItem>
@@ -226,7 +226,7 @@ const HomePage = () => {
               value="FOLLOWING"
               aria-label="Following"
               aria-pressed={filter === "FOLLOWING"}
-              className="text-center text-lg p-5"
+              className="text-center xl:text-lg p-5"
               onClick={() => {
                 if (!user) setShowLoginPrompt(true);
               }}
@@ -237,7 +237,7 @@ const HomePage = () => {
               value="POPULAR"
               aria-label="Popular"
               aria-pressed={filter === "POPULAR"}
-              className="text-center text-lg p-5"
+              className="text-center xl:text-lg p-5"
             >
               <p>Popular</p>
             </ToggleGroupItem>
@@ -245,7 +245,7 @@ const HomePage = () => {
               value="CONTROVERSIAL"
               aria-label="Controversial"
               aria-pressed={filter === "CONTROVERSIAL"}
-              className="text-center text-lg p-5"
+              className="text-center xl:text-lg p-5"
             >
               <p>Controversial</p>
             </ToggleGroupItem>
