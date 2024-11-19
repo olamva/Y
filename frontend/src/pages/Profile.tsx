@@ -3,8 +3,13 @@ import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
 import Avatar from "@/components/Profile/Avatar";
+import CommentsView from "@/components/Profile/CommentsView";
 import EditProfile from "@/components/Profile/EditProfile";
+import LikesView from "@/components/Profile/LikesView";
+import MentionsView from "@/components/Profile/MentionsView";
+import PostsView from "@/components/Profile/PostsView";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
@@ -13,10 +18,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import MentionsView from "@/components/Profile/MentionsView";
-import CommentsView from "@/components/Profile/CommentsView";
-import PostsView from "@/components/Profile/PostsView";
-import LikesView from "@/components/Profile/LikesView";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -132,8 +133,13 @@ const Profile = () => {
                 <Avatar user={user} large={true} />
                 <div className="sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
-                    <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
-                      {user?.firstName} {user?.lastName}
+                    <h1 className="flex items-center gap-2 truncate text-2xl font-bold text-gray-900 dark:text-white">
+                      <span>
+                        {user?.firstName
+                          ? `${user.firstName} ${user.lastName}`
+                          : user.username}
+                      </span>
+                      <VerificationBadge verified={user.verified} />
                     </h1>
                     <div className="flex flex-row gap-2">
                       <p className="text-md text-gray-500">@{user.username}</p>

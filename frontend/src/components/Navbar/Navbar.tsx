@@ -8,6 +8,7 @@ import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import VerificationBadge from "../VerificationBadge";
 
 const Navbar = () => {
   const params = new URLSearchParams(location.search);
@@ -167,7 +168,7 @@ const Navbar = () => {
                       return (
                         <a
                           key={isUser ? suggestion.id : suggestion.tag}
-                          className={`flex w-full cursor-pointer items-center gap-2 p-2 ${
+                          className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
                             index + 1 === activeSuggestionIndex
                               ? "bg-blue-500 text-white dark:bg-blue-800"
                               : ""
@@ -189,11 +190,21 @@ const Navbar = () => {
                             </p>
                           )}
 
-                          <p>
+                          <p className="pl-1">
                             {isUser
                               ? `${suggestion.username}`
                               : `${suggestion.tag}`}
                           </p>
+                          {isUser && (
+                            <VerificationBadge
+                              customColors={
+                                index + 1 === activeSuggestionIndex
+                                  ? "text-white"
+                                  : "text-blue-500 dark:text-blue-400"
+                              }
+                              verified={suggestion.verified}
+                            />
+                          )}
                         </a>
                       );
                     })}
@@ -206,9 +217,19 @@ const Navbar = () => {
             <ThemeToggle />
             <div className="flex items-center gap-2">
               {user && (
-                <div className="mr-2">
-                  <Avatar user={user} large={false} />{" "}
-                </div>
+                <a
+                  className="mr-2 flex gap-2"
+                  href={`/project2/user/${user.username}`}
+                >
+                  <Avatar user={user} noHref large={false} />
+                  <div className="flex items-center gap-1">
+                    <p className="break-words font-mono underline-offset-4 hover:underline">
+                      <span className="font-sans">@</span>
+                      {user.username}
+                    </p>
+                    <VerificationBadge verified={user.verified} />
+                  </div>
+                </a>
               )}
               {user ? (
                 <button

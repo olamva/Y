@@ -4,6 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import VerificationBadge from "@/components/VerificationBadge";
 import useDebounce from "@/hooks/useDebounce"; // Import the debounce hook
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
@@ -296,11 +297,21 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                           </p>
                         )}
 
-                        <p>
+                        <p className={isUser ? "pl-1" : ""}>
                           {isUser
                             ? `${suggestion.username}`
                             : `${suggestion.tag}`}
                         </p>
+                        {isUser && (
+                          <VerificationBadge
+                            customColors={
+                              index === activeSuggestionIndex
+                                ? "text-white"
+                                : "text-blue-500 dark:text-blue-400"
+                            }
+                            verified={suggestion.verified}
+                          />
+                        )}
                       </div>
                     </div>
                   );

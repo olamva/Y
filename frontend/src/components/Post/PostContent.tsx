@@ -9,6 +9,7 @@ import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent, useState } from "react";
+import VerificationBadge from "../VerificationBadge";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -78,10 +79,13 @@ const PostContent = ({
                 e.stopPropagation();
               }}
             >
-              <p className="break-words font-mono underline-offset-4 hover:underline">
-                <span className="font-sans">@</span>
-                {post.author.username}
-              </p>
+              <div className="flex items-center gap-1">
+                <p className="break-words font-mono underline-offset-4 hover:underline">
+                  <span className="font-sans">@</span>
+                  {post.author.username}
+                </p>
+                <VerificationBadge verified={post.author.verified} />
+              </div>
             </a>
             {post.author.username !== user?.username && (
               <FollowButton targetUsername={post.author.username} />

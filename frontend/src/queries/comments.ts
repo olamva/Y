@@ -11,6 +11,7 @@ export const GET_COMMENTS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
@@ -31,6 +32,7 @@ export const GET_COMMENT = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
@@ -51,6 +53,7 @@ export const GET_COMMENTS_BY_IDS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
@@ -82,6 +85,7 @@ export const CREATE_COMMENT = gql`
         id
         username
         profilePicture
+        verified
       }
       createdAt
       imageUrl

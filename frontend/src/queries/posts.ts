@@ -10,6 +10,7 @@ export const GET_POSTS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
@@ -29,6 +30,7 @@ export const GET_POST = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
@@ -48,6 +50,7 @@ export const GET_POSTS_BY_IDS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
@@ -66,6 +69,7 @@ export const CREATE_POST = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       hashTags
@@ -123,6 +127,7 @@ export const GET_PARENT = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
@@ -138,6 +143,7 @@ export const GET_PARENT = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
@@ -159,6 +165,7 @@ export const GET_PARENTS_BY_IDS = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
@@ -174,6 +181,7 @@ export const GET_PARENTS_BY_IDS = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
