@@ -65,7 +65,13 @@ const MentionsView: React.FC<MentionsViewProps> = ({
   );
 
   const loadMoreMentions = useCallback(async () => {
-    if (postsLoading || commentsLoading || !hasMore) return;
+    if (
+      postsLoading ||
+      commentsLoading ||
+      !hasMore ||
+      (mentionedCommentIds.length === 0 && mentionedPostIds.length === 0)
+    )
+      return;
 
     try {
       const nextPage = page + 1;
