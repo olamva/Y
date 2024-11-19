@@ -2,7 +2,14 @@ import { UserType } from "@/lib/types";
 import { GET_USER_QUERY } from "@/queries/user";
 import { ApolloQueryResult, useLazyQuery } from "@apollo/client";
 import { jwtDecode } from "jwt-decode";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 
 interface AuthContextType {
@@ -12,6 +19,8 @@ interface AuthContextType {
   refetchUser: () => Promise<ApolloQueryResult<{ getUser: UserType }>>;
   login: (token: string) => void;
   logout: () => void;
+  following: string[];
+  setFollowing: Dispatch<SetStateAction<string[]>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,11 +38,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserType | null>(null);
+  const [following, setFollowing] = useState<string[]>([]);
 
   const [fetchUser, { refetch: refetchUser }] = useLazyQuery(GET_USER_QUERY, {
     onCompleted: (data) => {
       if (data && data.getUser) {
         setUser(data.getUser);
+        setFollowing(data.getUser.following.map((u: UserType) => u.username));
       }
     },
     onError: (err) => {
@@ -80,11 +91,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoggedIn(false);
     setToken(null);
     setUser(null);
+    setFollowing([]);
   };
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, token, user, login, logout, refetchUser }}
+      value={{
+        isLoggedIn,
+        token,
+        user,
+        login,
+        logout,
+        refetchUser,
+        following,
+        setFollowing,
+      }}
     >
       {children}
     </AuthContext.Provider>
