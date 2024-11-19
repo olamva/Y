@@ -113,14 +113,16 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
         } as ChangeEvent<HTMLTextAreaElement>);
         return;
       }
-      const currentValue = value.split(" ");
-      currentValue.pop();
+      const lastAt = value.lastIndexOf("@");
+      const lastHash = value.lastIndexOf("#");
+      const lastSymbol = Math.max(lastAt, lastHash);
+
       const finalSuggestion =
         selectedSuggestion.__typename === "User"
           ? `@${selectedSuggestion.username} `
           : `#${selectedSuggestion.tag} `;
-      currentValue.push(finalSuggestion);
-      const newValue = currentValue.join(" ");
+
+      const newValue = value.substring(0, lastSymbol) + finalSuggestion;
       if (newValue.length <= maxChars) {
         handleInputChange({
           target: {
@@ -172,9 +174,6 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       if (ref && "current" in ref && ref.current) {
         ref.current.style.height = "auto";
         ref.current.style.height = `${ref.current.scrollHeight}px`;
-      }
-      if (value === "") {
-        setShowSuggestions(false);
       }
     }, [value, ref]);
 
@@ -258,6 +257,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
+              onInput={handleInputChange}
               className="mt-1 block min-h-12 w-full max-w-xl resize-none rounded-md bg-transparent outline-none"
             />
           </PopoverTrigger>
