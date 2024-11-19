@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@apollo/client";
 import Post from "@/components/Post/Post";
 import { GET_POSTS_BY_IDS } from "@/queries/posts";
@@ -9,24 +9,33 @@ interface PostsViewProps {
 }
 
 const PostsView: React.FC<PostsViewProps> = ({ postIds }) => {
-  const [page, setPage] = useState(1);
+  const currentPage = useRef(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const { data, loading, fetchMore } = useQuery<{
+  const { data, loading, fetchMore, error } = useQuery<{
     getPostsByIds: PostType[];
   }>(GET_POSTS_BY_IDS, {
-    variables: { ids: postIds, page },
+    variables: { ids: postIds, page: 1 },
     skip: !postIds.length,
+    notifyOnNetworkStatusChange: true,
   });
 
   const posts: PostType[] = data?.getPostsByIds || [];
 
-  const loadMorePosts = () => {
-    if (loading || !data?.getPostsByIds.length) return;
+  const loadMorePosts = useCallback(() => {
+    if (loading || !hasMore) return;
+
     fetchMore({
-      variables: { page: page + 1 },
+      variables: {
+        ids: postIds,
+        page: currentPage.current + 1,
+      },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        setPage(page + 1);
+        if (!fetchMoreResult || fetchMoreResult.getPostsByIds.length === 0) {
+          setHasMore(false);
+          return prev;
+        }
+        currentPage.current += 1;
         return {
           getPostsByIds: [
             ...prev.getPostsByIds,
@@ -34,20 +43,29 @@ const PostsView: React.FC<PostsViewProps> = ({ postIds }) => {
           ],
         };
       },
+    }).catch((e) => {
+      console.error("Error fetching more posts:", e);
+      setHasMore(false);
     });
-  };
+  }, [fetchMore, hasMore, loading, postIds]);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-    if (scrollHeight - scrollTop === clientHeight) {
+    const threshold = 300;
+
+    if (scrollHeight - scrollTop - clientHeight < threshold) {
       loadMorePosts();
     }
-  };
+  }, [loadMorePosts]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [posts]);
+  }, [handleScroll]);
+
+  if (error) {
+    return <p>Error loading posts.</p>;
+  }
 
   return (
     <>
@@ -55,6 +73,7 @@ const PostsView: React.FC<PostsViewProps> = ({ postIds }) => {
         <Post post={post} key={post.id} />
       ))}
       {loading && <p>Loading more posts...</p>}
+      {!hasMore && <p>No more posts to load.</p>}
     </>
   );
 };

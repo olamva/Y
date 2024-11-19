@@ -102,11 +102,13 @@ export const resolvers: IResolvers = {
     getPostsByIds: async (_, { ids, page }) => {
       const limit = 10;
       try {
-        return await Post.find({ _id: { $in: ids } })
+        const posts = await Post.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
           .skip((page - 1) * limit)
           .limit(limit)
           .populate('author');
+
+        return posts;
       } catch (err) {
         throw new Error('Error fetching posts by IDs');
       }

@@ -80,9 +80,13 @@ const client = new ApolloClient({
             },
           },
           getPostsByIds: {
-            keyArgs: false,
-            merge(existing = [], incoming = []) {
-              return [...existing, ...incoming];
+            keyArgs: ["ids"],
+            merge(existing = [], incoming, { args }) {
+              const merged = existing ? existing.slice(0) : [];
+              const page = args?.page || 1;
+              const start = (page - 1) * 10;
+              merged.splice(start, incoming.length, ...incoming);
+              return merged;
             },
           },
         },
