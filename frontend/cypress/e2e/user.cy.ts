@@ -30,6 +30,19 @@ describe("User Page", () => {
     cy.contains("This is a test post").should("not.exist");
   });
 
+  it("Should create a comment and delete it", () => {
+    cy.visit("/");
+    cy.get("article").first().click("bottomRight", { force: true });
+    cy.get("textarea").type("This is a test comment");
+    cy.get("button").contains("Post").click();
+    cy.contains("This is a test comment").should("be.visible");
+    cy.visit("/user/cytest");
+    cy.get("button").contains("Comments").click();
+    cy.contains("This is a test comment").should("be.visible");
+
+    cy.get('[aria-label="Delete post"]').first().click();
+  });
+
   it("Should like/dislike a post", () => {
     cy.visit("/");
 
