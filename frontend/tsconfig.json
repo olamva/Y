@@ -12,6 +12,12 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": ["cypress"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types",
+      "cypress/**/*.ts",
+      "cypress/**/*.tsx"
+    ]
   }
 }
