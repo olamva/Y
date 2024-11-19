@@ -17,7 +17,6 @@ import ProfileCard from "./components/ProfileCard";
 import CardSkeleton from "./components/Skeletons/CardSkeleton";
 import PostSkeleton from "./components/Skeletons/PostSkeleton";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
-import { GET_REPOSTS } from "./queries/reposts";
 
 const PAGE_SIZE = 10;
 
@@ -33,25 +32,12 @@ const HomePage = () => {
   const [filter, setFilter] = useState<FilterType>("LATEST");
 
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
-    getPosts: PostType[];
+    getPosts: (PostType | RepostType)[];
   }>(GET_POSTS, {
-    variables: { page: 1, filter },
+    variables: { page: 1, filter, includeReposts: true },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
     skip: filter === "FOLLOWING" && !user,
-  });
-
-  const {
-    data: repostsData,
-    loading: repostsLoading,
-    // error: repostsError,
-    // fetchMore: fetchMoreReposts,
-    // networkStatus: repostsNetworkStatus,
-  } = useQuery<{
-    getReposts: RepostType[];
-  }>(GET_REPOSTS, {
-    variables: { page: 1 },
-    notifyOnNetworkStatusChange: true,
   });
 
   const { data: usersData, error: usersError } = useQuery<{
@@ -164,18 +150,7 @@ const HomePage = () => {
       </p>
     );
 
-  const normalPosts = data?.getPosts ?? [];
-  const reposts = repostsData?.getReposts ?? [];
-
-  const posts = [...normalPosts, ...reposts].sort((a, b) => {
-    const aDate = new Date(
-      parseInt(a.__typename === "Post" ? a.createdAt : a.repostedAt),
-    ).getTime();
-    const bDate = new Date(
-      parseInt(b.__typename === "Post" ? b.createdAt : b.repostedAt),
-    ).getTime();
-    return bDate - aDate;
-  });
+  const posts = data?.getPosts ?? [];
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
@@ -298,9 +273,7 @@ const HomePage = () => {
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
                 ))
-              : !loading &&
-                !repostsLoading &&
-                posts.map((post) =>
+              : posts.map((post) =>
                   post.__typename === "Post" ? (
                     <Post key={post.id} post={post} />
                   ) : (

@@ -14,7 +14,7 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page, filter }, { user }) => {
+    getPosts: async (_, { page, filter, includeReposts }, { user }) => {
       const POSTS_PER_PAGE = 10;
       const skip = (page - 1) * POSTS_PER_PAGE;
 
@@ -51,6 +51,59 @@ export const resolvers: IResolvers = {
         }
 
         const posts = await Post.find(query).sort(sort).skip(skip).limit(POSTS_PER_PAGE).populate('author');
+
+        if (includeReposts) {
+          const reposts = await Repost.find(query).sort(sort).populate('author');
+
+          const repostedPosts = await Promise.all(
+            reposts.map(async (repost) => {
+              let originalPost: PostType | CommentType | null = null;
+              if (repost.originalType === 'Post') {
+                originalPost = await Post.findById(repost.originalID);
+              } else if (repost.originalType === 'Comment') {
+                originalPost = await Comment.findById(repost.originalID);
+              }
+              if (!originalPost) {
+                throw new Error('Original post not found');
+              }
+              const originalAuthor = await User.findById(originalPost.author);
+
+              return {
+                id: repost.id,
+                author: repost.author,
+                originalID: originalPost.id,
+                originalType: repost.originalType,
+                originalAuthor,
+                repostedAt: repost.repostedAt,
+                body: originalPost.body,
+                originalBody: originalPost.originalBody,
+                amtLikes: originalPost.amtLikes,
+                amtComments: originalPost.amtComments,
+                amtReposts: originalPost.amtReposts,
+                createdAt: originalPost.createdAt,
+                imageUrl: originalPost.imageUrl,
+                hashTags: originalPost.hashTags,
+                mentionedUsers: originalPost.mentionedUsers,
+              };
+            })
+          );
+
+          return [...posts, ...repostedPosts]
+            .sort((a, b) => {
+              switch (filter) {
+                case 'POPULAR':
+                  return b.amtLikes - a.amtLikes;
+                case 'CONTROVERSIAL':
+                  return b.amtComments - a.amtComments;
+                default:
+                  return (
+                    ('repostedAt' in b ? b.repostedAt : b.createdAt).getTime() -
+                    ('repostedAt' in a ? a.repostedAt : a.createdAt).getTime()
+                  );
+              }
+            })
+            .slice(skip, skip + POSTS_PER_PAGE);
+        }
 
         return posts;
       } catch (err) {
@@ -1320,6 +1373,11 @@ export const resolvers: IResolvers = {
     },
   },
 
+  AllPosts: {
+    __resolveType(AllTypes: { repostedAt?: Date; body?: string }) {
+      return AllTypes.repostedAt ? 'Repost' : 'Post';
+    },
+  },
   User: {
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });

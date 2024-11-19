@@ -1,21 +1,46 @@
 import { gql } from "@apollo/client";
 
 export const GET_POSTS = gql`
-  query GetPosts($page: Int!, $filter: PostFilter!) {
-    getPosts(page: $page, filter: $filter) {
-      id
-      body
-      originalBody
-      author {
+  query GetPosts($page: Int!, $filter: PostFilter!, $includeReposts: Boolean) {
+    getPosts(page: $page, filter: $filter, includeReposts: $includeReposts) {
+      ... on Post {
         id
-        username
-        profilePicture
+        body
+        originalBody
+        author {
+          id
+          username
+          profilePicture
+        }
+        amtLikes
+        amtComments
+        amtReposts
+        imageUrl
+        createdAt
       }
-      amtLikes
-      amtComments
-      amtReposts
-      imageUrl
-      createdAt
+      ... on Repost {
+        originalAuthor {
+          id
+          username
+          profilePicture
+        }
+        originalID
+        originalType
+        repostedAt
+        id
+        body
+        originalBody
+        author {
+          id
+          username
+          profilePicture
+        }
+        amtLikes
+        amtComments
+        amtReposts
+        imageUrl
+        createdAt
+      }
     }
   }
 `;
@@ -130,7 +155,7 @@ export const GET_PARENT = gql`
         }
         amtLikes
         amtComments
-      amtReposts
+        amtReposts
         imageUrl
         createdAt
       }
@@ -146,7 +171,7 @@ export const GET_PARENT = gql`
         }
         amtLikes
         amtComments
-      amtReposts
+        amtReposts
         createdAt
         imageUrl
       }
@@ -168,7 +193,7 @@ export const GET_PARENTS_BY_IDS = gql`
         }
         amtLikes
         amtComments
-      amtReposts
+        amtReposts
         imageUrl
         createdAt
       }
@@ -184,7 +209,7 @@ export const GET_PARENTS_BY_IDS = gql`
         }
         amtLikes
         amtComments
-      amtReposts
+        amtReposts
         createdAt
         imageUrl
       }

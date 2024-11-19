@@ -1,5 +1,5 @@
 type Query {
-  getPosts(page: Int!, filter: PostFilter!): [Post!]!
+  getPosts(page: Int!, filter: PostFilter!, includeReposts: Boolean): [AllPosts!]!
   getPost(id: ID!): Post
   getReposts(page: Int!): [Repost!]!
   getComments(postID: ID!, page: Int!): [Comment!]!
@@ -23,6 +23,8 @@ enum PostFilter {
   POPULAR
   CONTROVERSIAL
 }
+
+union AllPosts = Post | Repost
 
 union Parent = Post | Comment
 
