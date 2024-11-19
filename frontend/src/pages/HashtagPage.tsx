@@ -86,7 +86,7 @@ const HashtagPage = () => {
     } catch (error) {
       toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
-  }, [fetchMore, hasMore, loading, page, hashtag]);
+  }, [fetchMore, hasMore, loading, page, hashtag, fetchMoreParentPosts]);
 
   useEffect(() => {
     const handleScroll = () => {
