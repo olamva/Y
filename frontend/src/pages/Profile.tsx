@@ -33,6 +33,31 @@ const Profile = () => {
   );
 
   const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
+  const username = paramUsername ?? loggedInUser?.username;
+
+  const [deleteUser, { loading: deleteLoading }] = useMutation(DELETE_USER, {
+    variables: { username },
+    onCompleted: () => {
+      toast.success("User deleted successfully");
+    },
+    onError: (err) => {
+      toast.error(`Error deleting user: ${err.message}`);
+    },
+  });
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${loggedInUser?.username === username ? "your" : "this"} user?`,
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deleteUser();
+      window.location.href = "/project2/";
+    } catch (error) {
+      toast.error(`Error deleting post: ${(error as Error).message}`);
+    }
+  };
 
   const handleViewChange = (value: ViewState) => {
     setCurrentView(value);
@@ -50,7 +75,6 @@ const Profile = () => {
     setModalContent(null);
   };
 
-  const username = paramUsername ?? loggedInUser?.username;
   const BACKEND_URL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
