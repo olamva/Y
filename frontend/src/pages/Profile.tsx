@@ -212,7 +212,7 @@ const Profile = () => {
             </div>
           </section>
           {/* Toggle Group for Views */}
-          <section className="w-full max-w-5xl justify-self-center">
+          <section className="w-full max-w-5xl m-auto">
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => {
