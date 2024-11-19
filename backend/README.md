@@ -92,6 +92,16 @@ Fetches a paginated list of the latest reposts.
 
 ---
 
+### `getRepostsByUser(username: String!): [Post!]!`
+
+Retrieves multiple reposts by their IDs.
+
+- **Parameters:**
+  - `username` (String!): The username of the user.
+- **Returns:** An array of `Post` objects.
+
+---
+
 ### `getComments(postID: ID!, page: Int!): [Comment!]!`
 
 Fetches comments associated with a specific post.

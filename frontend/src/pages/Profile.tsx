@@ -4,12 +4,14 @@ import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
+import Repost from "@/components/Post/Repost";
 import Avatar from "@/components/Profile/Avatar";
 import EditProfile from "@/components/Profile/EditProfile";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
-import { CommentType, PostType, UserType } from "@/lib/types";
+import { CommentType, PostType, RepostType, UserType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
+import { GET_REPOSTS_BY_USER } from "@/queries/reposts";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
@@ -79,7 +81,30 @@ const Profile = () => {
     skip: !user || !user.postIds.length,
   });
 
+  const {
+    data: repostsData,
+    loading: repostsLoading,
+    error: repostsError,
+  } = useQuery<{ getRepostsByUser: RepostType[] }>(GET_REPOSTS_BY_USER, {
+    variables: { username: user?.username },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+    skip: !user?.username,
+  });
+
   const posts: PostType[] = postsData?.getPostsByIds || [];
+
+  const reposts: RepostType[] = repostsData?.getRepostsByUser ?? [];
+
+  const combinedPosts = [...posts, ...reposts].sort(
+    (a, b) =>
+      new Date(
+        parseInt(b.__typename === "Repost" ? b.repostedAt : b.createdAt),
+      ).getTime() -
+      new Date(
+        parseInt(a.__typename === "Repost" ? a.repostedAt : a.createdAt),
+      ).getTime(),
+  );
 
   const {
     data: likedPostsData,
@@ -404,14 +429,21 @@ const Profile = () => {
             <div className="mt-4 flex w-full flex-col items-center">
               {currentView === "posts" && (
                 <>
-                  {postsLoading && <p>Loading posts...</p>}
-                  {postsError && (
-                    <p>Error loading posts: {postsError.message}</p>
+                  {(postsLoading || repostsLoading) && <p>Loading posts...</p>}
+                  {(postsError || repostsError) && (
+                    <p>
+                      Error loading posts:{" "}
+                      {postsError?.message ?? repostsError?.message}
+                    </p>
                   )}
-                  {posts.map((post) => (
-                    <Post post={post} key={post.id} />
-                  ))}
-                  {!postsLoading && posts.length === 0 && (
+                  {combinedPosts.map((post) =>
+                    post.__typename === "Post" ? (
+                      <Post post={post} key={post.id} />
+                    ) : (
+                      <Repost repost={post} key={post.id} />
+                    ),
+                  )}
+                  {!postsLoading && !repostsLoading && posts.length === 0 && (
                     <p>No posts to display.</p>
                   )}
                 </>

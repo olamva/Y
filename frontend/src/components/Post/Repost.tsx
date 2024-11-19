@@ -23,7 +23,7 @@ const Repost = ({ repost }: { repost: RepostType }) => {
     parentType: repost.parentType ?? "post",
   };
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full max-w-xl flex-col justify-self-center">
       <header className="mx-1 flex h-fit items-end">
         <div className="h-6 w-4 rounded-tl-lg border-b-0 border-l border-t border-gray-300 dark:border-gray-700"></div>
         <div className="flex items-center gap-2 rounded rounded-b-none bg-gray-200/70 p-2 shadow-lg dark:bg-gray-900/80">

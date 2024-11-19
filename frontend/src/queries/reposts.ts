@@ -65,3 +65,33 @@ export const GET_REPOSTS = gql`
     }
   }
 `;
+
+export const GET_REPOSTS_BY_USER = gql`
+  query getRepostsByUser($username: String!) {
+    getRepostsByUser(username: $username) {
+      originalAuthor {
+        id
+        username
+        profilePicture
+      }
+      originalID
+      originalType
+      repostedAt
+      id
+      body
+      originalBody
+      author {
+        id
+        username
+        profilePicture
+      }
+      amtLikes
+      amtComments
+      amtReposts
+      imageUrl
+      createdAt
+      parentID
+      parentType
+    }
+  }
+`;

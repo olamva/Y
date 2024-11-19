@@ -79,17 +79,17 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching post');
       }
     },
-    getReposts: async (_, { page, filter, limit }, context) => {
+    getReposts: async (_, { page, filter, limit }, { user }) => {
       const REPOSTS_PER_PAGE = limit ?? 10;
       const skip = (page - 1) * REPOSTS_PER_PAGE;
 
-      if (!context.user) {
-        throw new AuthenticationError('You must be logged in to view reposts');
+      if (!user && filter === 'FOLLOWING') {
+        throw new AuthenticationError('You must be logged in to view posts.');
       }
 
       try {
         let query: any = {};
-        let sort: Record<string, SortOrder> = { createdAt: -1 };
+        let sort: Record<string, SortOrder> = { repostedAt: -1 };
 
         switch (filter) {
           case 'LATEST':
@@ -97,17 +97,17 @@ export const resolvers: IResolvers = {
             break;
 
           case 'FOLLOWING':
-            const followingIds = context.user.following.map((followedUser: UserType) => followedUser._id);
+            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
             query = { author: { $in: followingIds } };
             break;
 
           case 'POPULAR':
-            sort = { amtLikes: -1, createdAt: -1 };
+            sort = { amtLikes: -1, repostedAt: -1 };
             query = {};
             break;
 
           case 'CONTROVERSIAL':
-            sort = { amtComments: -1, createdAt: -1 };
+            sort = { amtComments: -1, repostedAt: -1 };
             query = {};
             break;
 
@@ -136,7 +136,7 @@ export const resolvers: IResolvers = {
 
             return {
               id: repost.id,
-              author: context.user,
+              author: repost.author,
               originalID: originalPost.id,
               originalType: repost.originalType,
               originalAuthor,
@@ -159,6 +159,52 @@ export const resolvers: IResolvers = {
         return repostedPosts;
       } catch (err) {
         throw new Error('Error fetching reposts');
+      }
+    },
+    getRepostsByUser: async (_, { username }) => {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+      const reposts = await Repost.find({ author: user?.id }).sort({ repostedAt: -1 }).populate('author');
+
+      try {
+        const repostedPosts = reposts.map(async (repost) => {
+          let originalPost: PostType | CommentType | null = null;
+          if (repost.originalType === 'Post') {
+            originalPost = await Post.findById(repost.originalID);
+          } else if (repost.originalType === 'Comment') {
+            originalPost = await Comment.findById(repost.originalID);
+          }
+          if (!originalPost) {
+            throw new Error('Original post not found');
+          }
+          const originalAuthor = await User.findById(originalPost.author);
+
+          return {
+            id: repost.id,
+            author: repost.author,
+            originalID: originalPost.id,
+            originalType: repost.originalType,
+            originalAuthor,
+            repostedAt: repost.repostedAt,
+            body: originalPost.body,
+            originalBody: originalPost.originalBody,
+            amtLikes: originalPost.amtLikes,
+            amtComments: originalPost.amtComments,
+            amtReposts: originalPost.amtReposts,
+            createdAt: originalPost.createdAt,
+            imageUrl: originalPost.imageUrl,
+            hashTags: originalPost.hashTags,
+            mentionedUsers: originalPost.mentionedUsers,
+            parentID: (originalPost as CommentType).parentID,
+            parentType: (originalPost as CommentType).parentType,
+          };
+        });
+        return repostedPosts;
+      } catch (err) {
+        throw new Error('Error fetching reposts by IDs');
       }
     },
     getUser: async (_, { username }) => {
@@ -587,7 +633,7 @@ export const resolvers: IResolvers = {
 
         const combinedPost = {
           id: repost.id,
-          author: user,
+          author: repost.author,
           originalID: originalPost.id,
           originalType: type,
           originalAuthor,
