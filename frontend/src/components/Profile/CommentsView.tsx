@@ -25,7 +25,7 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
   }));
 
   const { data: parentData } = useQuery(GET_PARENTS_BY_IDS, {
-    variables: { parents, page },
+    variables: { parents },
     skip: !parents.length,
   });
 
@@ -34,11 +34,11 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
 
   const loadMoreComments = () => {
     if (loading || !data?.getCommentsByIds.length) return;
+    const nextPage = page + 1;
     fetchMore({
-      variables: { page: page + 1 },
+      variables: { page: nextPage },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
-        setPage(page + 1);
         return {
           getCommentsByIds: [
             ...prev.getCommentsByIds,
@@ -47,6 +47,7 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
         };
       },
     });
+    setPage(nextPage);
   };
 
   const handleScroll = () => {
@@ -59,7 +60,7 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [comments]);
+  }, []);
 
   return (
     <>

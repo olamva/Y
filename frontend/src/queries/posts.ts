@@ -149,8 +149,8 @@ export const GET_PARENT = gql`
 `;
 
 export const GET_PARENTS_BY_IDS = gql`
-  query GetParentsByIds($parents: [ParentInput!]!, $page: Int!) {
-    getParentsByIds(parents: $parents, page: $page) {
+  query GetParentsByIds($parents: [ParentInput!]!) {
+    getParentsByIds(parents: $parents) {
       ... on Post {
         id
         body

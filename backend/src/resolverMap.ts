@@ -291,11 +291,9 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching parent');
       }
     },
-    getParentsByIds: async (_, { parents, page }) => {
+    getParentsByIds: async (_, { parents }) => {
       const fetchedParents: (PostType | CommentType)[] = [];
-      const limit = 10;
       try {
-        const parentsToFetch = parents.slice((page - 1) * limit, page * limit);
         await Promise.all(
           parents.map(async (parent: { id: string; type: string }) => {
             if (parent.type === 'post') {

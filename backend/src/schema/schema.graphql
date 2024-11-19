@@ -11,7 +11,7 @@ type Query {
   getComment(id: ID!): Comment
   getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
-  getParentsByIds(parents: [ParentInput!]!, page: Int!): [Parent!]!
+  getParentsByIds(parents: [ParentInput!]!): [Parent!]!
   getTrendingHashtags(page: Int!): [TrendingHashtag!]!
   getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
 }
