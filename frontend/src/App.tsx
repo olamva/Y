@@ -193,15 +193,6 @@ const HomePage = () => {
     }
   }, [filter]);
 
-  if (error || repostsError || usersError)
-    return (
-      <p className="mt-4 text-center text-red-500">
-        Error loading posts:{" "}
-        {(error?.message ?? repostsError?.message ?? usersError?.message) ||
-          "Unknown error"}
-      </p>
-    );
-
   const posts = data?.getPosts ?? [];
   const reposts = repostsData?.getReposts ?? [];
 
@@ -340,6 +331,13 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
+            <p className="mt-4 text-center text-red-500">
+              {error && <p>Error loading posts: {error?.message}</p>}
+              {repostsError && (
+                <p>Error loading reposts: {repostsError.message}</p>
+              )}
+              {usersError && <p>Error loading users: {usersError.message}</p>}
+            </p>
             {combinedPosts.length === 0 && loading && repostsLoading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
