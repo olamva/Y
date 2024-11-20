@@ -111,7 +111,14 @@ const PostsView: React.FC<PostsViewProps> = ({
       loadMorePosts();
       loadMoreReposts();
     }
-  }, [loadMorePosts]);
+  }, [
+    loadMorePosts,
+    hasMore,
+    networkStatus,
+    repostsHasMore,
+    repostsNetworkStatus,
+    loadMoreReposts,
+  ]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
