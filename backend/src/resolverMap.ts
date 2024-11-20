@@ -437,6 +437,7 @@ export const resolvers: IResolvers = {
               author: '$authorDetails',
               amtLikes: 1,
               amtComments: 1,
+              amtReposts: 1,
               createdAt: 1,
               imageUrl: 1,
             },
