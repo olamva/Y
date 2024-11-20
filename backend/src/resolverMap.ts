@@ -110,9 +110,10 @@ export const resolvers: IResolvers = {
               }
 
               return {
+                _id: repost._id,
                 type: 'Repost',
                 id: repost._id,
-                author: repost.author._id,
+                author: repost.author,
                 originalID: originalPost._id,
                 originalType: repost.originalType,
                 originalAuthor: originalPost.author,
@@ -1729,6 +1730,9 @@ export const resolvers: IResolvers = {
   },
 
   User: {
+    id: (parent) => {
+      return parent._id.toString();
+    },
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });
     },
@@ -1747,6 +1751,7 @@ export const resolvers: IResolvers = {
   },
 
   Post: {
+    id: (parent) => parent._id.toString(),
     __isTypeOf(obj: any, context: any, info: any) {
       return obj.body !== undefined && obj.originalType === undefined;
     },
@@ -1758,6 +1763,7 @@ export const resolvers: IResolvers = {
   },
 
   Repost: {
+    id: (parent) => parent._id.toString(),
     __isTypeOf(obj: any, context: any, info: any) {
       return obj.originalType !== undefined;
     },
