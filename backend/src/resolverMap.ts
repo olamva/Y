@@ -51,7 +51,7 @@ export const resolvers: IResolvers = {
             break;
 
           case 'CONTROVERSIAL':
-            sort = { amtComments: -1, createdAt: -1 };
+            sort = { controversyRatio: -1, createdAt: -1 };
             includeReposts = false;
             break;
 
@@ -59,40 +59,110 @@ export const resolvers: IResolvers = {
             throw new UserInputError('Invalid filter type.');
         }
 
-        const postsPromise = Post.find(postQuery)
-          .sort(sort)
-          .skip(skip)
-          .limit(ITEMS_PER_PAGE)
-          .populate('author')
-          .lean();
+        const buildPostAggregation = () => {
+          const pipeline: any[] = [
+            { $match: postQuery },
+            {
+              $addFields: {
+                controversyRatio: {
+                  $cond: [{ $eq: ['$amtLikes', 0] }, 0, { $divide: ['$amtComments', '$amtLikes'] }],
+                },
+              },
+            },
+            { $sort: sort },
+            { $skip: skip },
+            { $limit: ITEMS_PER_PAGE },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+              },
+            },
+            { $unwind: '$author' },
+          ];
 
-        let repostsPromise: Promise<RepostType[]> | null = null;
+          return Post.aggregate(pipeline).exec();
+        };
 
-        if (includeReposts) {
+        const buildRepostAggregation = () => {
           let repostSort: Record<string, SortOrder> = { repostedAt: -1 };
 
           if (filter === 'POPULAR') {
             repostSort = { amtLikes: -1, repostedAt: -1 };
           } else if (filter === 'CONTROVERSIAL') {
-            repostSort = { amtComments: -1, repostedAt: -1 };
+            repostSort = { controversyRatio: -1, repostedAt: -1 };
           }
 
-          repostsPromise = Repost.find(repostQuery)
-            .sort(repostSort)
-            .skip(skip)
-            .limit(ITEMS_PER_PAGE)
-            .populate('author')
-            .lean() as Promise<RepostType[]>;
-        }
+          const pipeline: any[] = [
+            { $match: repostQuery },
+            {
+              $lookup: {
+                from: 'posts',
+                localField: 'originalID',
+                foreignField: '_id',
+                as: 'originalPost',
+              },
+            },
+            { $unwind: '$originalPost' },
+            {
+              $addFields: {
+                controversyRatio: {
+                  $cond: [
+                    { $eq: ['$originalPost.amtLikes', 0] },
+                    0,
+                    { $divide: ['$originalPost.amtComments', '$originalPost.amtLikes'] },
+                  ],
+                },
+              },
+            },
+            { $sort: repostSort },
+            { $skip: skip },
+            { $limit: ITEMS_PER_PAGE },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+              },
+            },
+            { $unwind: '$author' },
+          ];
 
-        const [posts, reposts] = await Promise.all([
-          postsPromise,
-          includeReposts && repostsPromise ? repostsPromise : Promise.resolve([]),
-        ]);
+          return Repost.aggregate(pipeline).exec();
+        };
+
+        let posts: PostType[] | RepostType[] = [];
+        let reposts: RepostType[] = [];
+
+        if (includeReposts) {
+          const [fetchedPosts, fetchedReposts] = await Promise.all([
+            buildPostAggregation(),
+            filter !== 'POPULAR' && filter !== 'CONTROVERSIAL'
+              ? buildRepostAggregation()
+              : Promise.resolve([]),
+          ]);
+
+          posts = fetchedPosts;
+          reposts = fetchedReposts as RepostType[];
+        } else {
+          if (filter === 'CONTROVERSIAL') {
+            posts = await buildPostAggregation();
+          } else {
+            posts = (await Post.find(postQuery)
+              .sort(sort)
+              .skip(skip)
+              .limit(ITEMS_PER_PAGE)
+              .populate('author')
+              .lean()) as PostType[];
+          }
+        }
 
         let combinedResults: any[] = [...posts];
 
-        if (includeReposts && reposts) {
+        if (includeReposts && reposts.length > 0) {
           const formattedReposts = await Promise.all(
             reposts.map(async (repost) => {
               let originalPost: PostType | CommentType | null = null;
@@ -107,6 +177,10 @@ export const resolvers: IResolvers = {
               if (!originalPost) {
                 throw new Error('Original post not found');
               }
+
+              const controversyRatio = originalPost.amtLikes
+                ? originalPost.amtComments / originalPost.amtLikes
+                : 0;
 
               return {
                 _id: repost._id,
@@ -128,20 +202,25 @@ export const resolvers: IResolvers = {
                 mentionedUsers: originalPost.mentionedUsers,
                 parentID: (originalPost as CommentType).parentID,
                 parentType: (originalPost as CommentType).parentType,
+                controversyRatio: controversyRatio,
               };
             })
           );
 
           combinedResults = combinedResults.concat(formattedReposts);
+        }
 
-          combinedResults.sort((a, b) => {
+        combinedResults.sort((a, b) => {
+          if (b.controversyRatio !== a.controversyRatio) {
+            return b.controversyRatio - a.controversyRatio;
+          } else {
             const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
             const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
             return dateB.getTime() - dateA.getTime();
-          });
+          }
+        });
 
-          combinedResults = combinedResults.slice(0, ITEMS_PER_PAGE);
-        }
+        combinedResults = combinedResults.slice(0, ITEMS_PER_PAGE);
 
         return combinedResults;
       } catch (err) {
@@ -149,6 +228,7 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching posts');
       }
     },
+
     getUsers: async (_, { page }) => {
       const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
