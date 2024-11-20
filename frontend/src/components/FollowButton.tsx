@@ -14,7 +14,7 @@ interface FollowButtonProps {
 }
 
 const FollowButton = ({ targetUsername }: FollowButtonProps) => {
-  const { refetchUser, following, setFollowing } = useAuth();
+  const { user, refetchUser, following, setFollowing } = useAuth();
   const [isHovering, setIsHovering] = useState(false);
 
   const [followUserMutation] = useMutation(FOLLOW_USER_MUTATION, {
@@ -69,49 +69,53 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
 
   const isFollowing = following.includes(targetUsername);
 
+  const displayButton = user ? user.username !== targetUsername : true;
+
   return (
-    <button
-      role="button"
-      className="inline-flex cursor-pointer select-none items-center"
-      tabIndex={0}
-      aria-pressed={isFollowing}
-      aria-label={
-        isFollowing ? (isHovering ? "Unfollow" : "Following") : "Follow"
-      }
-      onClick={(e) => {
-        if (isFollowing) {
-          handleUnfollow(e);
-        } else {
-          handleFollow(e);
-          setIsHovering(false);
+    displayButton && (
+      <button
+        role="button"
+        className="inline-flex cursor-pointer select-none items-center"
+        tabIndex={0}
+        aria-pressed={isFollowing}
+        aria-label={
+          isFollowing ? (isHovering ? "Unfollow" : "Following") : "Follow"
         }
-      }}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      {!isFollowing ? (
-        <>
-          <UserPlus className="mr-1 h-4 w-4 text-blue-500" />
-          <span className="hidden text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700 sm:flex">
-            Follow
-          </span>
-        </>
-      ) : isHovering ? (
-        <>
-          <X className="mr-1 h-4 w-4 text-red-500" />
-          <span className="hidden text-sm font-medium text-red-500 transition-colors duration-200 hover:text-red-700 sm:flex">
-            Unfollow
-          </span>
-        </>
-      ) : (
-        <>
-          <Check className="mr-1 h-4 w-4 text-green-500" />
-          <span className="hidden text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700 sm:flex">
-            Following
-          </span>
-        </>
-      )}
-    </button>
+        onClick={(e) => {
+          if (isFollowing) {
+            handleUnfollow(e);
+          } else {
+            handleFollow(e);
+            setIsHovering(false);
+          }
+        }}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        {!isFollowing ? (
+          <>
+            <UserPlus className="mr-1 h-4 w-4 text-blue-500" />
+            <span className="hidden text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700 sm:flex">
+              Follow
+            </span>
+          </>
+        ) : isHovering ? (
+          <>
+            <X className="mr-1 h-4 w-4 text-red-500" />
+            <span className="hidden text-sm font-medium text-red-500 transition-colors duration-200 hover:text-red-700 sm:flex">
+              Unfollow
+            </span>
+          </>
+        ) : (
+          <>
+            <Check className="mr-1 h-4 w-4 text-green-500" />
+            <span className="hidden text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700 sm:flex">
+              Following
+            </span>
+          </>
+        )}
+      </button>
+    )
   );
 };
 
