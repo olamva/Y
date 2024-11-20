@@ -65,7 +65,7 @@ export const resolvers: IResolvers = {
       try {
         User.updateMany({ $set: { verified: 'UNVERIFIED' } });
         return await User.find({ username: { $nin: ['admin', 'fredrik'] } })
-          .sort({ createdAt: -1 })
+          .sort({ createdAt: -1, username: 1 })
           .skip(skip)
           .limit(USERS_PER_PAGE);
       } catch (err) {
@@ -506,7 +506,12 @@ export const resolvers: IResolvers = {
         const sortedHashtags = Array.from(hashtagMap, ([tag, count]) => ({
           tag,
           count,
-        })).sort((a, b) => b.count - a.count);
+        })).sort((a, b) => {
+          if (b.count === a.count) {
+            return a.tag.localeCompare(b.tag);
+          }
+          return b.count - a.count;
+        });
 
         const paginatedHashtags = sortedHashtags.slice(skip, skip + HASHTAGS_PER_PAGE);
 
@@ -969,7 +974,7 @@ export const resolvers: IResolvers = {
         throw new Error('Username and password must be at most 20 characters');
       }
 
-      const usernameRegex = /^[a-zA-Z0-9_]+$/;
+      const usernameRegex = /^[a-zA-Z0-9_æøåÆØÅ]+$/;
       if (!usernameRegex.test(username)) {
         throw new Error('Username can only contain letters, numbers, and underscores.');
       }
@@ -1003,7 +1008,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (user.username !== username && user.username !== 'admin') {
+      if ((user.username !== username && user.username !== 'admin') || username === 'admin') {
         throw new AuthenticationError('You are not authorized to delete this user');
       }
 

@@ -74,7 +74,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
    * Hashtags are converted to <Link> components from react-router-dom.
    */
   const Linkify = (text: string) => {
-    const combinedRegex = /(https?:\/\/[^\s]+)|#(\w+)|@(\w+)/g;
+    const combinedRegex = /(https?:\/\/[^\s]+)|#([\wæøåÆØÅ]+)|@([\wæøåÆØÅ]+)/g;
     const parts = [];
     let lastIndex = 0;
     let match;

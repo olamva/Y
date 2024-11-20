@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useQuery } from "@apollo/client";
 import PostWithReply from "@/components/Post/PostWithReply";
+import { CommentType, PostType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_PARENTS_BY_IDS } from "@/queries/posts";
-import { CommentType, PostType } from "@/lib/types";
+import { useQuery } from "@apollo/client";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface CommentsViewProps {
   commentIds: string[];
@@ -26,10 +26,13 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
     type: comment.parentType,
   }));
 
-  const { data: parentData } = useQuery(GET_PARENTS_BY_IDS, {
-    variables: { parents },
-    skip: !parents.length,
-  });
+  const { data: parentData, loading: parentsLoading } = useQuery(
+    GET_PARENTS_BY_IDS,
+    {
+      variables: { parents },
+      skip: !parents.length,
+    },
+  );
 
   const parentPosts: (PostType | CommentType)[] =
     parentData?.getParentsByIds || [];
@@ -82,6 +85,7 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
           key={comment.id}
           post={parentPosts.find((post) => post.id === comment.parentID)}
           reply={comment}
+          parentsLoading={parentsLoading}
         />
       ))}
       {loading && <p>Loading more comments...</p>}
