@@ -6,6 +6,7 @@ import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import Avatar from "../Profile/Avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import Username from "../Username";
 
@@ -191,7 +192,7 @@ const Navbar = () => {
                               }
                             />
                           ) : (
-                            <div className="flex gap-1 items-center">
+                            <div className="flex items-center gap-1">
                               <span className="flex size-8 h-full items-center justify-center text-2xl">
                                 #
                               </span>
@@ -209,7 +210,16 @@ const Navbar = () => {
           <div className="hidden min-w-fit items-center gap-2 lg:flex">
             <ThemeToggle />
             <div className="flex items-center gap-4">
-              {user && <Username user={user} />}
+              {user && (
+                <>
+                  <div className="xl:hidden">
+                    <Avatar user={user} />
+                  </div>
+                  <div className="hidden xl:block">
+                    <Username user={user} />
+                  </div>
+                </>
+              )}
               {user ? (
                 <button
                   onClick={logout}
