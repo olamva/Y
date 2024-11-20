@@ -42,6 +42,7 @@ const HomePage = () => {
   }>(GET_POSTS, {
     variables: { page: 1, filter, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: "network-only",
     skip: filter === "FOLLOWING" && !user,
   });
 
