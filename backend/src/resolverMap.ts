@@ -1238,6 +1238,8 @@ export const resolvers: IResolvers = {
         const userPosts = await Post.find({ author: deletedUser.id });
         const userComments = await Comment.find({ author: deletedUser.id });
         const userReposts = await Repost.find({ author: deletedUser.id });
+        await Notification.deleteMany({ recipient: deletedUser.id });
+        await Notification.deleteMany({ sender: deletedUser.id });
 
         for (const post of userPosts) {
           if (post.imageUrl) {
