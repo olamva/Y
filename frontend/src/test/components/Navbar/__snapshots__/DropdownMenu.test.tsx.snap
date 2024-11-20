@@ -35,7 +35,7 @@ exports[`DropdownMenu > matches the snapshot 1`] = `
     >
       <a
         class="flex flex-row items-center gap-2 p-2 text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
-        href="/project2/user"
+        href="/project2/user/testuser"
       >
         <svg
           aria-hidden="true"

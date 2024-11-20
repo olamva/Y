@@ -54,7 +54,7 @@ describe("DropdownMenu", () => {
     render(<DropdownMenu />);
 
     const routes = [
-      { name: "Profile", href: "/project2/user" },
+      { name: "Profile", href: "/project2/user/testuser" },
       { name: "Homepage", href: "/project2" },
       { name: "Users", href: "/project2/users" },
       { name: "Trending", href: "/project2/hashtag" },

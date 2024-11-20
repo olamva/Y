@@ -20,36 +20,90 @@ exports[`Navbar > matches the snapshot 1`] = `
       </h1>
     </a>
     <div
-      class="mx-4 flex flex-1 items-center justify-center gap-2 lg:justify-end"
+      class="mx-2 flex flex-1 items-center gap-2"
     >
-      <input
-        aria-controls="radix-:r4:"
-        aria-expanded="false"
-        aria-haspopup="dialog"
-        autocomplete="off"
-        class="w-full max-w-xs rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
-        data-state="closed"
-        id="search"
-        maxlength="40"
-        placeholder="Search here..."
-        type="search"
-        value=""
-      />
       <div
-        class="hidden min-w-fit items-center gap-2 lg:flex"
+        class="flex flex-1 items-center justify-center gap-2 lg:justify-end"
       >
+        <input
+          aria-controls="radix-:r5:"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          autocomplete="off"
+          class="w-full max-w-xs rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
+          data-state="closed"
+          id="search"
+          maxlength="40"
+          placeholder="Search here..."
+          type="search"
+          value=""
+        />
         <div
-          class="hidden lg:block"
+          class="hidden min-w-fit items-center gap-2 lg:flex"
         >
-          <button
-            aria-label="Switch to dark theme"
-            class="mx-4 h-10 w-16 rounded-full p-1 transition-colors duration-300 focus:outline-none bg-gray-300"
+          <div
+            class="hidden lg:block"
           >
-            <div
-              class="flex h-8 w-8 transform items-center justify-center rounded-full transition-transform duration-300 translate-x-0 bg-white"
+            <button
+              aria-label="Switch to dark theme"
+              class="mx-4 h-10 w-16 rounded-full p-1 transition-colors duration-300 focus:outline-none bg-gray-300"
+            >
+              <div
+                class="flex h-8 w-8 transform items-center justify-center rounded-full transition-transform duration-300 translate-x-0 bg-white"
+              >
+                <svg
+                  class="lucide lucide-sun h-5 w-5 text-yellow-500"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="4"
+                  />
+                  <path
+                    d="M12 2v2"
+                  />
+                  <path
+                    d="M12 20v2"
+                  />
+                  <path
+                    d="m4.93 4.93 1.41 1.41"
+                  />
+                  <path
+                    d="m17.66 17.66 1.41 1.41"
+                  />
+                  <path
+                    d="M2 12h2"
+                  />
+                  <path
+                    d="M20 12h2"
+                  />
+                  <path
+                    d="m6.34 17.66-1.41 1.41"
+                  />
+                  <path
+                    d="m19.07 4.93-1.41 1.41"
+                  />
+                </svg>
+              </div>
+            </button>
+          </div>
+          <div
+            class="lg:hidden"
+          >
+            <button
+              class="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
             >
               <svg
-                class="lucide lucide-sun h-5 w-5 text-yellow-500"
+                class="lucide lucide-moon h-5 w-5"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -60,75 +114,28 @@ exports[`Navbar > matches the snapshot 1`] = `
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="4"
-                />
                 <path
-                  d="M12 2v2"
-                />
-                <path
-                  d="M12 20v2"
-                />
-                <path
-                  d="m4.93 4.93 1.41 1.41"
-                />
-                <path
-                  d="m17.66 17.66 1.41 1.41"
-                />
-                <path
-                  d="M2 12h2"
-                />
-                <path
-                  d="M20 12h2"
-                />
-                <path
-                  d="m6.34 17.66-1.41 1.41"
-                />
-                <path
-                  d="m19.07 4.93-1.41 1.41"
+                  d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
                 />
               </svg>
-            </div>
-          </button>
+              <p>
+                Dark Mode
+              </p>
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-4"
+          />
         </div>
-        <div
-          class="lg:hidden"
+      </div>
+      <div
+        class="hidden lg:flex"
+      >
+        <button
+          class="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
         >
-          <button
-            class="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
-          >
-            <svg
-              class="lucide lucide-moon h-5 w-5"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
-              />
-            </svg>
-            <p>
-              Dark Mode
-            </p>
-          </button>
-        </div>
-        <div
-          class="flex items-center gap-4"
-        >
-          <button
-            class="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
-          >
-            Log in
-          </button>
-        </div>
+          Log in
+        </button>
       </div>
     </div>
     <div
