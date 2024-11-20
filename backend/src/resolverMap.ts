@@ -272,7 +272,7 @@ export const resolvers: IResolvers = {
       if (!user) {
         throw new UserInputError('User not found');
       }
-      const reposts = await Repost.find({ author: user?.id })
+      const reposts = await Repost.find({ author: user._id })
         .sort({ repostedAt: -1 })
         .skip(skip)
         .limit(REPOSTS_PER_PAGE)
@@ -293,9 +293,9 @@ export const resolvers: IResolvers = {
             const originalAuthor = await User.findById(originalPost.author);
 
             return {
-              id: repost.id,
+              id: repost._id,
               author: repost.author,
-              originalID: originalPost.id,
+              originalID: originalPost._id,
               originalType: repost.originalType,
               originalAuthor,
               repostedAt: repost.repostedAt,
@@ -313,6 +313,7 @@ export const resolvers: IResolvers = {
             };
           })
         );
+        console.log(repostedPosts);
         return repostedPosts;
       } catch (err) {
         throw new Error('Error fetching reposts by IDs');
@@ -1552,7 +1553,11 @@ export const resolvers: IResolvers = {
 
   User: {
     id: (parent) => {
-      return parent._id.toString();
+      const id = parent._id || parent.id;
+      if (!id) {
+        throw new Error('ID not found on User object');
+      }
+      return id.toString();
     },
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });
@@ -1563,7 +1568,13 @@ export const resolvers: IResolvers = {
   },
 
   Post: {
-    id: (parent) => parent._id.toString(),
+    id: (parent) => {
+      const id = parent._id || parent.id;
+      if (!id) {
+        throw new Error('ID not found on Post object');
+      }
+      return id.toString();
+    },
     __isTypeOf(obj: any, context: any, info: any) {
       return obj.body !== undefined && obj.originalType === undefined;
     },
@@ -1575,7 +1586,13 @@ export const resolvers: IResolvers = {
   },
 
   Repost: {
-    id: (parent) => parent._id.toString(),
+    id: (parent) => {
+      const id = parent._id || parent.id;
+      if (!id) {
+        throw new Error('ID not found on Repost object');
+      }
+      return id.toString();
+    },
     __isTypeOf(obj: any, context: any, info: any) {
       return obj.originalType !== undefined;
     },
