@@ -134,7 +134,7 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 lg:max-w-lg lg:justify-end">
+        <div className="mx-4 flex flex-1 items-center justify-center gap-2 lg:justify-end">
           <Popover open={showSuggestions}>
             <PopoverTrigger asChild>
               <input
@@ -144,7 +144,7 @@ const Navbar = () => {
                 maxLength={40}
                 placeholder="Search here..."
                 autoComplete="off"
-                className="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
+                className="w-full max-w-xs rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
                 value={searchQuery}
                 onKeyDown={handleKeyDown}
                 onChange={handleInputChange}
