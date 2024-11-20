@@ -2,12 +2,14 @@ import { useAuth } from "@/components/AuthContext";
 import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
 import { formatTimestamp } from "@/lib/dateUtils";
-import { CommentType, PostType } from "@/lib/types";
-import { ApolloError } from "@apollo/client";
+import { CommentType, PostType, RepostType } from "@/lib/types";
+import { REPOST_MUTATION, UNREPOST_MUTATION } from "@/queries/reposts";
+import { ApolloError, useMutation } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
-import { MouseEvent, TouchEvent, useState } from "react";
+import { HeartIcon, PencilIcon, RecycleIcon, TrashIcon } from "lucide-react";
+import { MouseEvent, TouchEvent, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Username from "../Username";
 
 interface PostContentProps {
@@ -40,7 +42,8 @@ const PostContent = ({
   disableBottomMargin,
 }: PostContentProps) => {
   const { user } = useAuth();
-  const isComment = "parentID" in post;
+  const [amtReposts, setAmtReposts] = useState(post.amtReposts);
+  const [hasReposted, setHasReposted] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const BACKEND_URL =
@@ -53,6 +56,42 @@ const PostContent = ({
     if (showOriginal) setIsHovering(false);
   };
 
+  useEffect(() => {
+    setHasReposted(user?.repostedPostIds.includes(post.id) ?? false);
+  }, [user?.repostedPostIds, post.id]);
+
+  const [repost, { loading: repostLoading }] = useMutation<{
+    repost: RepostType;
+  }>(REPOST_MUTATION, {
+    variables: { id: post.id, type: post.__typename },
+    onCompleted: () => {
+      toast.success("Reposted successfully");
+      if (doesntRedirect) {
+        setAmtReposts(amtReposts + 1);
+        setHasReposted(true);
+      } else window.location.reload();
+    },
+    onError: (error) => {
+      toast.error(`Error reposting: ${error.message}`);
+    },
+  });
+
+  const [unrepost, { loading: unrepostLoading }] = useMutation<{
+    unrepost: RepostType;
+  }>(UNREPOST_MUTATION, {
+    variables: { id: post.id, type: post.__typename },
+    onCompleted: () => {
+      toast.success("Unreposted successfully");
+      if (doesntRedirect) {
+        setAmtReposts(amtReposts - 1);
+        setHasReposted(false);
+      } else window.location.reload();
+    },
+    onError: (error) => {
+      toast.error(`Error unreposting: ${error.message}`);
+    },
+  });
+
   return (
     <article
       className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${
@@ -64,7 +103,7 @@ const PostContent = ({
         e.preventDefault();
         e.stopPropagation();
         if (!doesntRedirect) {
-          document.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}`;
+          document.location.href = `/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`;
         }
       }}
     >
@@ -105,7 +144,7 @@ const PostContent = ({
                 onClick={(e: MouseEvent | TouchEvent) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  window.location.href = `/project2/${isComment ? "reply" : "post"}/${post.id}/edit`;
+                  window.location.href = `/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}/edit`;
                 }}
               >
                 <PencilIcon className="size-5" />
@@ -165,7 +204,7 @@ const PostContent = ({
         />
       )}
 
-      <footer className="flex w-full justify-around">
+      <footer className="flex w-full justify-evenly">
         <button
           className="group flex items-center gap-1 p-2"
           aria-label="Like post"
@@ -176,11 +215,35 @@ const PostContent = ({
           ) : (
             <HeartIcon className="size-6 group-hover:scale-110" />
           )}
-          <span className="select-none">{amtLikes}</span>
+          <span className="flex select-none gap-1">
+            <p className="font-extrabold">{amtLikes}</p>{" "}
+            <p className="hidden font-extralight md:block">Likes</p>
+          </span>
+        </button>
+        <button
+          className="group flex items-center gap-1 p-2"
+          disabled={repostLoading || unrepostLoading}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (hasReposted) unrepost();
+            else repost();
+          }}
+        >
+          <RecycleIcon
+            className={`size-6 transition-all group-hover:scale-110 ${hasReposted ? "text-green-600 group-hover:text-red-600" : "group-hover:text-green-600"}`}
+          />
+          <span className="flex select-none gap-1">
+            <p className="font-extrabold">{amtReposts}</p>{" "}
+            <p className="hidden font-extralight md:block">Reposts</p>
+          </span>
         </button>
         <div className="flex items-center gap-1">
           <ChatBubbleLeftIcon className="size-6" />
-          <span className="select-none">{post.amtComments}</span>
+          <span className="flex select-none gap-1">
+            <p className="font-extrabold">{post.amtComments}</p>{" "}
+            <p className="hidden font-extralight md:block">Comments</p>
+          </span>
         </div>
       </footer>
 

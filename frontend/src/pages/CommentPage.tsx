@@ -2,7 +2,6 @@ import { useAuth } from "@/components/AuthContext";
 import BackButton from "@/components/BackButton";
 import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
-import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
@@ -265,10 +264,8 @@ const CommentPage = () => {
               }
             />
           </form>
-        ) : "parentID" in reply ? (
-          <PostWithReply replyDoesntRedirect post={parentPost} reply={reply} />
         ) : (
-          <Post post={reply} doesntRedirect />
+          <PostWithReply replyDoesntRedirect post={parentPost} reply={reply} />
         )}
         <Divider />
         {!editing && (

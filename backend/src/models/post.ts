@@ -6,6 +6,7 @@ export interface PostType extends Document {
   author: Types.ObjectId;
   amtLikes: number;
   amtComments: number;
+  amtReposts: number;
   createdAt: Date;
   imageUrl?: string;
   hashTags?: string[];
@@ -18,6 +19,7 @@ const PostSchema = new Schema<PostType>({
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   amtLikes: { type: Number, default: 0 },
   amtComments: { type: Number, default: 0 },
+  amtReposts: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   imageUrl: { type: String, default: undefined },
   hashTags: { type: [String], default: undefined, index: true },

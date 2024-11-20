@@ -10,6 +10,7 @@ export interface UserType extends Document {
   postIds: string[];
   likedPostIds: string[];
   mentionedPostIds: string[];
+  repostedPostIds: string[];
   commentIds: string[];
   likedCommentIds: string[];
   mentionedCommentIds: string[];
@@ -30,6 +31,7 @@ const UserSchema = new Schema<UserType>({
   postIds: { type: [String], default: [] },
   likedPostIds: { type: [String], default: [] },
   mentionedPostIds: { type: [String], default: [] },
+  repostedPostIds: { type: [String], default: [] },
   commentIds: { type: [String], default: [] },
   likedCommentIds: { type: [String], default: [] },
   mentionedCommentIds: { type: [String], default: [] },

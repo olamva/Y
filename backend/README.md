@@ -58,12 +58,14 @@ npm run start:dev
 
 ## Queries
 
-### `getPosts(page: Int!): [Post!]!`
+### `getPosts(page: Int!, filter: PageFilter!, limit: Int!): [Post!]!`
 
 Fetches a paginated list of the latest posts.
 
 - **Parameters:**
   - `page` (Int!): The page number to retrieve.
+  - `filter` (PageFilter!): The filter to apply to the posts.
+  - `limit` (Int!): The number of posts to retrieve per page.
 - **Returns:** An array of `Post` objects.
 
 ---
@@ -75,6 +77,30 @@ Retrieves a single post by its ID.
 - **Parameters:**
   - `id` (ID!): The unique identifier of the post.
 - **Returns:** A `Post` object.
+
+---
+
+### `getReposts(page: Int!, filter: PageFilter!, limit: Int!): [Post!]!`
+
+Fetches a paginated list of the latest reposts.
+
+- **Parameters:**
+  - `page` (Int!): The page number to retrieve.
+  - `filter` (PageFilter!): The filter to apply to the reposts.
+  - `limit` (Int!): The number of reposts to retrieve per page.
+- **Returns:** An array of `Post` objects.
+
+---
+
+### `getRepostsByUser(username: String!, page: Int!, limit: Int!): [Post!]!`
+
+Retrieves multiple reposts by their IDs.
+
+- **Parameters:**
+  - `username` (String!): The username of the user.
+  - `page` (Int!): The page number to retrieve for pagination.
+  - `limit` (Int!): The number of reposts to retrieve per page.
+- **Returns:** An array of `Post` objects.
 
 ---
 
@@ -278,6 +304,7 @@ The resolvers handle the logic for each field in the GraphQL schema. Below is an
 ### Mutation Resolvers
 
 - **createPost**: Creates a new post authored by the authenticated user and updates the user's `postIds` array.
+- **repost** : Reposts a post.
 - **editPost**: Edits an existing post (if the user is the author).
 - **editComment**: Edits an existing comment (if the user is the author).
 - **createComment**: Creates a new comment on a specified post, increments `amtComments` on the parent post, and updates the user's `commentIds` array.

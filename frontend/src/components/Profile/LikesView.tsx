@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useQuery } from "@apollo/client";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
+import { useQuery } from "@apollo/client";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { PostType, CommentType } from "@/lib/types";
+import { CommentType, PostType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
-import { GET_POSTS_BY_IDS, GET_PARENTS_BY_IDS } from "@/queries/posts";
+import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
+
+const PAGE_SIZE = 16;
 
 interface LikesViewProps {
   likedPostIds: string[];
@@ -26,7 +28,7 @@ const LikesView: React.FC<LikesViewProps> = ({
     loading: postsLoading,
     fetchMore: fetchMorePosts,
   } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: likedPostIds, page: postsPage },
+    variables: { ids: likedPostIds, page: postsPage, limit: PAGE_SIZE },
     skip: !likedPostIds.length,
     notifyOnNetworkStatusChange: true,
   });

@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
-import { useQuery } from "@apollo/client";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
-import { GET_POSTS_BY_IDS } from "@/queries/posts";
+import { CommentType, PostType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
-import { GET_PARENTS_BY_IDS } from "@/queries/posts";
-import { PostType, CommentType } from "@/lib/types";
+import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
+import { useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
+
+const PAGE_SIZE = 16;
 
 interface MentionsViewProps {
   mentionedPostIds: string[];
@@ -24,7 +25,7 @@ const MentionsView: React.FC<MentionsViewProps> = ({
     loading: postsLoading,
     fetchMore: fetchMorePosts,
   } = useQuery(GET_POSTS_BY_IDS, {
-    variables: { ids: mentionedPostIds, page },
+    variables: { ids: mentionedPostIds, page, limit: PAGE_SIZE },
     skip: !mentionedPostIds.length,
     notifyOnNetworkStatusChange: true,
   });

@@ -5,6 +5,7 @@ import { SortOrder, Types } from 'mongoose';
 import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
+import { Repost } from './models/repost';
 import { User, UserType } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
 import { extractHashtags, extractMentions } from './utils';
@@ -13,8 +14,8 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page, filter }, { user }) => {
-      const POSTS_PER_PAGE = 10;
+    getPosts: async (_, { page, filter, limit }, { user }) => {
+      const POSTS_PER_PAGE = limit ?? 10;
       const skip = (page - 1) * POSTS_PER_PAGE;
 
       if (!user && filter === 'FOLLOWING') {
@@ -78,6 +79,141 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching post');
       }
     },
+    getReposts: async (_, { page, filter, limit }, { user }) => {
+      const REPOSTS_PER_PAGE = limit ?? 10;
+      const skip = (page - 1) * REPOSTS_PER_PAGE;
+
+      if (!user && filter === 'FOLLOWING') {
+        throw new AuthenticationError('You must be logged in to view posts.');
+      }
+
+      try {
+        let query: any = {};
+        let sort: Record<string, SortOrder> = { repostedAt: -1 };
+
+        switch (filter) {
+          case 'LATEST':
+            query = {};
+            break;
+
+          case 'FOLLOWING':
+            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
+            query = { author: { $in: followingIds } };
+            break;
+
+          case 'POPULAR':
+            sort = { amtLikes: -1, repostedAt: -1 };
+            query = {};
+            break;
+
+          case 'CONTROVERSIAL':
+            sort = { amtComments: -1, repostedAt: -1 };
+            query = {};
+            break;
+
+          default:
+            throw new UserInputError('Invalid filter type.');
+        }
+
+        const reposts = await Repost.find(query)
+          .sort(sort)
+          .skip(skip)
+          .limit(REPOSTS_PER_PAGE)
+          .populate('author');
+
+        const repostedPosts = await Promise.all(
+          reposts.map(async (repost) => {
+            let originalPost: PostType | CommentType | null = null;
+            if (repost.originalType === 'Post') {
+              originalPost = await Post.findById(repost.originalID);
+            } else if (repost.originalType === 'Comment') {
+              originalPost = await Comment.findById(repost.originalID);
+            }
+            if (!originalPost) {
+              throw new Error('Original post not found');
+            }
+            const originalAuthor = await User.findById(originalPost.author);
+
+            return {
+              id: repost.id,
+              author: repost.author,
+              originalID: originalPost.id,
+              originalType: repost.originalType,
+              originalAuthor,
+              repostedAt: repost.repostedAt,
+              body: originalPost.body,
+              originalBody: originalPost.originalBody,
+              amtLikes: originalPost.amtLikes,
+              amtComments: originalPost.amtComments,
+              amtReposts: originalPost.amtReposts,
+              createdAt: originalPost.createdAt,
+              imageUrl: originalPost.imageUrl,
+              hashTags: originalPost.hashTags,
+              mentionedUsers: originalPost.mentionedUsers,
+              parentID: (originalPost as CommentType).parentID,
+              parentType: (originalPost as CommentType).parentType,
+            };
+          })
+        );
+
+        return repostedPosts;
+      } catch (err) {
+        throw new Error('Error fetching reposts');
+      }
+    },
+    getRepostsByUser: async (_, { username, page, limit }) => {
+      const user = await User.findOne({ username });
+      const REPOSTS_PER_PAGE = limit ?? 10;
+      const skip = (page - 1) * REPOSTS_PER_PAGE;
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+      const reposts = await Repost.find({ author: user?.id })
+        .sort({ repostedAt: -1 })
+        .skip(skip)
+        .limit(REPOSTS_PER_PAGE)
+        .populate('author');
+
+      try {
+        const repostedPosts = await Promise.all(
+          reposts.map(async (repost) => {
+            let originalPost: PostType | CommentType | null = null;
+            if (repost.originalType === 'Post') {
+              originalPost = await Post.findById(repost.originalID);
+            } else if (repost.originalType === 'Comment') {
+              originalPost = await Comment.findById(repost.originalID);
+            }
+            if (!originalPost) {
+              throw new Error('Original post not found');
+            }
+            const originalAuthor = await User.findById(originalPost.author);
+
+            return {
+              id: repost.id,
+              author: repost.author,
+              originalID: originalPost.id,
+              originalType: repost.originalType,
+              originalAuthor,
+              repostedAt: repost.repostedAt,
+              body: originalPost.body,
+              originalBody: originalPost.originalBody,
+              amtLikes: originalPost.amtLikes,
+              amtComments: originalPost.amtComments,
+              amtReposts: originalPost.amtReposts,
+              createdAt: originalPost.createdAt,
+              imageUrl: originalPost.imageUrl,
+              hashTags: originalPost.hashTags,
+              mentionedUsers: originalPost.mentionedUsers,
+              parentID: (originalPost as CommentType).parentID,
+              parentType: (originalPost as CommentType).parentType,
+            };
+          })
+        );
+        return repostedPosts;
+      } catch (err) {
+        throw new Error('Error fetching reposts by IDs');
+      }
+    },
     getUser: async (_, { username }) => {
       try {
         return await User.findOne({ username: username });
@@ -99,8 +235,8 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments');
       }
     },
-    getPostsByIds: async (_, { ids, page }) => {
-      const limit = 10;
+    getPostsByIds: async (_, { ids, page, limit }) => {
+      const POSTS_PER_PAGE = limit ?? 10;
       try {
         const posts = await Post.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
@@ -466,6 +602,115 @@ export const resolvers: IResolvers = {
         throw new Error('Error creating post');
       }
     },
+    repost: async (_, { id, type }, { user }) => {
+      if (!user) {
+        throw new AuthenticationError('You must be logged in to repost');
+      }
+
+      // if this user has already reposted this post, throw an error
+      const existingRepost = await Repost.findOne({ author: user.id, originalID: id });
+      if (existingRepost) {
+        throw new UserInputError('You have already reposted this post');
+      }
+
+      let originalPost: PostType | CommentType | null = null;
+
+      if (type === 'Post') {
+        originalPost = await Post.findById(id);
+      } else if (type === 'Comment') {
+        originalPost = await Comment.findById(id);
+      }
+
+      if (!originalPost) {
+        throw new UserInputError('Post not found');
+      }
+
+      try {
+        const repost = new Repost({
+          author: user.id,
+          originalID: originalPost._id,
+          originalType: type,
+        });
+
+        await repost.save();
+
+        originalPost.amtReposts += 1;
+        await originalPost.save();
+
+        await User.findByIdAndUpdate(user.id, { $push: { repostedPostIds: repost.originalID } });
+
+        const originalAuthor = await User.findById(originalPost.author);
+
+        console.log(user.id);
+
+        const combinedPost = {
+          id: repost.id,
+          author: user,
+          originalID: originalPost.id,
+          originalType: type,
+          originalAuthor,
+          repostedAt: repost.repostedAt,
+          body: originalPost.body,
+          originalBody: originalPost.originalBody,
+          amtLikes: originalPost.amtLikes,
+          amtComments: originalPost.amtComments,
+          amtReposts: originalPost.amtReposts,
+          createdAt: originalPost.createdAt,
+          imageUrl: originalPost.imageUrl,
+          hashTags: originalPost.hashTags,
+          mentionedUsers: originalPost.mentionedUsers,
+        };
+
+        return combinedPost;
+      } catch (err) {
+        throw new Error('Error reposting');
+      }
+    },
+    unrepost: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unrepost');
+      }
+
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
+
+      const repost = await Repost.findOneAndDelete({ originalID: id });
+
+      if (!repost) {
+        throw new UserInputError('Repost not found');
+      }
+
+      if (!repost.author.equals(user.id)) {
+        throw new AuthenticationError('You are not authorized to unrepost this post');
+      }
+
+      let originalPost: PostType | CommentType | null = null;
+
+      if (repost.originalType === 'Post') {
+        originalPost = await Post.findById(id);
+      } else if (repost.originalType === 'Comment') {
+        originalPost = await Comment.findById(id);
+      }
+
+      if (!originalPost) {
+        throw new UserInputError('Original post not found');
+      }
+
+      try {
+        await Repost.findByIdAndDelete(id);
+
+        originalPost.amtReposts -= 1;
+        await originalPost.save();
+
+        await User.findByIdAndUpdate(user.id, { $pull: { repostedPostIds: repost.originalID } });
+
+        return repost;
+      } catch (err) {
+        throw new Error('Error unreposting');
+      }
+    },
     updateProfile: async (_, { firstName, lastName, biography }, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to update profile');
@@ -770,6 +1015,7 @@ export const resolvers: IResolvers = {
 
         const userPosts = await Post.find({ author: deletedUser.id });
         const userComments = await Comment.find({ author: deletedUser.id });
+        const userReposts = await Repost.find({ author: deletedUser.id });
 
         for (const post of userPosts) {
           if (post.imageUrl) {
@@ -815,8 +1061,21 @@ export const resolvers: IResolvers = {
           }
         }
 
+        for (const repost of userReposts) {
+          const originalPost = await Post.findById(repost.originalID);
+          if (!originalPost) {
+            throw new Error('Original post not found');
+          }
+
+          originalPost.amtReposts -= 1;
+          await originalPost.save();
+
+          await User.findByIdAndUpdate(repost.author, { $pull: { repostedPostIds: repost.originalID } });
+        }
+
         await Post.deleteMany({ author: deletedUser.id });
         await Comment.deleteMany({ author: deletedUser.id });
+        await Repost.deleteMany({ author: deletedUser.id });
 
         if (deletedUser.profilePicture) {
           const deleteResult = await deleteFile(deletedUser.profilePicture);
@@ -838,16 +1097,14 @@ export const resolvers: IResolvers = {
       }
     },
 
-    createComment: async (_, { body, parentID, parentType, file }, context) => {
-      if (!context.user) {
+    createComment: async (_, { body, parentID, parentType, file }, { user }) => {
+      if (!user) {
         throw new AuthenticationError('You must be logged in to create a comment');
       }
 
       if (body.length < 1 && !file) {
         throw new UserInputError('Comment must have a body or an image');
       }
-
-      const user = await User.findById(context.user.id);
 
       if (!user) {
         throw new UserInputError('User not found');
