@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import PostContent from "@/components/Post/PostContent";
 import { PostType, VerifiedTiers } from "@/lib/types";
 import { MockedProvider } from "@apollo/client/testing";
+import { ApolloError } from "@apollo/client";
 
 vi.mock("@/components/AuthContext", () => ({
   useAuth: vi.fn().mockReturnValue({
@@ -123,7 +124,7 @@ describe("PostContent", () => {
           amtLikes={mockPost.amtLikes}
           handleDelete={mockHandleDelete}
           deleteLoading={false}
-          deleteError={{ message: "Failed to delete post" } as any}
+          deleteError={{ message: "Failed to delete post" } as ApolloError}
           disableTopMargin={false}
           disableBottomMargin={false}
         />
