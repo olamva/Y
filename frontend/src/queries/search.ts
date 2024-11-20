@@ -10,6 +10,7 @@ export const SEARCH_POSTS = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
