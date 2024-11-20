@@ -1,11 +1,11 @@
 import { useAuth } from "@/components/AuthContext";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import { UsersIcon } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   HashtagIcon,
   HomeIcon,
   UserIcon,
+  UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { LogInIcon, LogOutIcon } from "lucide-react";

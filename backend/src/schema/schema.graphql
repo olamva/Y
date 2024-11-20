@@ -16,6 +16,7 @@ type Query {
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
   getTrendingHashtags(page: Int!): [TrendingHashtag!]!
   getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
+  getNotifications: [Notification!]!
 }
 
 union PostItem = Post | Repost
@@ -138,4 +139,16 @@ type Mutation {
   changeProfilePicture(file: Upload): User!
   changeBackgroundPicture(file: Upload): User!
   updateProfile(firstName: String, lastName: String, biography: String): User!
+  deleteNotification(id: ID!): Notification!
+  deleteAllNotifications: [Notification!]!
+}
+
+type Notification {
+  id: ID!
+  type: String!
+  sender: User!
+  recipient: User!
+  createdAt: String!
+  postID: ID
+  postType: String
 }

@@ -4,6 +4,7 @@ import { GraphQLUpload } from 'graphql-upload-minimal';
 import { SortOrder, Types } from 'mongoose';
 import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
+import { Notification } from './models/notification';
 import { Post, PostType } from './models/post';
 import { Repost, RepostType } from './models/repost';
 import { User, UserType } from './models/user';
@@ -377,6 +378,22 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments by IDs');
       }
     },
+    getNotifications: async (_, __, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to view notifications');
+      }
+
+      try {
+        const user = await User.findById(context.user._id);
+
+        if (!user) {
+          throw new UserInputError('User not found');
+        }
+        return await Notification.find({ recipient: user._id }).sort({ createdAt: -1 });
+      } catch (err) {
+        throw new Error('Error fetching notifications');
+      }
+    },
 
     searchPosts: async (_: any, { query, page }: { query: string; page: string }) => {
       if (query.length > 40) {
@@ -704,9 +721,25 @@ export const resolvers: IResolvers = {
         await user.save();
 
         if (mentionedUsers) {
-          mentionedUsers.forEach(
-            async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedPostIds: savedPost.id } })
-          );
+          mentionedUsers.forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedPostIds.push(savedPost.id);
+
+            if (user.id !== savedPost.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'post',
+                postID: savedPost.id,
+                recipient: user,
+                sender: savedPost.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
         }
 
         return await savedPost.populate('author');
@@ -752,6 +785,18 @@ export const resolvers: IResolvers = {
         await User.findByIdAndUpdate(user.id, { $push: { repostedPostIds: repost.originalID } });
 
         const originalAuthor = await User.findById(originalPost.author);
+
+        if (originalAuthor && originalAuthor._id !== user.id) {
+          const notification = new Notification({
+            type: 'REPOST',
+            postType: type,
+            postID: id,
+            recipient: originalAuthor,
+            sender: user,
+          });
+
+          await notification.save();
+        }
 
         const combinedPost = {
           id: repost.id,
@@ -810,6 +855,15 @@ export const resolvers: IResolvers = {
         await originalPost.save();
 
         await User.findByIdAndUpdate(user.id, { $pull: { repostedPostIds: repost.originalID } });
+
+        if (originalPost.author !== user.id) {
+          await Notification.findOneAndDelete({
+            type: 'REPOST',
+            postType: repost.originalType,
+            postID: id,
+            sender: user,
+          });
+        }
 
         return repost;
       } catch (err) {
@@ -972,10 +1026,44 @@ export const resolvers: IResolvers = {
       ) {
         mentionedUsers
           .filter((id) => !post.mentionedUsers?.includes(id))
-          .forEach(async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedPostIds: post.id } }));
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedPostIds.push(post.id);
+
+            if (user.id !== post.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'post',
+                postID: post.id,
+                recipient: user,
+                sender: post.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
         post.mentionedUsers
           .filter((id) => !mentionedUsers.includes(id))
-          .forEach(async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: post.id } }));
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedPostIds = user.mentionedPostIds.filter((postId) => postId !== post.id);
+
+            if (user.id !== post.author) {
+              await Notification.findOneAndDelete({
+                type: 'MENTION',
+                postType: 'post',
+                postID: post.id,
+                recipient: user,
+                sender: post.author,
+              });
+            }
+
+            return await user.save();
+          });
       }
       post.mentionedUsers = mentionedUsers;
       await post.save();
@@ -1043,14 +1131,44 @@ export const resolvers: IResolvers = {
       ) {
         mentionedUsers
           .filter((id) => !comment.mentionedUsers?.includes(id))
-          .forEach(
-            async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedCommentIds: comment.id } })
-          );
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedCommentIds.push(comment.id);
+
+            if (user.id !== comment.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'reply',
+                postID: comment.id,
+                recipient: user,
+                sender: comment.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
         comment.mentionedUsers
           .filter((id) => !mentionedUsers.includes(id))
-          .forEach(
-            async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: comment.id } })
-          );
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedCommentIds = user.mentionedCommentIds.filter((postId) => postId !== comment.id);
+
+            if (user.id !== comment.author) {
+              await Notification.findOneAndDelete({
+                type: 'MENTION',
+                postType: 'reply',
+                postID: comment.id,
+                recipient: user,
+                sender: comment.author,
+              });
+            }
+
+            return await user.save();
+          });
       }
       comment.mentionedUsers = mentionedUsers;
 
@@ -1249,20 +1367,48 @@ export const resolvers: IResolvers = {
         });
         const savedComment = await newComment.save();
 
+        let parent: PostType | CommentType | null = null;
         if (parentType === 'post') {
-          await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+          parent = await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
         } else {
-          await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+          parent = await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
         }
 
         user.commentIds.push(savedComment.id);
         await user.save();
 
         if (mentionedUsers) {
-          mentionedUsers.forEach(
-            async (id) =>
-              await User.findByIdAndUpdate(id, { $push: { mentionedCommentIds: savedComment.id } })
-          );
+          mentionedUsers.forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedCommentIds.push(savedComment.id);
+
+            if (user.id !== savedComment.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'reply',
+                postID: savedComment.id,
+                recipient: user,
+                sender: savedComment.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
+        }
+
+        if (parent && user.id !== parent.author._id) {
+          const notification = new Notification({
+            type: 'COMMENT',
+            postType: 'reply',
+            postID: savedComment._id,
+            recipient: parent.author,
+            sender: user,
+          });
+
+          await notification.save();
         }
 
         return await savedComment.populate('author');
@@ -1306,9 +1452,25 @@ export const resolvers: IResolvers = {
 
         user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
 
-        deletedPost.mentionedUsers?.forEach(
-          async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: deletedPost.id } })
-        );
+        deletedPost.mentionedUsers?.forEach(async (id) => {
+          const user = await User.findById(id);
+
+          if (!user) return;
+
+          user.mentionedPostIds = user.mentionedPostIds.filter(
+            (commentId) => String(commentId) !== String(deletedPost.id)
+          );
+
+          if (user.id !== deletedPost.author) {
+            await Notification.findOneAndDelete({
+              type: 'MENTION',
+              postType: 'post',
+              postID: deletedPost._id,
+              sender: user,
+            });
+          }
+          return;
+        });
 
         await user.save();
 
@@ -1346,22 +1508,47 @@ export const resolvers: IResolvers = {
           }
         }
 
+        let parent: PostType | CommentType | null = null;
         if (parentType === 'post') {
-          await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+          parent = await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
         } else {
-          await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+          parent = await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
         }
 
         user.commentIds = user.commentIds.filter(
           (commentId) => String(commentId) !== String(deletedComment.id)
         );
 
-        deletedComment.mentionedUsers?.forEach(
-          async (id) =>
-            await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: deletedComment.id } })
-        );
+        deletedComment.mentionedUsers?.forEach(async (id) => {
+          const user = await User.findById(id);
+
+          if (!user) return;
+
+          user.mentionedCommentIds = user.mentionedCommentIds.filter(
+            (commentId) => String(commentId) !== String(deletedComment.id)
+          );
+
+          if (user.id !== deletedComment.author) {
+            await Notification.findOneAndDelete({
+              type: 'MENTION',
+              postType: 'reply',
+              postID: deletedComment._id,
+              sender: user,
+            });
+          }
+          return;
+        });
 
         await user.save();
+
+        if (parent && parent.author._id !== user.id) {
+          await Notification.findOneAndDelete({
+            type: 'COMMENT',
+            postType: 'reply',
+            postID: deletedComment._id,
+            sender: user,
+          });
+        }
 
         return deletedComment;
       } catch (err) {
@@ -1391,6 +1578,18 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
+      if (post.author._id !== user.id) {
+        const notification = new Notification({
+          type: 'LIKE',
+          postType: 'post',
+          postID,
+          recipient: post.author,
+          sender: user,
+        });
+
+        await notification.save();
+      }
+
       return await post.populate('author');
     },
 
@@ -1417,6 +1616,15 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
+      if (post.author._id !== user.id) {
+        await Notification.findOneAndDelete({
+          type: 'LIKE',
+          postType: 'post',
+          postID,
+          sender: user,
+        });
+      }
+
       return await post.populate('author');
     },
 
@@ -1440,6 +1648,18 @@ export const resolvers: IResolvers = {
         user.likedCommentIds.push(id);
         await comment.save();
         await user.save();
+      }
+
+      if (comment.author._id !== user.id) {
+        const notification = new Notification({
+          type: 'LIKE',
+          postType: 'reply',
+          postID: id,
+          recipient: comment.author,
+          sender: user,
+        });
+
+        await notification.save();
       }
 
       return await comment.populate('author');
@@ -1468,6 +1688,15 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
+      if (comment.author._id !== user.id) {
+        await Notification.findOneAndDelete({
+          type: 'LIKE',
+          postType: 'reply',
+          postID: id,
+          sender: user,
+        });
+      }
+
       return await comment.populate('author');
     },
 
@@ -1493,6 +1722,14 @@ export const resolvers: IResolvers = {
 
       await personToFollow.save();
       await user.save();
+
+      const notification = new Notification({
+        type: 'FOLLOW',
+        recipient: personToFollow,
+        sender: user,
+      });
+
+      await notification.save();
 
       return personToFollow;
     },
@@ -1524,7 +1761,43 @@ export const resolvers: IResolvers = {
       await personToUnfollow.save();
       await user.save();
 
+      await Notification.findOneAndDelete({
+        type: 'FOLLOW',
+        recipient: personToUnfollow,
+        sender: user,
+      });
+
       return personToUnfollow;
+    },
+    deleteNotification: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to delete a notification');
+      }
+
+      const notification = await Notification.findById(id);
+      if (!notification) {
+        throw new UserInputError('Notification not found');
+      }
+
+      if (!notification.recipient._id === context.user._id) {
+        throw new AuthenticationError('You are not authorized to delete this notification');
+      }
+
+      await Notification.findByIdAndDelete(id);
+      return notification;
+    },
+    deleteAllNotifications: async (_, __, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to delete notifications');
+      }
+
+      const notifications = await Notification.find({ recipient: context.user });
+      if (!notifications) {
+        throw new UserInputError('Notifications not found');
+      }
+
+      await Notification.deleteMany({ recipient: context.user });
+      return notifications;
     },
   },
 
@@ -1565,6 +1838,15 @@ export const resolvers: IResolvers = {
     },
     following: async (parent) => {
       return await User.find({ _id: { $in: parent.following } });
+    },
+  },
+
+  Notification: {
+    sender: async (parent) => {
+      return await User.findById(parent.sender);
+    },
+    recipient: async (parent) => {
+      return await User.findById(parent.recipient);
     },
   },
 
