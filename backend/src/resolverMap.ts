@@ -314,7 +314,6 @@ export const resolvers: IResolvers = {
             };
           })
         );
-        console.log(repostedPosts);
         return repostedPosts;
       } catch (err) {
         throw new Error('Error fetching reposts by IDs');

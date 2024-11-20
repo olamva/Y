@@ -91,11 +91,6 @@ const PostPage = () => {
     }
   }, [fetchMoreComments, hasMore, commentsLoading, page]);
 
-  const updateFile = (file: File | null) => {
-    console.log("file:", file);
-    setFile(file);
-  };
-
   useEffect(() => {
     if (post && !postLoading) {
       setEditBody(post.body ?? "");
@@ -183,7 +178,6 @@ const PostPage = () => {
       toast.error(`Error editing post: ${(error as Error).message}`);
     }
   };
-  console.log("comment:", comment, "\nfile:", file);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -225,10 +219,7 @@ const PostPage = () => {
               setValue={setEditBody}
               loading={editLoading}
               file={file}
-              setFile={(file: File | null) => {
-                console.log("file1:", file);
-                updateFile(file);
-              }}
+              setFile={setFile}
               existingImageURL={
                 post.imageUrl ? `${BACKEND_URL}${post.imageUrl}` : undefined
               }
