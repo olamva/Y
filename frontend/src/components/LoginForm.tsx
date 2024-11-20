@@ -82,8 +82,8 @@ const LoginForm = ({ view }: LoginFormProps) => {
   };
 
   return (
-    <div className="flex w-full flex-col items-center justify-center self-center">
-      <h1 className="absolute top-32 w-fit bg-gradient-to-r from-indigo-950 to-indigo-700 bg-clip-text text-4xl font-extrabold text-transparent dark:from-indigo-200 dark:to-indigo-500 sm:text-6xl md:text-7xl">
+    <div className="flex w-full flex-col items-center justify-center gap-4 self-center">
+      <h1 className="w-fit bg-gradient-to-r from-indigo-950 to-indigo-700 bg-clip-text text-4xl font-extrabold text-transparent dark:from-indigo-200 dark:to-indigo-500 sm:text-6xl md:text-7xl">
         Welcome to Y
       </h1>
       <div className="flex w-full justify-center">
