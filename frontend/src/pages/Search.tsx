@@ -58,7 +58,6 @@ const SearchPage = () => {
       limit: RESULTS_PAGE_SIZE,
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
     skip: filterType !== "users",
   });
 
