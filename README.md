@@ -54,7 +54,7 @@ Løsningen skal være en prototyp på en søkbar katalog med frontend hvor bruke
 
 - [x] Linting og bruk av Prettier
   - Ved hver pull request har vi sørget for at både Prettier og EsLint har blitt brukt.
-- [ ] Gjennomført testing av komponenter (vi bruker Vitest)
+- [x] Gjennomført testing av komponenter (vi bruker Vitest)
 - [x] En form for automatisert end-2-end testing (i praksis teste en lengre sekvens av interaksjoner), testing av API'et.
   - End-2-end testene våre kan du finne i [frontend/cypress](frontend/cypress/). Disse testene tester både generell routing av applikasjonen vår. Samt API-et, der testene f.eks. lager innlegg, kommenterer og liker innlegg. Dette sørger for at vi vet at kjernefunksjonaliteten i applikasjonen vår fungerer som det skal.
 - [x] Prosjektet dokumenteres med en README.md i git repositoriet. Dokumentasjonen skal diskutere, forklare og vise til alle de viktigste valgene og løsningene som gruppa gjør (inklusive valg av komponenter og api).
