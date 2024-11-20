@@ -1813,18 +1813,6 @@ export const resolvers: IResolvers = {
     },
   },
 
-  PostItem: {
-    __resolveType(obj: any, context: any, info: any) {
-      if (obj.originalType) {
-        return 'Repost';
-      }
-      if (obj.body !== undefined) {
-        return 'Post';
-      }
-      return null;
-    },
-  },
-
   Parent: {
     __resolveType(parent: { body?: string; author?: Types.ObjectId; parentID?: string }) {
       if (parent.body && parent.author) {
