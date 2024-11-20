@@ -7,9 +7,10 @@ import { NetworkStatus, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+const USERS_PER_PAGE = 16;
+
 const UsersPage = () => {
   const [page, setPage] = useState(1);
-  const [users, setUsers] = useState<UserType[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
@@ -20,26 +21,23 @@ const UsersPage = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  useEffect(() => {
-    if (data && data.getUsers && page === 1) {
-      setUsers(data.getUsers);
-      setHasMore(data.getUsers.length > 0);
-    }
-  }, [data, page]);
+  const users = data?.getUsers || [];
 
   const loadMoreUsers = useCallback(async () => {
     if (!hasMore || loading) return;
 
     try {
-      const nextPage = page + 1;
       const { data: fetchMoreData } = await fetchMore({
-        variables: { page: nextPage },
+        variables: { page: page + 1 },
       });
 
       if (fetchMoreData?.getUsers) {
-        setUsers((prevUsers) => [...prevUsers, ...fetchMoreData.getUsers]);
-        setHasMore(fetchMoreData.getUsers.length > 0);
-        setPage(nextPage);
+        if (fetchMoreData.getUsers.length < USERS_PER_PAGE) {
+          setHasMore(false);
+        }
+        if (fetchMoreData.getUsers.length > 0) {
+          setPage((prev) => prev + 1);
+        }
       } else {
         setHasMore(false);
       }
@@ -63,16 +61,8 @@ const UsersPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMoreUsers, hasMore, networkStatus]);
 
-  if (loading && networkStatus === 1) {
+  if (loading && networkStatus === NetworkStatus.loading) {
     return <p className="mt-4 text-center">Loading users...</p>;
-  }
-
-  if (error) {
-    return (
-      <p className="mt-4 text-center text-red-500">
-        Error loading users: {error.message}
-      </p>
-    );
   }
 
   return (
@@ -82,6 +72,11 @@ const UsersPage = () => {
         <h1 className="my-4 text-3xl font-bold">All users</h1>
         <Divider />
         <div className="flex w-full flex-wrap justify-center gap-2 md:gap-4">
+          {error && (
+            <p className="mt-4 text-center text-red-500">
+              Error loading users: {error.message}
+            </p>
+          )}
           {users.map((user) => (
             <div
               className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
@@ -92,7 +87,7 @@ const UsersPage = () => {
           ))}
         </div>
 
-        {loading && networkStatus === 3 && (
+        {loading && networkStatus === NetworkStatus.fetchMore && (
           <p className="mt-4 text-center">Loading more users...</p>
         )}
         {!hasMore && (

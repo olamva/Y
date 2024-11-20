@@ -62,10 +62,15 @@ export const resolvers: IResolvers = {
       const skip = (page - 1) * USERS_PER_PAGE;
 
       try {
-        return await User.find({ username: { $nin: ['admin', 'fredrik'] } })
-          .sort({ createdAt: -1 })
+        const users = await User.find({ username: { $nin: ['admin', 'fredrik'] } })
+          .sort({ createdAt: -1, username: 1 })
           .skip(skip)
           .limit(USERS_PER_PAGE);
+        console.log(
+          users.map((user) => user.username),
+          users.length
+        );
+        return users;
       } catch (err) {
         throw new Error('Error fetching users');
       }
