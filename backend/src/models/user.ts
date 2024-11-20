@@ -18,6 +18,7 @@ export interface UserType extends Document {
   profilePicture?: string;
   backgroundPicture?: string;
   comparePassword: (candidatePassword: string) => Promise<boolean>;
+  verified?: boolean;
 }
 
 const UserSchema = new Schema<UserType>({
@@ -36,6 +37,7 @@ const UserSchema = new Schema<UserType>({
   following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
   profilePicture: { type: String, default: undefined },
   backgroundPicture: { type: String, default: undefined },
+  verified: { type: Boolean, default: false },
 });
 
 UserSchema.pre('save', async function (next) {

@@ -126,7 +126,7 @@ const CreatePostField = ({
                     }
                   }}
                 >
-                  <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
+                  <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:hover:text-blue-600">
                     @
                   </h3>
                 </button>
@@ -158,7 +158,7 @@ const CreatePostField = ({
                     }
                   }}
                 >
-                  <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
+                  <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:hover:text-blue-600">
                     #
                   </h3>
                 </button>
@@ -174,7 +174,7 @@ const CreatePostField = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <label htmlFor="image-upload" className="cursor-pointer">
-                    <ImageIcon className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500" />
+                    <ImageIcon className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-600" />
                   </label>
                 </TooltipTrigger>
                 <TooltipContent className="border border-gray-300 dark:border-gray-600">

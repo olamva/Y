@@ -1,9 +1,9 @@
-import Avatar from "@/components/Profile/Avatar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Username from "@/components/Username";
 import useDebounce from "@/hooks/useDebounce"; // Import the debounce hook
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
@@ -289,18 +289,20 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                     >
                       <div className="flex items-center gap-1">
                         {isUser ? (
-                          <Avatar noHref user={suggestion} />
+                          <Username
+                            user={suggestion}
+                            customBadgeColors={
+                              index === activeSuggestionIndex
+                                ? "text-white"
+                                : "text-blue-500 dark:text-blue-400"
+                            }
+                            noHref
+                          />
                         ) : (
                           <p className="flex h-full items-center justify-center">
-                            #
+                            #{suggestion.tag}
                           </p>
                         )}
-
-                        <p>
-                          {isUser
-                            ? `${suggestion.username}`
-                            : `${suggestion.tag}`}
-                        </p>
                       </div>
                     </div>
                   );

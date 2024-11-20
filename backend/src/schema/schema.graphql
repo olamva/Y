@@ -80,6 +80,7 @@ type User {
   followers: [User!]!
   profilePicture: String
   backgroundPicture: String
+  verified: Boolean!
 }
 
 type Mutation {

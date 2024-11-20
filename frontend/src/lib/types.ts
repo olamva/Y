@@ -42,4 +42,5 @@ export type UserType = {
   following: UserType[];
   profilePicture?: string;
   backgroundPicture?: string;
+  verified?: boolean;
 };
