@@ -235,7 +235,7 @@ const PostPage = () => {
             <PostSkeleton />
           </div>
         ) : post ? (
-          <Post post={post} doesntRedirect />
+          <Post post={post} goHomeOnDelete doesntRedirect />
         ) : (
           <p>Post not found.</p>
         )}
