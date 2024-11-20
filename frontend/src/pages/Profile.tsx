@@ -238,7 +238,9 @@ const Profile = () => {
                 aria-label="View Posts"
                 className="text-center"
               >
-                <p>{user?.postIds.length} Posts</p>
+                <p>
+                  {user?.postIds.length + user.repostedPostIds.length} Posts
+                </p>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="comments"
@@ -271,7 +273,11 @@ const Profile = () => {
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
               {currentView === "posts" && (
-                <PostsView postIds={user.postIds} fetchReposts={user.repostedPostIds.length > 0} username={user.username} />
+                <PostsView
+                  postIds={user.postIds}
+                  fetchReposts={user.repostedPostIds.length > 0}
+                  username={user.username}
+                />
               )}
               {currentView === "comments" && (
                 <CommentsView commentIds={user.commentIds} />
