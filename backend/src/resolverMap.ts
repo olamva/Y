@@ -726,7 +726,7 @@ export const resolvers: IResolvers = {
             if (!user) return;
             user.mentionedPostIds.push(savedPost.id);
 
-            if (user.id !== savedPost.author) {
+            if (user.id.toString() !== savedPost.author._id.toString()) {
               const notification = new Notification({
                 type: 'MENTION',
                 postType: 'post',
@@ -786,7 +786,7 @@ export const resolvers: IResolvers = {
 
         const originalAuthor = await User.findById(originalPost.author);
 
-        if (originalAuthor && originalAuthor._id !== user.id) {
+        if (originalAuthor && originalAuthor.id.toString() !== user._id.toString()) {
           const notification = new Notification({
             type: 'REPOST',
             postType: type,
@@ -856,7 +856,7 @@ export const resolvers: IResolvers = {
 
         await User.findByIdAndUpdate(user.id, { $pull: { repostedPostIds: repost.originalID } });
 
-        if (originalPost.author !== user.id) {
+        if (originalPost.author._id.toString() !== user._id.toString()) {
           await Notification.findOneAndDelete({
             type: 'REPOST',
             postType: repost.originalType,
@@ -1031,7 +1031,7 @@ export const resolvers: IResolvers = {
             if (!user) return;
             user.mentionedPostIds.push(post.id);
 
-            if (user.id !== post.author) {
+            if (user.id.toString() !== post.author._id.toString()) {
               const notification = new Notification({
                 type: 'MENTION',
                 postType: 'post',
@@ -1052,7 +1052,7 @@ export const resolvers: IResolvers = {
             if (!user) return;
             user.mentionedPostIds = user.mentionedPostIds.filter((postId) => postId !== post.id);
 
-            if (user.id !== post.author) {
+            if (user.id.toString() !== post.author._id.toString()) {
               await Notification.findOneAndDelete({
                 type: 'MENTION',
                 postType: 'post',
@@ -1136,7 +1136,7 @@ export const resolvers: IResolvers = {
             if (!user) return;
             user.mentionedCommentIds.push(comment.id);
 
-            if (user.id !== comment.author) {
+            if (user.id.toString() !== comment.author._id.toString()) {
               const notification = new Notification({
                 type: 'MENTION',
                 postType: 'reply',
@@ -1157,7 +1157,7 @@ export const resolvers: IResolvers = {
             if (!user) return;
             user.mentionedCommentIds = user.mentionedCommentIds.filter((postId) => postId !== comment.id);
 
-            if (user.id !== comment.author) {
+            if (user.id.toString() !== comment.author._id.toString()) {
               await Notification.findOneAndDelete({
                 type: 'MENTION',
                 postType: 'reply',
@@ -1383,7 +1383,7 @@ export const resolvers: IResolvers = {
             if (!user) return;
             user.mentionedCommentIds.push(savedComment.id);
 
-            if (user.id !== savedComment.author) {
+            if (user.id !== savedComment.author.id) {
               const notification = new Notification({
                 type: 'MENTION',
                 postType: 'reply',
@@ -1399,7 +1399,7 @@ export const resolvers: IResolvers = {
           });
         }
 
-        if (parent && user.id !== parent.author._id) {
+        if (parent && user._id.toString() !== parent.author._id.toString()) {
           const notification = new Notification({
             type: 'COMMENT',
             postType: 'reply',
@@ -1461,7 +1461,7 @@ export const resolvers: IResolvers = {
             (commentId) => String(commentId) !== String(deletedPost.id)
           );
 
-          if (user.id !== deletedPost.author) {
+          if (user.id.toString() !== deletedPost.author._id.toString()) {
             await Notification.findOneAndDelete({
               type: 'MENTION',
               postType: 'post',
@@ -1528,7 +1528,7 @@ export const resolvers: IResolvers = {
             (commentId) => String(commentId) !== String(deletedComment.id)
           );
 
-          if (user.id !== deletedComment.author) {
+          if (user.id.toString() !== deletedComment.author._id.toString()) {
             await Notification.findOneAndDelete({
               type: 'MENTION',
               postType: 'reply',
@@ -1541,7 +1541,7 @@ export const resolvers: IResolvers = {
 
         await user.save();
 
-        if (parent && parent.author._id !== user.id) {
+        if (parent && parent.author._id.toString() !== user.id.toString()) {
           await Notification.findOneAndDelete({
             type: 'COMMENT',
             postType: 'reply',
@@ -1578,7 +1578,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      if (post.author._id !== user.id) {
+      if (post.author._id.toString() !== user.id.toString()) {
         const notification = new Notification({
           type: 'LIKE',
           postType: 'post',
@@ -1616,7 +1616,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      if (post.author._id !== user.id) {
+      if (post.author._id.toString() !== user.id.toString()) {
         await Notification.findOneAndDelete({
           type: 'LIKE',
           postType: 'post',
@@ -1650,7 +1650,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      if (comment.author._id !== user.id) {
+      if (comment.author._id.toString() !== user.id.toString()) {
         const notification = new Notification({
           type: 'LIKE',
           postType: 'reply',
@@ -1688,7 +1688,7 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
-      if (comment.author._id !== user.id) {
+      if (comment.author._id.toString() !== user.id.toString()) {
         await Notification.findOneAndDelete({
           type: 'LIKE',
           postType: 'reply',
