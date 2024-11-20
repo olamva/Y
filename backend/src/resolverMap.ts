@@ -6,7 +6,7 @@ import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
 import { Notification } from './models/notification';
 import { Post, PostType } from './models/post';
-import { Repost } from './models/repost';
+import { Repost, RepostType } from './models/repost';
 import { User, UserType } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
 import { extractHashtags, extractMentions } from './utils';
@@ -15,45 +15,135 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page, filter, limit }, { user }) => {
-      const POSTS_PER_PAGE = limit ?? 10;
-      const skip = (page - 1) * POSTS_PER_PAGE;
+    getPosts: async (
+      _: any,
+      { page = 1, filter = 'LATEST', limit = 10 }: { page: number; filter: string; limit?: number },
+      { user }: { user?: UserType }
+    ) => {
+      const ITEMS_PER_PAGE = limit;
+      const skip = (page - 1) * ITEMS_PER_PAGE;
 
       if (!user && filter === 'FOLLOWING') {
         throw new AuthenticationError('You must be logged in to view posts.');
       }
 
       try {
-        let query: any = {};
+        let postQuery: any = {};
+        let repostQuery: any = {};
         let sort: Record<string, SortOrder> = { createdAt: -1 };
+        let includeReposts = true;
 
         switch (filter) {
           case 'LATEST':
-            query = {};
             break;
 
           case 'FOLLOWING':
-            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
-            query = { author: { $in: followingIds } };
+            if (!user) {
+              break;
+            }
+            const followingIds = user.following.map((followedUser: Types.ObjectId) => followedUser);
+            postQuery.author = { $in: followingIds };
+            repostQuery.author = { $in: followingIds };
             break;
 
           case 'POPULAR':
             sort = { amtLikes: -1, createdAt: -1 };
-            query = {};
+            includeReposts = false;
             break;
 
           case 'CONTROVERSIAL':
             sort = { amtComments: -1, createdAt: -1 };
-            query = {};
+            includeReposts = false;
             break;
 
           default:
             throw new UserInputError('Invalid filter type.');
         }
 
-        const posts = await Post.find(query).sort(sort).skip(skip).limit(POSTS_PER_PAGE).populate('author');
+        const postsPromise = Post.find(postQuery)
+          .sort(sort)
+          .skip(skip)
+          .limit(ITEMS_PER_PAGE)
+          .populate('author')
+          .lean();
 
-        return posts;
+        let repostsPromise: Promise<RepostType[]> | null = null;
+
+        if (includeReposts) {
+          let repostSort: Record<string, SortOrder> = { repostedAt: -1 };
+
+          if (filter === 'POPULAR') {
+            repostSort = { amtLikes: -1, repostedAt: -1 };
+          } else if (filter === 'CONTROVERSIAL') {
+            repostSort = { amtComments: -1, repostedAt: -1 };
+          }
+
+          repostsPromise = Repost.find(repostQuery)
+            .sort(repostSort)
+            .skip(skip)
+            .limit(ITEMS_PER_PAGE)
+            .populate('author')
+            .lean() as Promise<RepostType[]>;
+        }
+
+        const [posts, reposts] = await Promise.all([
+          postsPromise,
+          includeReposts && repostsPromise ? repostsPromise : Promise.resolve([]),
+        ]);
+
+        let combinedResults: any[] = [...posts];
+
+        if (includeReposts && reposts) {
+          const formattedReposts = await Promise.all(
+            reposts.map(async (repost) => {
+              let originalPost: PostType | CommentType | null = null;
+              if (repost.originalType === 'Post') {
+                originalPost = (await Post.findById(repost.originalID).populate('author').lean()) as PostType;
+              } else if (repost.originalType === 'Comment') {
+                originalPost = (await Comment.findById(repost.originalID)
+                  .populate('author')
+                  .lean()) as CommentType;
+              }
+
+              if (!originalPost) {
+                throw new Error('Original post not found');
+              }
+
+              return {
+                type: 'Repost',
+                id: repost._id,
+                author: repost.author._id,
+                originalID: originalPost._id,
+                originalType: repost.originalType,
+                originalAuthor: originalPost.author,
+                repostedAt: repost.repostedAt,
+                body: originalPost.body,
+                originalBody: originalPost.originalBody,
+                amtLikes: originalPost.amtLikes,
+                amtComments: originalPost.amtComments,
+                amtReposts: originalPost.amtReposts,
+                createdAt: originalPost.createdAt,
+                imageUrl: originalPost.imageUrl,
+                hashTags: originalPost.hashTags,
+                mentionedUsers: originalPost.mentionedUsers,
+                parentID: (originalPost as CommentType).parentID,
+                parentType: (originalPost as CommentType).parentType,
+              };
+            })
+          );
+
+          combinedResults = combinedResults.concat(formattedReposts);
+
+          combinedResults.sort((a, b) => {
+            const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+            const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+
+          combinedResults = combinedResults.slice(0, ITEMS_PER_PAGE);
+        }
+
+        return combinedResults;
       } catch (err) {
         console.error(err);
         throw new Error('Error fetching posts');
@@ -79,88 +169,6 @@ export const resolvers: IResolvers = {
         return post;
       } catch (err) {
         throw new Error('Error fetching post');
-      }
-    },
-    getReposts: async (_, { page, filter, limit }, { user }) => {
-      const REPOSTS_PER_PAGE = limit ?? 10;
-      const skip = (page - 1) * REPOSTS_PER_PAGE;
-
-      if (!user && filter === 'FOLLOWING') {
-        throw new AuthenticationError('You must be logged in to view posts.');
-      }
-
-      try {
-        let query: any = {};
-        let sort: Record<string, SortOrder> = { repostedAt: -1 };
-
-        switch (filter) {
-          case 'LATEST':
-            query = {};
-            break;
-
-          case 'FOLLOWING':
-            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
-            query = { author: { $in: followingIds } };
-            break;
-
-          case 'POPULAR':
-            sort = { amtLikes: -1, repostedAt: -1 };
-            query = {};
-            break;
-
-          case 'CONTROVERSIAL':
-            sort = { amtComments: -1, repostedAt: -1 };
-            query = {};
-            break;
-
-          default:
-            throw new UserInputError('Invalid filter type.');
-        }
-
-        const reposts = await Repost.find(query)
-          .sort(sort)
-          .skip(skip)
-          .limit(REPOSTS_PER_PAGE)
-          .populate('author');
-
-        const repostedPosts = await Promise.all(
-          reposts.map(async (repost) => {
-            let originalPost: PostType | CommentType | null = null;
-            if (repost.originalType === 'Post') {
-              originalPost = await Post.findById(repost.originalID);
-            } else if (repost.originalType === 'Comment') {
-              originalPost = await Comment.findById(repost.originalID);
-            }
-            if (!originalPost) {
-              throw new Error('Original post not found');
-            }
-            const originalAuthor = await User.findById(originalPost.author);
-
-            return {
-              id: repost.id,
-              author: repost.author,
-              originalID: originalPost.id,
-              originalType: repost.originalType,
-              originalAuthor,
-              repostedAt: repost.repostedAt,
-              body: originalPost.body,
-              originalBody: originalPost.originalBody,
-              amtLikes: originalPost.amtLikes,
-              amtComments: originalPost.amtComments,
-              amtReposts: originalPost.amtReposts,
-              createdAt: originalPost.createdAt,
-              imageUrl: originalPost.imageUrl,
-              hashTags: originalPost.hashTags,
-              mentionedUsers: originalPost.mentionedUsers,
-              parentID: (originalPost as CommentType).parentID,
-              parentType: (originalPost as CommentType).parentType,
-            };
-          })
-        );
-
-        return repostedPosts;
-      } catch (err) {
-        throw new Error('Error fetching reposts');
       }
     },
     getRepostsByUser: async (_, { username, page, limit }) => {
@@ -1696,6 +1704,18 @@ export const resolvers: IResolvers = {
     },
   },
 
+  PostItem: {
+    __resolveType(obj: any, context: any, info: any) {
+      if (obj.originalType) {
+        return 'Repost';
+      }
+      if (obj.body !== undefined) {
+        return 'Post';
+      }
+      return null;
+    },
+  },
+
   Parent: {
     __resolveType(parent: { body?: string; author?: Types.ObjectId; parentID?: string }) {
       if (parent.body && parent.author) {
@@ -1727,10 +1747,19 @@ export const resolvers: IResolvers = {
   },
 
   Post: {
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.body !== undefined && obj.originalType === undefined;
+    },
     hashTags: (parent) => parent.hashTags,
     mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
+    },
+  },
+
+  Repost: {
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.originalType !== undefined;
     },
   },
 

@@ -2,7 +2,13 @@ import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
 import Divider from "@/components/ui/Divider";
-import { HashtagType, PostType, RepostType, UserType } from "@/lib/types";
+import {
+  HashtagType,
+  PostItem,
+  PostType,
+  RepostType,
+  UserType,
+} from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
@@ -17,7 +23,6 @@ import ProfileCard from "./components/ProfileCard";
 import CardSkeleton from "./components/Skeletons/CardSkeleton";
 import PostSkeleton from "./components/Skeletons/PostSkeleton";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
-import { GET_REPOSTS } from "./queries/reposts";
 
 const PAGE_SIZE = 16;
 
@@ -26,31 +31,15 @@ type FilterType = "LATEST" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL";
 const HomePage = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
-  const [repostsPage, setRepostsPage] = useState(1);
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
-  const [repostsHasMore, setRepostsHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [filter, setFilter] = useState<FilterType>("LATEST");
 
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
-    getPosts: (PostType | RepostType)[];
+    getPosts: PostItem[];
   }>(GET_POSTS, {
-    variables: { page: 1, filter, limit: PAGE_SIZE },
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
-    skip: filter === "FOLLOWING" && !user,
-  });
-
-  const {
-    data: repostsData,
-    loading: repostsLoading,
-    error: repostsError,
-    fetchMore: fetchMoreReposts,
-    networkStatus: repostsNetworkStatus,
-    refetch: refetchReposts,
-  } = useQuery<{ getReposts: RepostType[] }>(GET_REPOSTS, {
     variables: { page: 1, filter, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
@@ -70,7 +59,7 @@ const HomePage = () => {
   });
 
   const [createPost, { loading: createLoading }] = useMutation<
-    { createPost: PostType },
+    { createPost: PostItem },
     { body: string; file: File | null }
   >(CREATE_POST, {
     context: {
@@ -87,9 +76,7 @@ const HomePage = () => {
       setFile(null);
       toast.success("Post added successfully!");
       refetch();
-      refetchReposts();
     },
-    refetchQueries: [{ query: GET_POSTS, variables: { page: 1 } }],
   });
 
   const handleAddPost = async (e: React.FormEvent) => {
@@ -113,11 +100,12 @@ const HomePage = () => {
 
   // Infinite scroll to load more posts
   const loadMorePosts = useCallback(async () => {
-    if (!hasMore || loading) return;
+    if (!hasMore || loading || networkStatus === NetworkStatus.fetchMore)
+      return;
 
     try {
       const { data: fetchMoreData } = await fetchMore({
-        variables: { page: page + 1 },
+        variables: { page: page + 1, filter, limit: PAGE_SIZE },
       });
 
       if (fetchMoreData?.getPosts) {
@@ -131,61 +119,27 @@ const HomePage = () => {
     } catch (error) {
       toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
-  }, [fetchMore, hasMore, loading, page]);
-
-  const loadMoreReposts = useCallback(async () => {
-    if (!repostsHasMore || repostsLoading) return;
-
-    try {
-      const { data: fetchMoreData } = await fetchMoreReposts({
-        variables: { page: repostsPage + 1 },
-      });
-
-      if (fetchMoreData?.getReposts) {
-        if (fetchMoreData.getReposts.length < PAGE_SIZE) {
-          setRepostsHasMore(false);
-        }
-        setRepostsPage((prev) => prev + 1);
-      } else {
-        setRepostsHasMore(false);
-      }
-    } catch (error) {
-      toast.error(`Failed to load more posts: ${(error as Error).message}`);
-    }
-  }, [fetchMoreReposts, repostsHasMore, repostsLoading, repostsPage]);
+  }, [fetchMore, hasMore, loading, page, filter, networkStatus]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 200 &&
-        ((networkStatus !== NetworkStatus.fetchMore && hasMore) ||
-          (repostsNetworkStatus !== NetworkStatus.fetchMore && repostsHasMore))
+        hasMore
       ) {
         loadMorePosts();
-        loadMoreReposts();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [
-    hasMore,
-    networkStatus,
-    loadMorePosts,
-    loadMoreReposts,
-    repostsHasMore,
-    repostsNetworkStatus,
-  ]);
+  }, [hasMore, loadMorePosts]);
 
   useEffect(() => {
     setPage(1);
     setHasMore(true);
-    refetch({ page: 1, filter });
-
-    setRepostsPage(1);
-    setRepostsHasMore(true);
-    refetchReposts({ page: 1, filter });
-  }, [filter, refetch, refetchReposts]);
+    refetch({ page: 1, filter, limit: PAGE_SIZE });
+  }, [filter, refetch]);
 
   useEffect(() => {
     if (filter !== "FOLLOWING") {
@@ -194,25 +148,6 @@ const HomePage = () => {
   }, [filter]);
 
   const posts = data?.getPosts ?? [];
-  const reposts = repostsData?.getReposts ?? [];
-
-  const combinedPosts = [...posts, ...reposts].sort((a, b) => {
-    switch (filter) {
-      case "POPULAR":
-        return b.amtLikes - a.amtLikes;
-      case "CONTROVERSIAL":
-        return b.amtComments - a.amtComments;
-      default:
-        return (
-          new Date(
-            parseInt(b.__typename === "Repost" ? b.repostedAt : b.createdAt),
-          ).getTime() -
-          new Date(
-            parseInt(a.__typename === "Repost" ? a.repostedAt : a.createdAt),
-          ).getTime()
-        );
-    }
-  });
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
@@ -242,7 +177,6 @@ const HomePage = () => {
           </a>
         </div>
       </aside>
-
       <main className="w-full max-w-xl">
         <form
           className="flex w-full items-center gap-2"
@@ -262,15 +196,16 @@ const HomePage = () => {
             }
           />
         </form>
-
         <Divider />
-
         <section>
           <ToggleGroup
             value={filter}
             onValueChange={(newFilter: FilterType) => {
               if (newFilter) {
                 setFilter(newFilter);
+                if (newFilter === "FOLLOWING" && !user) {
+                  setShowLoginPrompt(true);
+                }
               }
             }}
             type="single"
@@ -314,7 +249,6 @@ const HomePage = () => {
             </ToggleGroupItem>
           </ToggleGroup>
         </section>
-
         {showLoginPrompt && (
           <div className="my-4 flex flex-col justify-center gap-5">
             <p>You need to log in to view following posts</p>
@@ -328,17 +262,11 @@ const HomePage = () => {
             </button>
           </div>
         )}
-
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
             {error && (
               <p className="mt-4 text-center text-red-500">
                 Error loading posts: {error?.message}
-              </p>
-            )}
-            {repostsError && (
-              <p className="mt-4 text-center text-red-500">
-                Error loading reposts: {repostsError.message}
               </p>
             )}
             {usersError && (
@@ -347,28 +275,29 @@ const HomePage = () => {
               </p>
             )}
 
-            {combinedPosts.length === 0 && loading && repostsLoading
-              ? Array.from({ length: 10 }).map((_, index) => (
-                  <PostSkeleton key={index} />
-                ))
-              : combinedPosts.map((post) =>
-                  post.__typename === "Post" ? (
-                    <Post key={post.id} post={post} />
-                  ) : (
-                    <Repost key={post.id} repost={post} />
-                  ),
-                )}
+            {loading &&
+              Array.from({ length: PAGE_SIZE }).map((_, index) => (
+                <PostSkeleton key={index} />
+              ))}
+            {!loading && posts.length === 0 && (
+              <p className="mt-4">No posts available.</p>
+            )}
+            {!loading &&
+              posts.length > 0 &&
+              posts.map((post) =>
+                post.__typename === "Post" ? (
+                  <Post key={post.id} post={post as PostType} />
+                ) : (
+                  <Repost key={post.id} repost={post as RepostType} />
+                ),
+              )}
           </div>
         )}
 
-        {!hasMore && !repostsHasMore && (
+        {!hasMore && (
           <p className="mt-4 justify-self-center text-gray-500 dark:text-gray-400">
             You've reached the end of the posts.
           </p>
-        )}
-
-        {!loading && !repostsLoading && combinedPosts.length === 0 && (
-          <p className="mt-4">No posts available.</p>
         )}
       </main>
 
