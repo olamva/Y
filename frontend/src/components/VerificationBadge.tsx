@@ -38,8 +38,6 @@ const VerificationBadge = ({
       break;
   }
 
-  console.log(verified);
-
   return (
     verified !== VerifiedTiers.UNVERIFIED && (
       <TooltipProvider>
