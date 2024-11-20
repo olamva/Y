@@ -20,9 +20,11 @@ export const GET_CONTENT_BY_HASHTAG = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         imageUrl
         createdAt
       }
@@ -35,9 +37,11 @@ export const GET_CONTENT_BY_HASHTAG = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         createdAt
         imageUrl
       }

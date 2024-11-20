@@ -62,12 +62,24 @@ export const uploadFile = async (
         }
       });
 
-      stream.on('error', (err) => reject(err));
-      out.on('error', (err) => reject(err));
+      stream.on('error', (err) => {
+        if (fs.existsSync(tempFilePath)) {
+          fs.unlinkSync(tempFilePath);
+        }
+        reject(err);
+      });
+
+      out.on('error', (err) => {
+        if (fs.existsSync(tempFilePath)) {
+          fs.unlinkSync(tempFilePath);
+        }
+        reject(err);
+      });
+
       out.on('finish', async () => {
         try {
           if (username) {
-            await sharp(tempFilePath).resize(300, 300, { fit: 'cover' }).toFile(filepath);
+            await sharp(tempFilePath).rotate().resize(300, 300, { fit: 'cover' }).toFile(filepath);
             fs.unlinkSync(tempFilePath);
           } else {
             fs.renameSync(tempFilePath, filepath);
@@ -77,11 +89,13 @@ export const uploadFile = async (
             message: 'File uploaded successfully',
             url: `/uploads/${uniqueFilename}`,
           });
-        } catch (err) {
+        } catch (err: any) {
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+          }
           reject(err);
         }
       });
-
       stream.pipe(out);
     });
   } catch (error: any) {

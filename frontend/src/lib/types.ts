@@ -5,6 +5,7 @@ type ContentType = {
   author: UserType;
   amtLikes: number;
   amtComments: number;
+  amtReposts: number;
   imageUrl?: string;
   createdAt: string;
 };
@@ -25,6 +26,16 @@ export type CommentType = ContentType & {
   parentType: "post" | "reply";
 };
 
+export type RepostType = ContentType & {
+  __typename: "Repost";
+  originalAuthor: UserType;
+  originalID: string;
+  originalType: "post" | "reply";
+  parentID?: string;
+  parentType?: "post" | "reply";
+  repostedAt: string;
+};
+
 export type UserType = {
   __typename: "User";
   id: string;
@@ -35,6 +46,7 @@ export type UserType = {
   postIds: string[];
   likedPostIds: string[];
   mentionedPostIds: string[];
+  repostedPostIds: string[];
   commentIds: string[];
   likedCommentIds: string[];
   mentionedCommentIds: string[];
@@ -42,4 +54,12 @@ export type UserType = {
   following: UserType[];
   profilePicture?: string;
   backgroundPicture?: string;
+  verified: VerifiedTiers;
 };
+
+export enum VerifiedTiers {
+  UNVERIFIED = "UNVERIFIED",
+  VERIFIED = "VERIFIED",
+  MADS = "MADS",
+  DEVELOPER = "DEVELOPER",
+}

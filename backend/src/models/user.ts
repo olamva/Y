@@ -10,6 +10,7 @@ export interface UserType extends Document {
   postIds: string[];
   likedPostIds: string[];
   mentionedPostIds: string[];
+  repostedPostIds: string[];
   commentIds: string[];
   likedCommentIds: string[];
   mentionedCommentIds: string[];
@@ -18,6 +19,14 @@ export interface UserType extends Document {
   profilePicture?: string;
   backgroundPicture?: string;
   comparePassword: (candidatePassword: string) => Promise<boolean>;
+  verified?: VerifiedTiers;
+}
+
+export enum VerifiedTiers {
+  UNVERIFIED = 'UNVERIFIED',
+  VERIFIED = 'VERIFIED',
+  MADS = 'MADS',
+  DEVELOPER = 'DEVELOPER',
 }
 
 const UserSchema = new Schema<UserType>({
@@ -29,6 +38,7 @@ const UserSchema = new Schema<UserType>({
   postIds: { type: [String], default: [] },
   likedPostIds: { type: [String], default: [] },
   mentionedPostIds: { type: [String], default: [] },
+  repostedPostIds: { type: [String], default: [] },
   commentIds: { type: [String], default: [] },
   likedCommentIds: { type: [String], default: [] },
   mentionedCommentIds: { type: [String], default: [] },
@@ -36,6 +46,11 @@ const UserSchema = new Schema<UserType>({
   following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
   profilePicture: { type: String, default: undefined },
   backgroundPicture: { type: String, default: undefined },
+  verified: {
+    type: String,
+    enum: Object.values(VerifiedTiers),
+    default: VerifiedTiers.UNVERIFIED,
+  },
 });
 
 UserSchema.pre('save', async function (next) {

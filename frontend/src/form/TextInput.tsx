@@ -1,9 +1,9 @@
-import Avatar from "@/components/Profile/Avatar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Username from "@/components/Username";
 import useDebounce from "@/hooks/useDebounce"; // Import the debounce hook
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
@@ -69,7 +69,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       } else {
         refetchHashtags();
       }
-    }, [debouncedQuery, refetchHashtags, refetchUsers]);
+    }, [debouncedQuery, refetchHashtags, refetchUsers, suggestionType]);
 
     useEffect(() => {
       if (suggestionType === "users") {
@@ -101,16 +101,13 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
       };
-    }, []);
+    }, [ref]);
 
     const handleAutofill = () => {
       const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
       if (!selectedSuggestion) {
-        handleInputChange({
-          target: {
-            value: value + " ",
-          },
-        } as ChangeEvent<HTMLTextAreaElement>);
+        setShowSuggestions(false);
+        setQuery("");
         return;
       }
       const lastAt = value.lastIndexOf("@");
@@ -188,7 +185,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
 
       if (
         lastSymbol !== -1 &&
-        /^[a-zA-Z0-9]*$/.test(textBeforeCaret.slice(lastSymbol + 1))
+        /^[a-zA-Z0-9_æøåÆØÅ]*$/.test(textBeforeCaret.slice(lastSymbol + 1))
       ) {
         setShowSuggestions(true);
         setQuery(textBeforeCaret.slice(lastSymbol + 1));
@@ -287,20 +284,24 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                       onClick={handleAutofill}
                       onMouseEnter={() => setActiveSuggestionIndex(index)}
                     >
-                      <div className="flex items-center gap-1">
+                      <div
+                        className={`flex items-center ${isUser ? "gap-1" : ""}`}
+                      >
                         {isUser ? (
-                          <Avatar noHref user={suggestion} />
+                          <Username
+                            user={suggestion}
+                            customBadgeColors={
+                              index === activeSuggestionIndex
+                                ? "text-white"
+                                : "text-blue-500 dark:text-blue-400"
+                            }
+                            noHref
+                          />
                         ) : (
                           <p className="flex h-full items-center justify-center">
-                            #
+                            #{suggestion.tag}
                           </p>
                         )}
-
-                        <p>
-                          {isUser
-                            ? `${suggestion.username}`
-                            : `${suggestion.tag}`}
-                        </p>
                       </div>
                     </div>
                   );

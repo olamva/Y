@@ -11,6 +11,7 @@ interface PostProps {
   doesntRedirect?: boolean;
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
+  goHomeOnDelete?: boolean;
 }
 
 const Post = ({
@@ -18,6 +19,7 @@ const Post = ({
   doesntRedirect,
   disableBottomMargin = false,
   disableTopMargin = false,
+  goHomeOnDelete = false,
 }: PostProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
@@ -70,6 +72,9 @@ const Post = ({
       onCompleted: () => {
         setIsDeleted(true);
         toast.success("Post deleted successfully");
+        if (goHomeOnDelete) {
+          window.location.href = "/project2";
+        }
       },
       onError: (err) => {
         toast.error(`Error deleting post: ${err.message}`);
@@ -95,7 +100,6 @@ const Post = ({
 
     try {
       await deletePostMutation();
-      window.location.href = "/project2/";
     } catch (error) {
       toast.error(`Error deleting post: ${(error as Error).message}`);
     }

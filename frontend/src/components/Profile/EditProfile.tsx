@@ -26,9 +26,9 @@ const EditProfile = ({ user }: Props) => {
     null,
   );
 
-  const [firstName, setFirstName] = useState<string | null>(null);
-  const [lastName, setLastName] = useState<string | null>(null);
-  const [biography, setBiography] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string>(user.firstName || "");
+  const [lastName, setLastName] = useState<string>(user.lastName || "");
+  const [biography, setBiography] = useState<string>(user.biography || "");
 
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -97,16 +97,26 @@ const EditProfile = ({ user }: Props) => {
       );
     }
 
-    if (firstName || lastName || biography) {
-      promises.push(
-        updateProfile({
-          variables: {
-            firstName: firstName || undefined,
-            lastName: lastName || undefined,
-            biography: biography || undefined,
-          },
-        }),
-      );
+    const updatedFields: {
+      firstName?: string;
+      lastName?: string;
+      biography?: string;
+    } = {};
+
+    if (firstName !== user.firstName) {
+      updatedFields.firstName = firstName;
+    }
+
+    if (lastName !== user.lastName) {
+      updatedFields.lastName = lastName;
+    }
+
+    if (biography !== user.biography) {
+      updatedFields.biography = biography;
+    }
+
+    if (Object.keys(updatedFields).length > 0) {
+      promises.push(updateProfile({ variables: updatedFields }));
     }
 
     try {
@@ -168,7 +178,7 @@ const EditProfile = ({ user }: Props) => {
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="transform rounded-md bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600"
+        className="transform rounded-md bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 sm:px-4 sm:text-base"
       >
         Edit Profile
       </button>
@@ -221,7 +231,7 @@ const EditProfile = ({ user }: Props) => {
                           ref={firstInputRef}
                           type="text"
                           id="first-name"
-                          defaultValue={user.firstName}
+                          value={firstName}
                           maxLength={20}
                           placeholder="What's your first name?"
                           onChange={(e) => setFirstName(e.target.value)}
@@ -238,7 +248,7 @@ const EditProfile = ({ user }: Props) => {
                         <input
                           type="text"
                           id="last-name"
-                          defaultValue={user.lastName}
+                          value={lastName}
                           maxLength={20}
                           placeholder="What's your last name?"
                           onChange={(e) => setLastName(e.target.value)}
@@ -255,7 +265,7 @@ const EditProfile = ({ user }: Props) => {
                       </label>
                       <textarea
                         id="biography"
-                        defaultValue={user.biography}
+                        value={biography}
                         placeholder="Tell us about yourself..."
                         onChange={(e) => {
                           e.target.style.height = "auto";

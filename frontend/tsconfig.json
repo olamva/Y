@@ -12,7 +12,12 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "types": ["cypress", "vitest/globals", "@testing-library/jest-dom"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types",
+      "cypress/**/*.ts",
+      "cypress/**/*.tsx"
+    ],
   }
 }

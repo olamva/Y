@@ -1,4 +1,3 @@
-// src/utils/auth.ts
 import jwt from 'jsonwebtoken';
 import { UserType } from './models/user';
 
@@ -11,7 +10,7 @@ export const signToken = (user: UserType) => {
       username: user.username,
     },
     JWT_SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: '168h' }
   );
 };
 

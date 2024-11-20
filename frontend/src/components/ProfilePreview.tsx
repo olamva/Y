@@ -1,5 +1,6 @@
 import Avatar from "@/components/Profile/Avatar";
 import { UserType } from "@/lib/types";
+import Username from "./Username";
 import CoverPhoto from "/coverphoto.jpg";
 
 const ProfilePreview = ({ user }: { user: UserType }) => (
@@ -24,10 +25,7 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
       <h2 className="text-lg">
         {user?.firstName} {user?.lastName}
       </h2>
-      <p className="text-md break-words font-mono">
-        <span className="font-sans">@</span>
-        {user.username}
-      </p>
+      <Username user={user} noHref noAvatar smallBadge />
     </div>
   </a>
 );

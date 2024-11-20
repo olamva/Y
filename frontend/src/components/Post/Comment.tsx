@@ -17,6 +17,7 @@ interface CommentProps {
   doesntRedirect?: boolean;
   redirectToParentOnDelete?: boolean;
   maxWidth?: string;
+  goHomeOnDelete?: boolean;
 }
 const Comment = ({
   comment,
@@ -25,6 +26,7 @@ const Comment = ({
   doesntRedirect = false,
   redirectToParentOnDelete = false,
   maxWidth,
+  goHomeOnDelete,
 }: CommentProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
@@ -58,6 +60,9 @@ const Comment = ({
       onCompleted: () => {
         setIsDeleted(true);
         toast.success("Comment deleted");
+        if (goHomeOnDelete) {
+          window.location.href = "/project2";
+        }
       },
     });
 

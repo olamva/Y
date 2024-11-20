@@ -1,13 +1,15 @@
 type Query {
-  getPosts(page: Int!, filter: PostFilter!): [Post!]!
+  getPosts(page: Int!, filter: PostFilter!, limit: Int!): [Post!]!
   getPost(id: ID!): Post
+  getReposts(page: Int!, filter: PostFilter!, limit: Int!): [Repost!]!
+  getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!
   getComments(postID: ID!, page: Int!): [Comment!]!
   getUser(username: String!): User
   getUsers(page: Int!): [User!]!
   searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!, page: Int!, limit: Int!): [User!]!
   searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
-  getPostsByIds(ids: [ID!]!, page: Int!): [Post!]!
+  getPostsByIds(ids: [ID!]!, page: Int!, limit: Int!): [Post!]!
   getComment(id: ID!): Comment
   getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
@@ -21,6 +23,13 @@ enum PostFilter {
   FOLLOWING
   POPULAR
   CONTROVERSIAL
+}
+
+enum VerifiedTiers {
+  UNVERIFIED
+  VERIFIED
+  MADS
+  DEVELOPER
 }
 
 union Parent = Post | Comment
@@ -39,6 +48,7 @@ type Post {
   author: User!
   amtLikes: Int!
   amtComments: Int!
+  amtReposts: Int!
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
@@ -53,6 +63,7 @@ type Comment {
   parentType: String!
   amtLikes: Int!
   amtComments: Int!
+  amtReposts: Int!
   createdAt: String!
   imageUrl: String
   hashTags: [String!]!
@@ -73,6 +84,7 @@ type User {
   postIds: [ID!]!
   likedPostIds: [ID!]!
   mentionedPostIds: [ID!]!
+  repostedPostIds: [ID!]!
   commentIds: [ID!]!
   likedCommentIds: [ID!]!
   mentionedCommentIds: [ID!]!
@@ -80,10 +92,33 @@ type User {
   followers: [User!]!
   profilePicture: String
   backgroundPicture: String
+  verified: VerifiedTiers!
+}
+
+type Repost {
+  id: ID!
+  author: User!
+  originalID: ID!
+  originalType: String!
+  originalAuthor: User!
+  repostedAt: String!
+  body: String
+  originalBody: String
+  amtLikes: Int!
+  amtComments: Int!
+  amtReposts: Int!
+  createdAt: String!
+  imageUrl: String
+  hashTags: [String!]!
+  mentionedUsers: [User!]!
+  parentID: ID
+  parentType: String
 }
 
 type Mutation {
   createPost(body: String, file: Upload): Post!
+  repost(id: ID!, type: String!): Repost!
+  unrepost(id: ID!): Repost!
   editPost(id: ID!, body: String, file: Upload): Post!
   editComment(id: ID!, body: String, file: Upload): Comment!
   createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!

@@ -20,14 +20,14 @@ exports[`Navbar > matches the snapshot 1`] = `
       </h1>
     </a>
     <div
-      class="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg lg:justify-end"
+      class="mx-4 flex flex-1 items-center justify-center gap-2 lg:justify-end"
     >
       <input
-        aria-controls="radix-:r3:"
+        aria-controls="radix-:r4:"
         aria-expanded="false"
         aria-haspopup="dialog"
         autocomplete="off"
-        class="w-full rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
+        class="w-full max-w-xs rounded-md bg-gray-100 p-2 outline-none dark:bg-gray-800"
         data-state="closed"
         id="search"
         maxlength="40"
@@ -121,7 +121,7 @@ exports[`Navbar > matches the snapshot 1`] = `
           </button>
         </div>
         <div
-          class="flex items-center gap-2"
+          class="flex items-center gap-4"
         >
           <button
             class="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"

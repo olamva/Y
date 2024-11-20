@@ -17,6 +17,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HashtagPage from "./pages/HashtagPage";
 import HashtagsPage from "./pages/HashtagsPage";
 import UsersPage from "./pages/UsersPage";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
     path: "/project2/hashtag/:hashtag",
     element: <HashtagPage />,
   },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
@@ -75,7 +80,7 @@ createRoot(document.getElementById("root")!).render(
     <ApolloProvider client={client}>
       <AuthProvider>
         <Toaster />
-        <div className="flex min-h-svh min-w-fit flex-col bg-gray-100 dark:bg-gray-800">
+        <div className="flex min-h-svh flex-col bg-gray-100 dark:bg-gray-800">
           <Navbar />
           <div className="mb-4 flex flex-grow items-start">
             <RouterProvider router={router} />

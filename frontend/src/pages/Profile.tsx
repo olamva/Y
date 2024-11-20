@@ -3,8 +3,13 @@ import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
 import Avatar from "@/components/Profile/Avatar";
+import CommentsView from "@/components/Profile/CommentsView";
 import EditProfile from "@/components/Profile/EditProfile";
+import LikesView from "@/components/Profile/LikesView";
+import MentionsView from "@/components/Profile/MentionsView";
+import PostsView from "@/components/Profile/PostsView";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
@@ -13,10 +18,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import MentionsView from "@/components/Profile/MentionsView";
-import CommentsView from "@/components/Profile/CommentsView";
-import PostsView from "@/components/Profile/PostsView";
-import LikesView from "@/components/Profile/LikesView";
+import NotFound from "./NotFound";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -39,6 +41,7 @@ const Profile = () => {
     variables: { username },
     onCompleted: () => {
       toast.success("User deleted successfully");
+      window.location.href = "/project2/";
     },
     onError: (err) => {
       toast.error(`Error deleting user: ${err.message}`);
@@ -53,7 +56,6 @@ const Profile = () => {
 
     try {
       await deleteUser();
-      window.location.href = "/project2/";
     } catch (error) {
       toast.error(`Error deleting post: ${(error as Error).message}`);
     }
@@ -95,7 +97,7 @@ const Profile = () => {
 
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
-  if (!user) return <p>User not found.</p>;
+  if (!user) return <NotFound page="user" />;
 
   return (
     <div className="w-full px-5">
@@ -111,9 +113,9 @@ const Profile = () => {
         </div>
       )}
       {username ? (
-        <>
+        <div className="flex flex-col items-center">
           {/* User Profile Section */}
-          <section className="mb-8">
+          <section className="mb-8 w-full max-w-5xl">
             {/* Background and Avatar */}
             <div className="relative h-64 md:h-96">
               <img
@@ -128,12 +130,19 @@ const Profile = () => {
             </div>
             {/* User Info */}
             <div className="mx-auto max-w-5xl">
-              <div className="relative -mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
-                <Avatar user={user} large={true} />
-                <div className="sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:pb-1">
+              <div className="-mt-16 flex items-end space-x-5">
+                <Avatar user={user} large />
+                <div className="flex min-w-0 flex-1 items-center justify-end pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
-                    <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
-                      {user?.firstName} {user?.lastName}
+                    <h1 className="flex items-center gap-2 truncate text-2xl font-bold text-gray-900 dark:text-white">
+                      <span>
+                        {user?.firstName
+                          ? user.lastName
+                            ? `${user.firstName} ${user.lastName}`
+                            : user.firstName
+                          : user.username}
+                      </span>
+                      <VerificationBadge verified={user.verified} />
                     </h1>
                     <div className="flex flex-row gap-2">
                       <p className="text-md text-gray-500">@{user.username}</p>
@@ -144,12 +153,13 @@ const Profile = () => {
                   </div>
                   <div className="flex gap-2 md:mt-0">
                     {loggedInUser &&
+                      username !== "admin" &&
                       (loggedInUser.username === username ||
                         loggedInUser.username === "admin") && (
                         <button
                           onClick={handleDelete}
                           disabled={deleteLoading}
-                          className="transform rounded-md bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-red-600 hover:to-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 dark:from-red-400 dark:to-red-500 dark:hover:from-red-500 dark:hover:to-red-600"
+                          className="transform rounded-md bg-gradient-to-r from-red-500 to-red-600 px-2 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-red-600 hover:to-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 dark:from-red-400 dark:to-red-500 dark:hover:from-red-500 dark:hover:to-red-600 sm:px-4 sm:text-base"
                         >
                           Delete User
                         </button>
@@ -161,7 +171,7 @@ const Profile = () => {
                 </div>
               </div>
               {/* Mobile User Info */}
-              <div className="mt-6 min-w-0 flex-1 sm:block md:hidden">
+              <div className="mt-6 block min-w-0 flex-1 md:hidden">
                 <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
                   {user?.firstName} {user?.lastName}
                 </h1>
@@ -212,7 +222,7 @@ const Profile = () => {
             </div>
           </section>
           {/* Toggle Group for Views */}
-          <section className="w-full max-w-5xl justify-self-center">
+          <section className="w-full max-w-5xl">
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => {
@@ -229,7 +239,9 @@ const Profile = () => {
                 aria-label="View Posts"
                 className="text-center"
               >
-                <p>{user?.postIds.length} Posts</p>
+                <p>
+                  {user?.postIds.length + user.repostedPostIds.length} Posts
+                </p>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="comments"
@@ -261,7 +273,13 @@ const Profile = () => {
               </ToggleGroupItem>
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
-              {currentView === "posts" && <PostsView postIds={user.postIds} />}
+              {currentView === "posts" && (
+                <PostsView
+                  postIds={user.postIds}
+                  fetchReposts={user.repostedPostIds.length > 0}
+                  username={user.username}
+                />
+              )}
               {currentView === "comments" && (
                 <CommentsView commentIds={user.commentIds} />
               )}
@@ -291,7 +309,7 @@ const Profile = () => {
                   : []
             }
           />
-        </>
+        </div>
       ) : (
         <div className="flex w-full flex-col items-center gap-4">
           <h1 className="text-4xl">You are not logged in</h1>

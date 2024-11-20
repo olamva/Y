@@ -11,9 +11,11 @@ export const GET_COMMENTS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }
@@ -31,9 +33,11 @@ export const GET_COMMENT = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }
@@ -51,9 +55,11 @@ export const GET_COMMENTS_BY_IDS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }
@@ -82,6 +88,7 @@ export const CREATE_COMMENT = gql`
         id
         username
         profilePicture
+        verified
       }
       createdAt
       imageUrl
@@ -118,8 +125,8 @@ export const LIKE_COMMENT = gql`
 `;
 
 export const UNLIKE_COMMENT = gql`
-  mutation UnlikePost($id: ID!) {
-    unlikePost(id: $id) {
+  mutation UnlikeComment($id: ID!) {
+    unlikeComment(id: $id) {
       id
       amtLikes
     }

@@ -23,19 +23,25 @@ export const GET_USER_QUERY = gql`
       postIds
       likedPostIds
       mentionedPostIds
+      repostedPostIds
       commentIds
       likedCommentIds
       mentionedCommentIds
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
       profilePicture
       backgroundPicture
+      verified
     }
   }
 `;
@@ -51,19 +57,25 @@ export const GET_USERS = gql`
       postIds
       likedPostIds
       mentionedPostIds
+      repostedPostIds
       commentIds
       likedCommentIds
       mentionedCommentIds
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
       profilePicture
       backgroundPicture
+      verified
     }
   }
 `;
@@ -95,10 +107,14 @@ export const FOLLOW_USER_MUTATION = gql`
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
     }
   }
@@ -112,10 +128,14 @@ export const UNFOLLOW_USER_MUTATION = gql`
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
     }
   }

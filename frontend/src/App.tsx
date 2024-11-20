@@ -2,7 +2,7 @@ import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
 import Divider from "@/components/ui/Divider";
-import { HashtagType, PostType, UserType } from "@/lib/types";
+import { HashtagType, PostType, RepostType, UserType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
@@ -12,28 +12,46 @@ import { Users } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import HashTagCard from "./components/HashtagCard";
+import Repost from "./components/Post/Repost";
 import ProfileCard from "./components/ProfileCard";
-import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
-import PostSkeleton from "./components/Skeletons/PostSkeleton";
 import CardSkeleton from "./components/Skeletons/CardSkeleton";
+import PostSkeleton from "./components/Skeletons/PostSkeleton";
+import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
+import { GET_REPOSTS } from "./queries/reposts";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 16;
 
 type FilterType = "LATEST" | "FOLLOWING" | "POPULAR" | "CONTROVERSIAL";
 
 const HomePage = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
+  const [repostsPage, setRepostsPage] = useState(1);
   const [postBody, setPostBody] = useState("");
   const [hasMore, setHasMore] = useState(true);
+  const [repostsHasMore, setRepostsHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [filter, setFilter] = useState<FilterType>("LATEST");
 
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
-    getPosts: PostType[];
+    getPosts: (PostType | RepostType)[];
   }>(GET_POSTS, {
-    variables: { page: 1, filter },
+    variables: { page: 1, filter, limit: PAGE_SIZE },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+    skip: filter === "FOLLOWING" && !user,
+  });
+
+  const {
+    data: repostsData,
+    loading: repostsLoading,
+    error: repostsError,
+    fetchMore: fetchMoreReposts,
+    networkStatus: repostsNetworkStatus,
+    refetch: refetchReposts,
+  } = useQuery<{ getReposts: RepostType[] }>(GET_REPOSTS, {
+    variables: { page: 1, filter, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
     skip: filter === "FOLLOWING" && !user,
@@ -69,6 +87,7 @@ const HomePage = () => {
       setFile(null);
       toast.success("Post added successfully!");
       refetch();
+      refetchReposts();
     },
     refetchQueries: [{ query: GET_POSTS, variables: { page: 1 } }],
   });
@@ -114,26 +133,59 @@ const HomePage = () => {
     }
   }, [fetchMore, hasMore, loading, page]);
 
+  const loadMoreReposts = useCallback(async () => {
+    if (!repostsHasMore || repostsLoading) return;
+
+    try {
+      const { data: fetchMoreData } = await fetchMoreReposts({
+        variables: { page: repostsPage + 1 },
+      });
+
+      if (fetchMoreData?.getReposts) {
+        if (fetchMoreData.getReposts.length < PAGE_SIZE) {
+          setRepostsHasMore(false);
+        }
+        setRepostsPage((prev) => prev + 1);
+      } else {
+        setRepostsHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  }, [fetchMoreReposts, repostsHasMore, repostsLoading, repostsPage]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 200 &&
-        networkStatus !== NetworkStatus.fetchMore &&
-        hasMore
+        ((networkStatus !== NetworkStatus.fetchMore && hasMore) ||
+          (repostsNetworkStatus !== NetworkStatus.fetchMore && repostsHasMore))
       ) {
         loadMorePosts();
+        loadMoreReposts();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, page, hasMore, networkStatus, loadMorePosts]);
+  }, [
+    hasMore,
+    networkStatus,
+    loadMorePosts,
+    loadMoreReposts,
+    repostsHasMore,
+    repostsNetworkStatus,
+  ]);
 
   useEffect(() => {
     setPage(1);
     setHasMore(true);
     refetch({ page: 1, filter });
-  }, [filter, refetch]);
+
+    setRepostsPage(1);
+    setRepostsHasMore(true);
+    refetchReposts({ page: 1, filter });
+  }, [filter, refetch, refetchReposts]);
 
   useEffect(() => {
     if (filter !== "FOLLOWING") {
@@ -141,19 +193,30 @@ const HomePage = () => {
     }
   }, [filter]);
 
-  if (error || usersError)
-    return (
-      <p className="mt-4 text-center text-red-500">
-        Error loading posts:{" "}
-        {(error?.message ?? usersError?.message) || "Unknown error"}
-      </p>
-    );
+  const posts = data?.getPosts ?? [];
+  const reposts = repostsData?.getReposts ?? [];
 
-  const posts = data?.getPosts || [];
+  const combinedPosts = [...posts, ...reposts].sort((a, b) => {
+    switch (filter) {
+      case "POPULAR":
+        return b.amtLikes - a.amtLikes;
+      case "CONTROVERSIAL":
+        return b.amtComments - a.amtComments;
+      default:
+        return (
+          new Date(
+            parseInt(b.__typename === "Repost" ? b.repostedAt : b.createdAt),
+          ).getTime() -
+          new Date(
+            parseInt(a.__typename === "Repost" ? a.repostedAt : a.createdAt),
+          ).getTime()
+        );
+    }
+  });
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+      <aside className="hidden w-full max-w-60 py-8 lg:flex">
         {hashtagsError && (
           <p className="mt-4 text-center text-red-500">
             Error loading hashtags: {hashtagsError.message}
@@ -268,26 +331,48 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            {posts.length === 0
+            {error && (
+              <p className="mt-4 text-center text-red-500">
+                Error loading posts: {error?.message}
+              </p>
+            )}
+            {repostsError && (
+              <p className="mt-4 text-center text-red-500">
+                Error loading reposts: {repostsError.message}
+              </p>
+            )}
+            {usersError && (
+              <p className="mt-4 text-center text-red-500">
+                Error loading users: {usersError.message}
+              </p>
+            )}
+
+            {combinedPosts.length === 0 && loading && repostsLoading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
                 ))
-              : posts.map((post) => <Post key={post.id} post={post} />)}
+              : combinedPosts.map((post) =>
+                  post.__typename === "Post" ? (
+                    <Post key={post.id} post={post} />
+                  ) : (
+                    <Repost key={post.id} repost={post} />
+                  ),
+                )}
           </div>
         )}
 
-        {!hasMore && (
+        {!hasMore && !repostsHasMore && (
           <p className="mt-4 justify-self-center text-gray-500 dark:text-gray-400">
             You've reached the end of the posts.
           </p>
         )}
 
-        {!loading && data?.getPosts.length === 0 && (
+        {!loading && !repostsLoading && combinedPosts.length === 0 && (
           <p className="mt-4">No posts available.</p>
         )}
       </main>
 
-      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+      <aside className="hidden w-full max-w-60 py-8 lg:flex">
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl font-extralight">People to follow</h1>
 

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_POSTS = gql`
-  query GetPosts($page: Int!, $filter: PostFilter!) {
-    getPosts(page: $page, filter: $filter) {
+  query GetPosts($page: Int!, $filter: PostFilter!, $limit: Int!) {
+    getPosts(page: $page, filter: $filter, limit: $limit) {
       id
       body
       originalBody
@@ -10,9 +10,11 @@ export const GET_POSTS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
+      amtReposts
       imageUrl
       createdAt
     }
@@ -29,9 +31,11 @@ export const GET_POST = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
+      amtReposts
       imageUrl
       createdAt
     }
@@ -39,8 +43,8 @@ export const GET_POST = gql`
 `;
 
 export const GET_POSTS_BY_IDS = gql`
-  query GetPostsByIds($ids: [ID!]!, $page: Int!) {
-    getPostsByIds(ids: $ids, page: $page) {
+  query GetPostsByIds($ids: [ID!]!, $page: Int!, $limit: Int!) {
+    getPostsByIds(ids: $ids, page: $page, limit: $limit) {
       id
       body
       originalBody
@@ -48,9 +52,11 @@ export const GET_POSTS_BY_IDS = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       amtComments
+      amtReposts
       createdAt
       imageUrl
     }
@@ -66,10 +72,12 @@ export const CREATE_POST = gql`
         id
         username
         profilePicture
+        verified
       }
       amtLikes
       hashTags
       amtComments
+      amtReposts
       imageUrl
       createdAt
       __typename
@@ -123,9 +131,11 @@ export const GET_PARENT = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         imageUrl
         createdAt
       }
@@ -138,9 +148,11 @@ export const GET_PARENT = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         createdAt
         imageUrl
       }
@@ -159,9 +171,11 @@ export const GET_PARENTS_BY_IDS = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         imageUrl
         createdAt
       }
@@ -174,9 +188,11 @@ export const GET_PARENTS_BY_IDS = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         createdAt
         imageUrl
       }

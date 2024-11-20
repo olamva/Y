@@ -10,9 +10,11 @@ export const SEARCH_POSTS = gql`
           id
           username
           profilePicture
+          verified
         }
         amtLikes
         amtComments
+        amtReposts
         createdAt
       }
     }
@@ -26,6 +28,7 @@ export const SEARCH_USERS = gql`
         id
         username
         profilePicture
+        verified
       }
     }
   }
