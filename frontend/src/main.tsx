@@ -75,7 +75,7 @@ createRoot(document.getElementById("root")!).render(
     <ApolloProvider client={client}>
       <AuthProvider>
         <Toaster />
-        <div className="flex min-h-svh min-w-fit flex-col bg-gray-100 dark:bg-gray-800">
+        <div className="flex min-h-svh flex-col bg-gray-100 dark:bg-gray-800">
           <Navbar />
           <div className="mb-4 flex flex-grow items-start">
             <RouterProvider router={router} />

@@ -81,10 +81,10 @@ const UsersPage = () => {
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All users</h1>
         <Divider />
-        <div className="flex w-full flex-wrap justify-center gap-4">
+        <div className="flex w-full flex-wrap justify-center gap-2 md:gap-4">
           {users.map((user) => (
             <div
-              className="w-full min-w-24 max-w-56 md:min-w-64 md:max-w-72"
+              className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
               key={user.id}
             >
               <ProfileCard user={user} large />

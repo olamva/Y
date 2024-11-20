@@ -22,7 +22,7 @@ const ProfileCard = ({ user, large }: Props) => {
           backgroundPosition: "center top",
         }}
         href={`/project2/user/${user.username}`}
-        className="flex h-64 w-full flex-col items-center justify-center rounded-lg border border-gray-400 bg-zinc-200 bg-cover bg-no-repeat shadow-xl hover:opacity-80 dark:border-gray-600 dark:bg-zinc-800"
+        className="flex min-h-48 w-full flex-col items-center justify-center rounded-lg border border-gray-400 bg-zinc-200 bg-cover bg-no-repeat shadow-xl hover:opacity-80 dark:border-gray-600 dark:bg-zinc-800 md:min-h-64"
       >
         <div className="flex flex-col items-center gap-2">
           <div className="flex-shrink-0">
@@ -32,7 +32,7 @@ const ProfileCard = ({ user, large }: Props) => {
             user={user}
             noHref
             noAvatar
-            className="text-2xl font-bold"
+            className="text-base sm:text-xl font-bold md:text-2xl"
           />
           <FollowButton targetUsername={user.username} />
         </div>
