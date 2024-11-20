@@ -29,6 +29,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
   const handleDelete = async () => {
     try {
       await deleteNotification();
+      toast.success("Notification marked as read");
     } catch (error) {
       toast.error(`Error deleting notification: ${(error as Error).message}`);
     }
@@ -53,6 +54,14 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
       text = `reposted your ${notification.postType === "post" ? "post" : "comment"}`;
       href = `/project2/${notification.postType}/${notification.postID}`;
       break;
+    case "COMMENT":
+      if (!notification.postType) {
+        text = "Unknown post type";
+        break;
+      }
+      text = `commented on your ${notification.postType === "post" ? "post" : "comment"}`;
+      href = `/project2/${notification.postType}/${notification.postID}`;
+      break;
     case "MENTION":
       if (!notification.postType) {
         text = "Unknown post type";
@@ -69,7 +78,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
 
   return (
     <a
-      className="flex w-full items-center justify-between gap-4 p-2 text-center text-sm transition-colors hover:bg-gray-200"
+      className="flex w-full items-center justify-between gap-4 p-2 text-center text-sm transition-colors hover:bg-gray-200 lg:p-3"
       href={href}
     >
       <div className="flex items-center justify-start gap-1 break-words">
