@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import Navbar from "@/components/Navbar/Navbar";
-import { vi, describe, it, expect } from "vitest";
-import { MockedProvider } from "@apollo/client/testing";
-import userEvent from "@testing-library/user-event";
 import { useAuth } from "@/components/AuthContext";
+import Navbar from "@/components/Navbar/Navbar";
+import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/components/AuthContext", () => ({
   useAuth: vi.fn().mockReturnValue({
@@ -42,6 +42,13 @@ describe("Navbar", () => {
   it("shows login button when user is not logged in", () => {
     vi.mocked(useAuth).mockReturnValue({
       logout: vi.fn(),
+      isLoggedIn: false,
+      token: null,
+      user: null,
+      login: vi.fn(),
+      following: [],
+      setFollowing: vi.fn(),
+      refetchUser: vi.fn(),
     });
 
     render(
