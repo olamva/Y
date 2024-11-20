@@ -136,7 +136,9 @@ const Profile = () => {
                     <h1 className="flex items-center gap-2 truncate text-2xl font-bold text-gray-900 dark:text-white">
                       <span>
                         {user?.firstName
-                          ? `${user.firstName} ${user.lastName}`
+                          ? user.lastName
+                            ? `${user.firstName} ${user.lastName}`
+                            : user.firstName
                           : user.username}
                       </span>
                       <VerificationBadge verified={user.verified} />
