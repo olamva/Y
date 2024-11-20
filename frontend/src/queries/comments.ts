@@ -125,8 +125,8 @@ export const LIKE_COMMENT = gql`
 `;
 
 export const UNLIKE_COMMENT = gql`
-  mutation UnlikePost($id: ID!) {
-    unlikePost(id: $id) {
+  mutation UnlikeComment($id: ID!) {
+    unlikeComment(id: $id) {
       id
       amtLikes
     }
