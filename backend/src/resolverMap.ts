@@ -643,8 +643,6 @@ export const resolvers: IResolvers = {
 
         const originalAuthor = await User.findById(originalPost.author);
 
-        console.log(user.id);
-
         const combinedPost = {
           id: repost.id,
           author: user,
