@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Footer > renders correctly in the DOM 1`] = `
+<DocumentFragment>
+  <footer
+    class="border-t border-gray-200 bg-gray-200 dark:border-gray-700 dark:bg-gray-950"
+  >
+    <div
+      class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"
+    >
+      <div
+        class="flex flex-col items-center justify-end sm:flex-row"
+      >
+        <p
+          class="text-sm text-gray-700 dark:text-gray-300"
+        >
+          © 2024 Y Corporation. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+</DocumentFragment>
+`;
