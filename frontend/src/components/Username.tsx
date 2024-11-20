@@ -27,11 +27,11 @@ const Username = ({
         onClick: (e: MouseEvent | TouchEvent) => e.stopPropagation(),
       };
   return (
-    <Tag className="flex items-center gap-2" {...tagProps}>
-      {!noAvatar && <Avatar user={user} noHref large={false} />}
+    <Tag className="group flex items-center gap-2" {...tagProps}>
+      {!noAvatar && <Avatar disableHover user={user} noHref large={false} />}
       <div className="flex items-center gap-1">
         <p
-          className={`break-words font-mono ${noHref ? "" : "underline-offset-4 hover:underline"} ${className}`}
+          className={`break-words font-mono ${noHref ? "" : "underline-offset-4 group-hover:underline"} ${className}`}
         >
           <span className="font-sans">@</span>
           {user.username}
