@@ -671,17 +671,12 @@ export const resolvers: IResolvers = {
         throw new Error('Error reposting');
       }
     },
-    unrepost: async (_, { id }, context) => {
-      if (!context.user) {
+    unrepost: async (_, { id }, { user }) => {
+      if (!user) {
         throw new AuthenticationError('You must be logged in to unrepost');
       }
 
-      const user = await User.findById(context.user.id);
-      if (!user) {
-        throw new UserInputError('User not found');
-      }
-
-      const repost = await Repost.findOneAndDelete({ originalID: id });
+      const repost = await Repost.findOne({ author: user.id, originalID: id });
 
       if (!repost) {
         throw new UserInputError('Repost not found');
@@ -704,7 +699,7 @@ export const resolvers: IResolvers = {
       }
 
       try {
-        await Repost.findByIdAndDelete(id);
+        await Repost.findOneAndDelete({ originalID: id, author: user.id });
 
         originalPost.amtReposts -= 1;
         await originalPost.save();
