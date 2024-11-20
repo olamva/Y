@@ -1196,6 +1196,11 @@ export const resolvers: IResolvers = {
           }
         }
 
+        if (deletedPost.amtReposts > 0) {
+          await User.updateMany({ $pull: { repostedPostIds: deletedPost.id } });
+          await Repost.deleteMany({ originalID: deletedPost.id });
+        }
+
         user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
 
         deletedPost.mentionedUsers?.forEach(
