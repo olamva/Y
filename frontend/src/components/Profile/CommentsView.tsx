@@ -89,7 +89,12 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
         />
       ))}
       {loading && <p>Loading more comments...</p>}
-      {!hasMore && <p>No more comments to load.</p>}
+      {!hasMore &&
+        (comments.length === 0 ? (
+          <p>No comments to show.</p>
+        ) : (
+          <p>No more comments to load.</p>
+        ))}
     </>
   );
 };
