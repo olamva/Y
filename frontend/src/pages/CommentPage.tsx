@@ -265,7 +265,12 @@ const CommentPage = () => {
             />
           </form>
         ) : (
-          <PostWithReply replyDoesntRedirect post={parentPost} reply={reply} />
+          <PostWithReply
+            goHomeOnParentDelete
+            replyDoesntRedirect
+            post={parentPost}
+            reply={reply}
+          />
         )}
         <Divider />
         {!editing && (
