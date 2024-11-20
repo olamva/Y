@@ -588,8 +588,8 @@ export const resolvers: IResolvers = {
         }
       }
 
-      const hashTags = body ? extractHashtags(body) : undefined;
-      const mentionedUsers = body ? await extractMentions(body) : undefined;
+      const hashTags = body ? extractHashtags(body) : [];
+      const mentionedUsers = body ? await extractMentions(body) : [];
 
       try {
         const newPost = new Post({ body, author: user.id, imageUrl, hashTags, mentionedUsers });
