@@ -95,7 +95,6 @@ const Post = ({
 
     try {
       await deletePostMutation();
-      window.location.href = "/project2/";
     } catch (error) {
       toast.error(`Error deleting post: ${(error as Error).message}`);
     }

@@ -42,7 +42,7 @@ const LoginForm = ({ view }: LoginFormProps) => {
       if (data.login) {
         login(data.login);
         toast.success("Logged in successfully!");
-        navigate(`/project2/user/${formData.username}`);
+        navigate(`/project2/`);
       }
     } catch (error) {
       if (error instanceof Error) {
