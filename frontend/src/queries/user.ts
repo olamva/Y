@@ -30,13 +30,18 @@ export const GET_USER_QUERY = gql`
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
       profilePicture
       backgroundPicture
+      verified
     }
   }
 `;
@@ -59,13 +64,18 @@ export const GET_USERS = gql`
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
       profilePicture
       backgroundPicture
+      verified
     }
   }
 `;
@@ -97,10 +107,14 @@ export const FOLLOW_USER_MUTATION = gql`
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
     }
   }
@@ -114,10 +128,14 @@ export const UNFOLLOW_USER_MUTATION = gql`
       followers {
         id
         username
+        profilePicture
+        verified
       }
       following {
         id
         username
+        profilePicture
+        verified
       }
     }
   }

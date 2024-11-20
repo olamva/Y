@@ -9,6 +9,7 @@ import LikesView from "@/components/Profile/LikesView";
 import MentionsView from "@/components/Profile/MentionsView";
 import PostsView from "@/components/Profile/PostsView";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
@@ -111,9 +112,9 @@ const Profile = () => {
         </div>
       )}
       {username ? (
-        <>
+        <div className="flex flex-col items-center">
           {/* User Profile Section */}
-          <section className="mb-8">
+          <section className="mb-8 w-full max-w-5xl">
             {/* Background and Avatar */}
             <div className="relative h-64 md:h-96">
               <img
@@ -132,8 +133,13 @@ const Profile = () => {
                 <Avatar user={user} large={true} />
                 <div className="sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
-                    <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
-                      {user?.firstName} {user?.lastName}
+                    <h1 className="flex items-center gap-2 truncate text-2xl font-bold text-gray-900 dark:text-white">
+                      <span>
+                        {user?.firstName
+                          ? `${user.firstName} ${user.lastName}`
+                          : user.username}
+                      </span>
+                      <VerificationBadge verified={user.verified} />
                     </h1>
                     <div className="flex flex-row gap-2">
                       <p className="text-md text-gray-500">@{user.username}</p>
@@ -212,7 +218,7 @@ const Profile = () => {
             </div>
           </section>
           {/* Toggle Group for Views */}
-          <section className="w-full max-w-5xl justify-self-center">
+          <section className="w-full max-w-5xl">
             <ToggleGroup
               value={currentView}
               onValueChange={(value: ViewState) => {
@@ -293,7 +299,7 @@ const Profile = () => {
                   : []
             }
           />
-        </>
+        </div>
       ) : (
         <div className="flex w-full flex-col items-center gap-4">
           <h1 className="text-4xl">You are not logged in</h1>

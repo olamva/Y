@@ -1,13 +1,14 @@
 import { useAuth } from "@/components/AuthContext";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import Avatar from "@/components/Profile/Avatar";
 import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import Avatar from "../Profile/Avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import Username from "../Username";
 
 const Navbar = () => {
   const params = new URLSearchParams(location.search);
@@ -167,7 +168,7 @@ const Navbar = () => {
                       return (
                         <a
                           key={isUser ? suggestion.id : suggestion.tag}
-                          className={`flex w-full cursor-pointer items-center gap-2 p-2 ${
+                          className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
                             index + 1 === activeSuggestionIndex
                               ? "bg-blue-500 text-white dark:bg-blue-800"
                               : ""
@@ -182,18 +183,22 @@ const Navbar = () => {
                           }
                         >
                           {isUser ? (
-                            <Avatar noHref user={suggestion} />
+                            <Username
+                              user={suggestion}
+                              customBadgeColors={
+                                index + 1 === activeSuggestionIndex
+                                  ? "text-white"
+                                  : "text-blue-500 dark:text-blue-400"
+                              }
+                            />
                           ) : (
-                            <p className="flex size-8 h-full items-center justify-center text-2xl">
-                              #
-                            </p>
+                            <div className="flex items-center gap-1">
+                              <span className="flex size-8 h-full items-center justify-center text-2xl">
+                                #
+                              </span>
+                              <p>{suggestion.tag}</p>
+                            </div>
                           )}
-
-                          <p>
-                            {isUser
-                              ? `${suggestion.username}`
-                              : `${suggestion.tag}`}
-                          </p>
                         </a>
                       );
                     })}
@@ -204,11 +209,16 @@ const Navbar = () => {
           </Popover>
           <div className="hidden min-w-fit items-center gap-2 lg:flex">
             <ThemeToggle />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               {user && (
-                <div className="mr-2">
-                  <Avatar user={user} large={false} />{" "}
-                </div>
+                <>
+                  <div className="xl:hidden">
+                    <Avatar user={user} />
+                  </div>
+                  <div className="hidden xl:block">
+                    <Username user={user} />
+                  </div>
+                </>
               )}
               {user ? (
                 <button

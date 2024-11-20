@@ -225,7 +225,7 @@ const HomePage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+      <aside className="hidden w-full max-w-60 py-8 lg:flex">
         {hashtagsError && (
           <p className="mt-4 text-center text-red-500">
             Error loading hashtags: {hashtagsError.message}
@@ -365,7 +365,7 @@ const HomePage = () => {
         )}
       </main>
 
-      <aside className="hidden w-full max-w-64 py-8 lg:flex">
+      <aside className="hidden w-full max-w-60 py-8 lg:flex">
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl font-extralight">People to follow</h1>
 

@@ -27,6 +27,7 @@ export const SEARCH_USERS = gql`
         id
         username
         profilePicture
+        verified
       }
     }
   }

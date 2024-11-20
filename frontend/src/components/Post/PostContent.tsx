@@ -1,7 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
-import Avatar from "@/components/Profile/Avatar";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
 import { REPOST_MUTATION, UNREPOST_MUTATION } from "@/queries/reposts";
@@ -11,6 +10,7 @@ import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, PencilIcon, RecycleIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Username from "../Username";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -110,18 +110,7 @@ const PostContent = ({
       <header className="flex flex-col gap-1">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Avatar user={post.author} />
-            <a
-              href={`/project2/user/${post.author.username}`}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <p className="break-words font-mono underline-offset-4 hover:underline">
-                <span className="font-sans">@</span>
-                {post.author.username}
-              </p>
-            </a>
+            <Username user={post.author} />
             {post.author.username !== user?.username && (
               <FollowButton targetUsername={post.author.username} />
             )}
