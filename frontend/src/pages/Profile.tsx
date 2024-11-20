@@ -271,7 +271,7 @@ const Profile = () => {
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
               {currentView === "posts" && (
-                <PostsView postIds={user.postIds} username={user.username} />
+                <PostsView postIds={user.postIds} fetchReposts={user.repostedPostIds.length > 0} username={user.username} />
               )}
               {currentView === "comments" && (
                 <CommentsView commentIds={user.commentIds} />
