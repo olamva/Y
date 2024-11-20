@@ -27,28 +27,26 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="mx-2 flex flex-1 items-center justify-center gap-2 lg:justify-end">
-          <SearchBar />
-          <div className="hidden min-w-fit items-center gap-2 lg:flex">
-            <ThemeToggle />
-            <div className="flex items-center gap-4">
-              {user && (
-                <>
-                  <div className="xl:hidden">
-                    <Avatar user={user} />
-                  </div>
-                  <div className="hidden xl:block">
-                    <Username user={user} />
-                  </div>
-                </>
-              )}
+        <div className="mx-2 flex flex-1 items-center gap-2">
+          <div className="flex flex-1 items-center justify-center gap-2 lg:justify-end">
+            <SearchBar />
+            <div className="hidden min-w-fit items-center gap-2 lg:flex">
+              <ThemeToggle />
+              <div className="flex items-center gap-4">
+                {user && (
+                  <>
+                    <div className="xl:hidden">
+                      <Avatar user={user} />
+                    </div>
+                    <div className="hidden xl:block">
+                      <Username user={user} />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          {user && (
-            <div className="flex items-center justify-center lg:mx-2">
-              <Notifications />
-            </div>
-          )}
+          {user && <Notifications />}
           <div className="hidden lg:flex">
             {user ? (
               <button
