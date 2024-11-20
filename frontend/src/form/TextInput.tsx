@@ -185,7 +185,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
 
       if (
         lastSymbol !== -1 &&
-        /^[a-zA-Z0-9]*$/.test(textBeforeCaret.slice(lastSymbol + 1))
+        /^[a-zA-Z0-9_æøåÆØÅ]*$/.test(textBeforeCaret.slice(lastSymbol + 1))
       ) {
         setShowSuggestions(true);
         setQuery(textBeforeCaret.slice(lastSymbol + 1));

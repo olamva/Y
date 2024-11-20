@@ -724,7 +724,7 @@ export const resolvers: IResolvers = {
         throw new Error('Username and password must be at most 20 characters');
       }
 
-      const usernameRegex = /^[a-zA-Z0-9_]+$/;
+      const usernameRegex = /^[a-zA-Z0-9_æøåÆØÅ]+$/;
       if (!usernameRegex.test(username)) {
         throw new Error('Username can only contain letters, numbers, and underscores.');
       }

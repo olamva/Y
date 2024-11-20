@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { User } from './models/user';
 
 export const extractHashtags = (text: string): string[] => {
-  const regex = /#(\w+)/g;
+  const regex = /#([\wæøåÆØÅ]+)/g;
   const hashtags = new Set<string>();
   let match;
 
@@ -17,7 +17,7 @@ export const extractHashtags = (text: string): string[] => {
 };
 
 export const extractMentions = async (text: string): Promise<Types.ObjectId[]> => {
-  const regex = /@(\w+)/g;
+  const regex = /@([\wæøåÆØÅ]+)/g;
   const mentions = new Set<Types.ObjectId>();
   let match;
 
