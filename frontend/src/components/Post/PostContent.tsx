@@ -1,7 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
-import Avatar from "@/components/Profile/Avatar";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType } from "@/lib/types";
 import { ApolloError } from "@apollo/client";
@@ -9,7 +8,7 @@ import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent, useState } from "react";
-import VerificationBadge from "../VerificationBadge";
+import Username from "../Username";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -72,21 +71,7 @@ const PostContent = ({
       <header className="flex flex-col gap-1">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Avatar user={post.author} />
-            <a
-              href={`/project2/user/${post.author.username}`}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <div className="flex items-center gap-1">
-                <p className="break-words font-mono underline-offset-4 hover:underline">
-                  <span className="font-sans">@</span>
-                  {post.author.username}
-                </p>
-                <VerificationBadge verified={post.author.verified} />
-              </div>
-            </a>
+            <Username user={post.author} />
             {post.author.username !== user?.username && (
               <FollowButton targetUsername={post.author.username} />
             )}

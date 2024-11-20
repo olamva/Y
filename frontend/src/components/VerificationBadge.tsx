@@ -9,16 +9,18 @@ import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 const VerificationBadge = ({
   verified = false,
   customColors,
+  small = false,
 }: {
   verified?: boolean;
   customColors?: string;
+  small?: boolean;
 }) => (
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger>
         {verified && (
           <CheckBadgeIcon
-            className={`size-6 cursor-pointer ${customColors || "text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-500"}`}
+            className={`${small ? "size-4" : "size-6"} cursor-pointer ${customColors || "text-blue-500 hover:text-blue-400 dark:text-blue-400 dark:hover:text-blue-500"}`}
           />
         )}
       </TooltipTrigger>

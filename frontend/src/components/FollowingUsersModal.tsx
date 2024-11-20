@@ -1,8 +1,7 @@
-import Avatar from "@/components/Profile/Avatar";
 import { UserType } from "@/lib/types";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
-import VerificationBadge from "./VerificationBadge";
+import Username from "./Username";
 
 interface Props {
   isOpen: boolean;
@@ -63,14 +62,7 @@ const FollowingUsersModal = ({ isOpen, onClose, title, users }: Props) => {
           <ul className="space-y-2">
             {users.map((user) => (
               <li key={user.id} className="flex items-center">
-                <a
-                  href={`/project2/user/${user.username}`}
-                  className="flex items-center gap-1 hover:scale-110"
-                >
-                  <Avatar noHref user={user} />
-                  <span className="pl-1">{user.username}</span>
-                  <VerificationBadge verified={user.verified} />
-                </a>
+                <Username user={user} />
               </li>
             ))}
           </ul>

@@ -1,14 +1,13 @@
 import { useAuth } from "@/components/AuthContext";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import Avatar from "@/components/Profile/Avatar";
 import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import VerificationBadge from "../VerificationBadge";
+import Username from "../Username";
 
 const Navbar = () => {
   const params = new URLSearchParams(location.search);
@@ -183,27 +182,21 @@ const Navbar = () => {
                           }
                         >
                           {isUser ? (
-                            <Avatar noHref user={suggestion} />
-                          ) : (
-                            <p className="flex size-8 h-full items-center justify-center text-2xl">
-                              #
-                            </p>
-                          )}
-
-                          <p className="pl-1">
-                            {isUser
-                              ? `${suggestion.username}`
-                              : `${suggestion.tag}`}
-                          </p>
-                          {isUser && (
-                            <VerificationBadge
-                              customColors={
+                            <Username
+                              user={suggestion}
+                              customBadgeColors={
                                 index + 1 === activeSuggestionIndex
                                   ? "text-white"
                                   : "text-blue-500 dark:text-blue-400"
                               }
-                              verified={suggestion.verified}
                             />
+                          ) : (
+                            <div className="flex gap-1 items-center">
+                              <span className="flex size-8 h-full items-center justify-center text-2xl">
+                                #
+                              </span>
+                              <p>{suggestion.tag}</p>
+                            </div>
                           )}
                         </a>
                       );
@@ -215,22 +208,8 @@ const Navbar = () => {
           </Popover>
           <div className="hidden min-w-fit items-center gap-2 lg:flex">
             <ThemeToggle />
-            <div className="flex items-center gap-2">
-              {user && (
-                <a
-                  className="mr-2 flex gap-2"
-                  href={`/project2/user/${user.username}`}
-                >
-                  <Avatar user={user} noHref large={false} />
-                  <div className="flex items-center gap-1">
-                    <p className="break-words font-mono underline-offset-4 hover:underline">
-                      <span className="font-sans">@</span>
-                      {user.username}
-                    </p>
-                    <VerificationBadge verified={user.verified} />
-                  </div>
-                </a>
-              )}
+            <div className="flex items-center gap-4">
+              {user && <Username user={user} />}
               {user ? (
                 <button
                   onClick={logout}
