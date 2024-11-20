@@ -331,13 +331,22 @@ const HomePage = () => {
 
         {!showLoginPrompt && (
           <div className="flex flex-col gap-4">
-            <p className="mt-4 text-center text-red-500">
-              {error && <p>Error loading posts: {error?.message}</p>}
-              {repostsError && (
-                <p>Error loading reposts: {repostsError.message}</p>
-              )}
-              {usersError && <p>Error loading users: {usersError.message}</p>}
-            </p>
+            {error && (
+              <p className="mt-4 text-center text-red-500">
+                Error loading posts: {error?.message}
+              </p>
+            )}
+            {repostsError && (
+              <p className="mt-4 text-center text-red-500">
+                Error loading reposts: {repostsError.message}
+              </p>
+            )}
+            {usersError && (
+              <p className="mt-4 text-center text-red-500">
+                Error loading users: {usersError.message}
+              </p>
+            )}
+
             {combinedPosts.length === 0 && loading && repostsLoading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <PostSkeleton key={index} />
