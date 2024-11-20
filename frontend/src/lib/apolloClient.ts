@@ -31,12 +31,6 @@ const client = new ApolloClient({
               return [...existing, ...incoming];
             },
           },
-          getReposts: {
-            keyArgs: false,
-            merge(existing = [], incoming) {
-              return [...existing, ...incoming];
-            },
-          },
           getContentByHashtag: {
             keyArgs: false,
             merge(existing = [], incoming) {

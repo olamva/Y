@@ -5,7 +5,7 @@ import { SortOrder, Types } from 'mongoose';
 import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
 import { Post, PostType } from './models/post';
-import { Repost } from './models/repost';
+import { Repost, RepostType } from './models/repost';
 import { User, UserType } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
 import { extractHashtags, extractMentions } from './utils';
@@ -14,50 +14,235 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page, filter, limit }, { user }) => {
-      const POSTS_PER_PAGE = limit ?? 10;
-      const skip = (page - 1) * POSTS_PER_PAGE;
-
-      if (!user && filter === 'FOLLOWING') {
-        throw new AuthenticationError('You must be logged in to view posts.');
-      }
+    getPosts: async (
+      _: any,
+      { page = 1, filter = 'LATEST', limit = 10 }: { page: number; filter: string; limit?: number },
+      { user }: { user?: UserType }
+    ) => {
+      const ITEMS_PER_PAGE = limit;
+      const skip = (page - 1) * ITEMS_PER_PAGE;
 
       try {
-        let query: any = {};
+        let postQuery: any = {};
+        let repostQuery: any = {};
         let sort: Record<string, SortOrder> = { createdAt: -1 };
+        let includeReposts = true;
 
         switch (filter) {
           case 'LATEST':
-            query = {};
             break;
 
           case 'FOLLOWING':
-            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
-            query = { author: { $in: followingIds } };
+            if (!user) {
+              break;
+            }
+            const followingIds = user.following.map((followedUser: Types.ObjectId) => followedUser);
+            postQuery.author = { $in: followingIds };
+            repostQuery.author = { $in: followingIds };
             break;
 
           case 'POPULAR':
             sort = { amtLikes: -1, createdAt: -1 };
-            query = {};
+            includeReposts = false;
             break;
 
           case 'CONTROVERSIAL':
-            sort = { amtComments: -1, createdAt: -1 };
-            query = {};
+            sort = { controversyRatio: -1, createdAt: -1 };
+            includeReposts = false;
             break;
 
           default:
             throw new UserInputError('Invalid filter type.');
         }
 
-        const posts = await Post.find(query).sort(sort).skip(skip).limit(POSTS_PER_PAGE).populate('author');
+        const buildPostAggregation = () => {
+          const pipeline: any[] = [
+            { $match: postQuery },
+            {
+              $addFields: {
+                controversyRatio: {
+                  $cond: [{ $eq: ['$amtLikes', 0] }, 0, { $divide: ['$amtComments', '$amtLikes'] }],
+                },
+              },
+            },
+            { $sort: sort },
+            { $skip: skip },
+            { $limit: ITEMS_PER_PAGE },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+              },
+            },
+            { $unwind: '$author' },
+          ];
 
-        return posts;
+          return Post.aggregate(pipeline).exec();
+        };
+
+        const buildRepostAggregation = () => {
+          let repostSort: Record<string, SortOrder> = { repostedAt: -1 };
+
+          if (filter === 'POPULAR') {
+            repostSort = { amtLikes: -1, repostedAt: -1 };
+          } else if (filter === 'CONTROVERSIAL') {
+            repostSort = { controversyRatio: -1, repostedAt: -1 };
+          }
+
+          const pipeline: any[] = [
+            { $match: repostQuery },
+            {
+              $lookup: {
+                from: 'posts',
+                localField: 'originalID',
+                foreignField: '_id',
+                as: 'originalPost',
+              },
+            },
+            { $unwind: '$originalPost' },
+            {
+              $addFields: {
+                controversyRatio: {
+                  $cond: [
+                    { $eq: ['$originalPost.amtLikes', 0] },
+                    0,
+                    { $divide: ['$originalPost.amtComments', '$originalPost.amtLikes'] },
+                  ],
+                },
+              },
+            },
+            { $sort: repostSort },
+            { $skip: skip },
+            { $limit: ITEMS_PER_PAGE },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+              },
+            },
+            { $unwind: '$author' },
+          ];
+
+          return Repost.aggregate(pipeline).exec();
+        };
+
+        let posts: PostType[] | RepostType[] = [];
+        let reposts: RepostType[] = [];
+
+        if (includeReposts) {
+          const [fetchedPosts, fetchedReposts] = await Promise.all([
+            buildPostAggregation(),
+            filter !== 'POPULAR' && filter !== 'CONTROVERSIAL'
+              ? buildRepostAggregation()
+              : Promise.resolve([]),
+          ]);
+
+          posts = fetchedPosts;
+          reposts = fetchedReposts as RepostType[];
+        } else {
+          if (filter === 'CONTROVERSIAL') {
+            posts = await buildPostAggregation();
+          } else {
+            posts = (await Post.find(postQuery)
+              .sort(sort)
+              .skip(skip)
+              .limit(ITEMS_PER_PAGE)
+              .populate('author')
+              .lean()) as PostType[];
+          }
+        }
+
+        let combinedResults: any[] = [...posts];
+
+        if (includeReposts && reposts.length > 0) {
+          const formattedReposts = await Promise.all(
+            reposts.map(async (repost) => {
+              let originalPost: PostType | CommentType | null = null;
+              if (repost.originalType === 'Post') {
+                originalPost = (await Post.findById(repost.originalID).populate('author').lean()) as PostType;
+              } else if (repost.originalType === 'Comment') {
+                originalPost = (await Comment.findById(repost.originalID)
+                  .populate('author')
+                  .lean()) as CommentType;
+              }
+
+              if (!originalPost) {
+                throw new Error('Original post not found');
+              }
+
+              const controversyRatio = originalPost.amtLikes
+                ? originalPost.amtComments / originalPost.amtLikes
+                : 0;
+
+              return {
+                _id: repost._id,
+                type: 'Repost',
+                id: repost._id,
+                author: repost.author,
+                originalID: originalPost._id,
+                originalType: repost.originalType,
+                originalAuthor: originalPost.author,
+                repostedAt: repost.repostedAt,
+                body: originalPost.body,
+                originalBody: originalPost.originalBody,
+                amtLikes: originalPost.amtLikes,
+                amtComments: originalPost.amtComments,
+                amtReposts: originalPost.amtReposts,
+                createdAt: originalPost.createdAt,
+                imageUrl: originalPost.imageUrl,
+                hashTags: originalPost.hashTags,
+                mentionedUsers: originalPost.mentionedUsers,
+                parentID: (originalPost as CommentType).parentID,
+                parentType: (originalPost as CommentType).parentType,
+                controversyRatio: controversyRatio,
+              };
+            })
+          );
+
+          combinedResults = combinedResults.concat(formattedReposts);
+        }
+
+        if (filter === 'LATEST' || filter === 'FOLLOWING') {
+          combinedResults.sort((a, b) => {
+            const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+            const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+        } else if (filter === 'POPULAR') {
+          combinedResults.sort((a, b) => {
+            if (b.amtLikes !== a.amtLikes) {
+              return b.amtLikes - a.amtLikes;
+            } else {
+              const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+              const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            }
+          });
+        } else if (filter === 'CONTROVERSIAL') {
+          combinedResults.sort((a, b) => {
+            if (b.controversyRatio !== a.controversyRatio) {
+              return b.controversyRatio - a.controversyRatio;
+            } else {
+              const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+              const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            }
+          });
+        }
+
+        combinedResults = combinedResults.slice(0, ITEMS_PER_PAGE);
+
+        return combinedResults;
       } catch (err) {
         console.error(err);
         throw new Error('Error fetching posts');
       }
     },
+
     getUsers: async (_, { page }) => {
       const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
@@ -78,88 +263,6 @@ export const resolvers: IResolvers = {
         return post;
       } catch (err) {
         throw new Error('Error fetching post');
-      }
-    },
-    getReposts: async (_, { page, filter, limit }, { user }) => {
-      const REPOSTS_PER_PAGE = limit ?? 10;
-      const skip = (page - 1) * REPOSTS_PER_PAGE;
-
-      if (!user && filter === 'FOLLOWING') {
-        throw new AuthenticationError('You must be logged in to view posts.');
-      }
-
-      try {
-        let query: any = {};
-        let sort: Record<string, SortOrder> = { repostedAt: -1 };
-
-        switch (filter) {
-          case 'LATEST':
-            query = {};
-            break;
-
-          case 'FOLLOWING':
-            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
-            query = { author: { $in: followingIds } };
-            break;
-
-          case 'POPULAR':
-            sort = { amtLikes: -1, repostedAt: -1 };
-            query = {};
-            break;
-
-          case 'CONTROVERSIAL':
-            sort = { amtComments: -1, repostedAt: -1 };
-            query = {};
-            break;
-
-          default:
-            throw new UserInputError('Invalid filter type.');
-        }
-
-        const reposts = await Repost.find(query)
-          .sort(sort)
-          .skip(skip)
-          .limit(REPOSTS_PER_PAGE)
-          .populate('author');
-
-        const repostedPosts = await Promise.all(
-          reposts.map(async (repost) => {
-            let originalPost: PostType | CommentType | null = null;
-            if (repost.originalType === 'Post') {
-              originalPost = await Post.findById(repost.originalID);
-            } else if (repost.originalType === 'Comment') {
-              originalPost = await Comment.findById(repost.originalID);
-            }
-            if (!originalPost) {
-              throw new Error('Original post not found');
-            }
-            const originalAuthor = await User.findById(originalPost.author);
-
-            return {
-              id: repost.id,
-              author: repost.author,
-              originalID: originalPost.id,
-              originalType: repost.originalType,
-              originalAuthor,
-              repostedAt: repost.repostedAt,
-              body: originalPost.body,
-              originalBody: originalPost.originalBody,
-              amtLikes: originalPost.amtLikes,
-              amtComments: originalPost.amtComments,
-              amtReposts: originalPost.amtReposts,
-              createdAt: originalPost.createdAt,
-              imageUrl: originalPost.imageUrl,
-              hashTags: originalPost.hashTags,
-              mentionedUsers: originalPost.mentionedUsers,
-              parentID: (originalPost as CommentType).parentID,
-              parentType: (originalPost as CommentType).parentType,
-            };
-          })
-        );
-
-        return repostedPosts;
-      } catch (err) {
-        throw new Error('Error fetching reposts');
       }
     },
     getRepostsByUser: async (_, { username, page, limit }) => {
@@ -1423,6 +1526,18 @@ export const resolvers: IResolvers = {
     },
   },
 
+  PostItem: {
+    __resolveType(obj: any, context: any, info: any) {
+      if (obj.originalType) {
+        return 'Repost';
+      }
+      if (obj.body !== undefined) {
+        return 'Post';
+      }
+      return null;
+    },
+  },
+
   Parent: {
     __resolveType(parent: { body?: string; author?: Types.ObjectId; parentID?: string }) {
       if (parent.body && parent.author) {
@@ -1436,6 +1551,9 @@ export const resolvers: IResolvers = {
   },
 
   User: {
+    id: (parent) => {
+      return parent._id.toString();
+    },
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });
     },
@@ -1445,10 +1563,21 @@ export const resolvers: IResolvers = {
   },
 
   Post: {
+    id: (parent) => parent._id.toString(),
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.body !== undefined && obj.originalType === undefined;
+    },
     hashTags: (parent) => parent.hashTags,
     mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
+    },
+  },
+
+  Repost: {
+    id: (parent) => parent._id.toString(),
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.originalType !== undefined;
     },
   },
 

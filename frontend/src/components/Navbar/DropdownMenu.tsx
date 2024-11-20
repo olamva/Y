@@ -19,7 +19,7 @@ export const DropdownMenu = () => {
   const routes = [
     {
       name: user ? "Profile" : "Login",
-      href: `/project2/${user ? "user" : "login"}`,
+      href: `/project2/${user ? `user/${user.username}` : "login"}`,
       icon: user ? (
         <UserIcon className="size-5" />
       ) : (
