@@ -27,7 +27,7 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="mx-4 flex flex-1 items-center justify-center gap-2 lg:justify-end">
+        <div className="mx-2 flex flex-1 items-center justify-center gap-2 lg:justify-end">
           <SearchBar />
           <div className="hidden min-w-fit items-center gap-2 lg:flex">
             <ThemeToggle />
@@ -40,25 +40,31 @@ const Navbar = () => {
                   <div className="hidden xl:block">
                     <Username user={user} />
                   </div>
-                  <Notifications />
                 </>
               )}
-              {user ? (
-                <button
-                  onClick={logout}
-                  className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
-                >
-                  Log out
-                </button>
-              ) : (
-                <button
-                  onClick={login}
-                  className="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
-                >
-                  Log in
-                </button>
-              )}
             </div>
+          </div>
+          {user && (
+            <div className="flex items-center justify-center lg:mx-2">
+              <Notifications />
+            </div>
+          )}
+          <div className="hidden lg:flex">
+            {user ? (
+              <button
+                onClick={logout}
+                className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+              >
+                Log out
+              </button>
+            ) : (
+              <button
+                onClick={login}
+                className="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+              >
+                Log in
+              </button>
+            )}
           </div>
         </div>
         <DropdownMenu />

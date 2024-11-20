@@ -59,7 +59,7 @@ const Notifications = () => {
         </button>
       </PopoverTrigger>
       {!loading && notifications && (
-        <PopoverContent ref={popoverRef} className="z-[70] p-0 w-96">
+        <PopoverContent ref={popoverRef} className="z-[70] p-0 w-fit">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <NotificationCard
