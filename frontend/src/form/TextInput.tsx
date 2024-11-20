@@ -106,11 +106,8 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
     const handleAutofill = () => {
       const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
       if (!selectedSuggestion) {
-        handleInputChange({
-          target: {
-            value: value + " ",
-          },
-        } as ChangeEvent<HTMLTextAreaElement>);
+        setShowSuggestions(false);
+        setQuery("");
         return;
       }
       const lastAt = value.lastIndexOf("@");
