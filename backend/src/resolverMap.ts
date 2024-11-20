@@ -368,7 +368,12 @@ export const resolvers: IResolvers = {
         const sortedHashtags = Array.from(hashtagMap, ([tag, count]) => ({
           tag,
           count,
-        })).sort((a, b) => b.count - a.count);
+        })).sort((a, b) => {
+          if (b.count === a.count) {
+            return a.tag.localeCompare(b.tag);
+          }
+          return b.count - a.count;
+        });
 
         const paginatedHashtags = sortedHashtags.slice(skip, skip + HASHTAGS_PER_PAGE);
 

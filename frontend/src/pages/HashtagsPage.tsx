@@ -4,48 +4,39 @@ import CardSkeleton from "@/components/Skeletons/CardSkeleton";
 import Divider from "@/components/ui/Divider";
 import { HashtagType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
-import { useQuery } from "@apollo/client";
+import { NetworkStatus, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+
+const PAGE_SIZE = 16;
 
 const HashtagsPage = () => {
-  const { hashtag } = useParams<{ hashtag: string }>();
   const [page, setPage] = useState(1);
-  const [hashtags, setHashTags] = useState<HashtagType[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getTrendingHashtags: HashtagType[];
   }>(GET_TRENDING_HASHTAGS, {
-    variables: { hashtag, page: page },
+    variables: { page: 1 },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
-
-  useEffect(() => {
-    if (data && data.getTrendingHashtags && page === 1) {
-      setHashTags(data.getTrendingHashtags);
-      setHasMore(data.getTrendingHashtags.length > 0);
-    }
-  }, [data, page]);
 
   const loadMoreHashtags = useCallback(async () => {
     if (!hasMore || loading) return;
 
     try {
-      const nextPage = page + 1;
       const { data: fetchMoreData } = await fetchMore({
-        variables: { page: nextPage },
+        variables: { page: page + 1 },
       });
 
       if (fetchMoreData?.getTrendingHashtags) {
-        setHashTags((prevHashtags) => [
-          ...prevHashtags,
-          ...fetchMoreData.getTrendingHashtags,
-        ]);
-        setHasMore(fetchMoreData.getTrendingHashtags.length > 0);
-        setPage(nextPage);
+        if (fetchMoreData.getTrendingHashtags.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+        if (fetchMoreData.getTrendingHashtags.length > 0) {
+          setPage((prev) => prev + 1);
+        }
       } else {
         setHasMore(false);
       }
@@ -59,7 +50,7 @@ const HashtagsPage = () => {
       if (
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 200 &&
-        networkStatus !== 3 &&
+        networkStatus !== NetworkStatus.fetchMore &&
         hasMore
       ) {
         loadMoreHashtags();
@@ -69,13 +60,7 @@ const HashtagsPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMoreHashtags, hasMore, networkStatus]);
 
-  if (error) {
-    return (
-      <p className="mt-4 text-center text-red-500">
-        Error loading hashtags: {error.message}
-      </p>
-    );
-  }
+  const hashtags = data?.getTrendingHashtags || [];
 
   return (
     <div className="mx-auto w-full max-w-screen-xl px-5">
@@ -84,7 +69,12 @@ const HashtagsPage = () => {
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>
         <Divider />
         <div className="flex w-full flex-wrap justify-center gap-2 md:gap-4">
-          {loading && networkStatus === 1
+          {error && (
+            <p className="mt-4 text-center text-red-500">
+              Error loading hashtags: {error.message}
+            </p>
+          )}
+          {loading && networkStatus === NetworkStatus.loading
             ? Array.from({ length: 16 }).map((_, index) => (
                 <div
                   className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
@@ -103,7 +93,7 @@ const HashtagsPage = () => {
               ))}
         </div>
 
-        {loading && networkStatus === 3 && (
+        {loading && networkStatus === NetworkStatus.fetchMore && (
           <p className="mt-4 text-center">Loading more hashtags...</p>
         )}
         {!hasMore && (
