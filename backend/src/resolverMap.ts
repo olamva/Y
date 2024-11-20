@@ -23,10 +23,6 @@ export const resolvers: IResolvers = {
       const ITEMS_PER_PAGE = limit;
       const skip = (page - 1) * ITEMS_PER_PAGE;
 
-      if (!user && filter === 'FOLLOWING') {
-        throw new AuthenticationError('You must be logged in to view posts.');
-      }
-
       try {
         let postQuery: any = {};
         let repostQuery: any = {};
