@@ -12,8 +12,13 @@ const PAGE_SIZE = 16;
 interface PostsViewProps {
   postIds: string[];
   username?: string;
+  fetchReposts?: boolean;
 }
-const PostsView: React.FC<PostsViewProps> = ({ postIds, username }) => {
+const PostsView: React.FC<PostsViewProps> = ({
+  postIds,
+  username,
+  fetchReposts,
+}) => {
   const [page, setPage] = useState(1);
   const [repostsPage, setRepostsPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -35,11 +40,12 @@ const PostsView: React.FC<PostsViewProps> = ({ postIds, username }) => {
   } = useQuery<{ getRepostsByUser: RepostType[] }>(GET_REPOSTS_BY_USER, {
     variables: { username: username, page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
+    skip: !fetchReposts,
   });
 
   const posts: PostType[] = data?.getPostsByIds || [];
 
-  const reposts: RepostType[] = repostsData?.getRepostsByUser ?? [];
+  const reposts: RepostType[] = repostsData?.getRepostsByUser || [];
 
   const combinedPosts = [...posts, ...reposts].sort(
     (a, b) =>
@@ -105,7 +111,14 @@ const PostsView: React.FC<PostsViewProps> = ({ postIds, username }) => {
       loadMorePosts();
       loadMoreReposts();
     }
-  }, [loadMorePosts]);
+  }, [
+    loadMorePosts,
+    hasMore,
+    networkStatus,
+    repostsHasMore,
+    repostsNetworkStatus,
+    loadMoreReposts,
+  ]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -124,8 +137,15 @@ const PostsView: React.FC<PostsViewProps> = ({ postIds, username }) => {
           <Repost repost={post} key={post.id} />
         ),
       )}
-      {(loading || repostsLoading) && <p>Loading more posts...</p>}
-      {!hasMore && !repostsHasMore && <p>No more posts to load.</p>}
+      {loading && <p>Loading more posts...</p>}
+      {repostsLoading && <p>Loading more reposts...</p>}
+      {!hasMore &&
+        !repostsHasMore &&
+        (combinedPosts.length === 0 ? (
+          <p>No posts to show.</p>
+        ) : (
+          <p>No more posts to load.</p>
+        ))}
     </>
   );
 };

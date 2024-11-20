@@ -136,7 +136,9 @@ const Profile = () => {
                     <h1 className="flex items-center gap-2 truncate text-2xl font-bold text-gray-900 dark:text-white">
                       <span>
                         {user?.firstName
-                          ? `${user.firstName} ${user.lastName}`
+                          ? user.lastName
+                            ? `${user.firstName} ${user.lastName}`
+                            : user.firstName
                           : user.username}
                       </span>
                       <VerificationBadge verified={user.verified} />
@@ -269,7 +271,7 @@ const Profile = () => {
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">
               {currentView === "posts" && (
-                <PostsView postIds={user.postIds} username={user.username} />
+                <PostsView postIds={user.postIds} fetchReposts={user.repostedPostIds.length > 0} username={user.username} />
               )}
               {currentView === "comments" && (
                 <CommentsView commentIds={user.commentIds} />
