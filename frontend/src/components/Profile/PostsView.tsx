@@ -137,15 +137,11 @@ const PostsView: React.FC<PostsViewProps> = ({
           <Repost repost={post} key={post.id} />
         ),
       )}
-      {loading && <p>Loading more posts...</p>}
-      {repostsLoading && <p>Loading more reposts...</p>}
-      {!hasMore &&
-        !repostsHasMore &&
-        (combinedPosts.length === 0 ? (
-          <p>No posts to show.</p>
-        ) : (
-          <p>No more posts to load.</p>
-        ))}
+      {loading && repostsLoading && <p>Loading more posts...</p>}
+      {!combinedPosts.length && <p>No posts to show.</p>}
+      {!hasMore && combinedPosts.length !== 0 && (
+        <p>You have reached the end of posts</p>
+      )}
     </>
   );
 };

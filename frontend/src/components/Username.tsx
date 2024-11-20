@@ -10,6 +10,7 @@ interface UsernameProps {
   customBadgeColors?: string;
   className?: string;
   smallBadge?: boolean;
+  smallAvatar?: boolean;
 }
 const Username = ({
   user,
@@ -18,6 +19,7 @@ const Username = ({
   customBadgeColors,
   className,
   smallBadge,
+  smallAvatar,
 }: UsernameProps) => {
   const Tag = noHref ? "div" : "a";
   const tagProps = noHref
@@ -27,8 +29,19 @@ const Username = ({
         onClick: (e: MouseEvent | TouchEvent) => e.stopPropagation(),
       };
   return (
-    <Tag className="group flex items-center gap-2" {...tagProps}>
-      {!noAvatar && <Avatar disableHover user={user} noHref large={false} />}
+    <Tag
+      className={`group flex items-center ${smallAvatar ? "gap-1" : "gap-2"}`}
+      {...tagProps}
+    >
+      {!noAvatar && (
+        <Avatar
+          small={smallAvatar}
+          disableHover
+          user={user}
+          noHref
+          large={false}
+        />
+      )}
       <div className="flex items-center gap-1">
         <p
           className={`break-words font-mono ${noHref ? "" : "underline-offset-4 group-hover:underline"} ${className}`}

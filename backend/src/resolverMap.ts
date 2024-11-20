@@ -4,8 +4,9 @@ import { GraphQLUpload } from 'graphql-upload-minimal';
 import { SortOrder, Types } from 'mongoose';
 import { signToken } from './auth';
 import { Comment, CommentType } from './models/comment';
+import { Notification } from './models/notification';
 import { Post, PostType } from './models/post';
-import { Repost } from './models/repost';
+import { Repost, RepostType } from './models/repost';
 import { User, UserType } from './models/user';
 import { deleteFile, uploadFile } from './uploadFile';
 import { extractHashtags, extractMentions } from './utils';
@@ -14,50 +15,235 @@ export const resolvers: IResolvers = {
   Upload: GraphQLUpload,
 
   Query: {
-    getPosts: async (_, { page, filter, limit }, { user }) => {
-      const POSTS_PER_PAGE = limit ?? 10;
-      const skip = (page - 1) * POSTS_PER_PAGE;
-
-      if (!user && filter === 'FOLLOWING') {
-        throw new AuthenticationError('You must be logged in to view posts.');
-      }
+    getPosts: async (
+      _: any,
+      { page = 1, filter = 'LATEST', limit = 10 }: { page: number; filter: string; limit?: number },
+      { user }: { user?: UserType }
+    ) => {
+      const ITEMS_PER_PAGE = limit;
+      const skip = (page - 1) * ITEMS_PER_PAGE;
 
       try {
-        let query: any = {};
+        let postQuery: any = {};
+        let repostQuery: any = {};
         let sort: Record<string, SortOrder> = { createdAt: -1 };
+        let includeReposts = true;
 
         switch (filter) {
           case 'LATEST':
-            query = {};
             break;
 
           case 'FOLLOWING':
-            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
-            query = { author: { $in: followingIds } };
+            if (!user) {
+              break;
+            }
+            const followingIds = user.following.map((followedUser: Types.ObjectId) => followedUser);
+            postQuery.author = { $in: followingIds };
+            repostQuery.author = { $in: followingIds };
             break;
 
           case 'POPULAR':
             sort = { amtLikes: -1, createdAt: -1 };
-            query = {};
+            includeReposts = false;
             break;
 
           case 'CONTROVERSIAL':
-            sort = { amtComments: -1, createdAt: -1 };
-            query = {};
+            sort = { controversyRatio: -1, createdAt: -1 };
+            includeReposts = false;
             break;
 
           default:
             throw new UserInputError('Invalid filter type.');
         }
 
-        const posts = await Post.find(query).sort(sort).skip(skip).limit(POSTS_PER_PAGE).populate('author');
+        const buildPostAggregation = () => {
+          const pipeline: any[] = [
+            { $match: postQuery },
+            {
+              $addFields: {
+                controversyRatio: {
+                  $cond: [{ $eq: ['$amtLikes', 0] }, 0, { $divide: ['$amtComments', '$amtLikes'] }],
+                },
+              },
+            },
+            { $sort: sort },
+            { $skip: skip },
+            { $limit: ITEMS_PER_PAGE },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+              },
+            },
+            { $unwind: '$author' },
+          ];
 
-        return posts;
+          return Post.aggregate(pipeline).exec();
+        };
+
+        const buildRepostAggregation = () => {
+          let repostSort: Record<string, SortOrder> = { repostedAt: -1 };
+
+          if (filter === 'POPULAR') {
+            repostSort = { amtLikes: -1, repostedAt: -1 };
+          } else if (filter === 'CONTROVERSIAL') {
+            repostSort = { controversyRatio: -1, repostedAt: -1 };
+          }
+
+          const pipeline: any[] = [
+            { $match: repostQuery },
+            {
+              $lookup: {
+                from: 'posts',
+                localField: 'originalID',
+                foreignField: '_id',
+                as: 'originalPost',
+              },
+            },
+            { $unwind: '$originalPost' },
+            {
+              $addFields: {
+                controversyRatio: {
+                  $cond: [
+                    { $eq: ['$originalPost.amtLikes', 0] },
+                    0,
+                    { $divide: ['$originalPost.amtComments', '$originalPost.amtLikes'] },
+                  ],
+                },
+              },
+            },
+            { $sort: repostSort },
+            { $skip: skip },
+            { $limit: ITEMS_PER_PAGE },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+              },
+            },
+            { $unwind: '$author' },
+          ];
+
+          return Repost.aggregate(pipeline).exec();
+        };
+
+        let posts: PostType[] | RepostType[] = [];
+        let reposts: RepostType[] = [];
+
+        if (includeReposts) {
+          const [fetchedPosts, fetchedReposts] = await Promise.all([
+            buildPostAggregation(),
+            filter !== 'POPULAR' && filter !== 'CONTROVERSIAL'
+              ? buildRepostAggregation()
+              : Promise.resolve([]),
+          ]);
+
+          posts = fetchedPosts;
+          reposts = fetchedReposts as RepostType[];
+        } else {
+          if (filter === 'CONTROVERSIAL') {
+            posts = await buildPostAggregation();
+          } else {
+            posts = (await Post.find(postQuery)
+              .sort(sort)
+              .skip(skip)
+              .limit(ITEMS_PER_PAGE)
+              .populate('author')
+              .lean()) as PostType[];
+          }
+        }
+
+        let combinedResults: any[] = [...posts];
+
+        if (includeReposts && reposts.length > 0) {
+          const formattedReposts = await Promise.all(
+            reposts.map(async (repost) => {
+              let originalPost: PostType | CommentType | null = null;
+              if (repost.originalType === 'Post') {
+                originalPost = (await Post.findById(repost.originalID).populate('author').lean()) as PostType;
+              } else if (repost.originalType === 'Comment') {
+                originalPost = (await Comment.findById(repost.originalID)
+                  .populate('author')
+                  .lean()) as CommentType;
+              }
+
+              if (!originalPost) {
+                throw new Error('Original post not found');
+              }
+
+              const controversyRatio = originalPost.amtLikes
+                ? originalPost.amtComments / originalPost.amtLikes
+                : 0;
+
+              return {
+                _id: repost._id,
+                type: 'Repost',
+                id: repost._id,
+                author: repost.author,
+                originalID: originalPost._id,
+                originalType: repost.originalType,
+                originalAuthor: originalPost.author,
+                repostedAt: repost.repostedAt,
+                body: originalPost.body,
+                originalBody: originalPost.originalBody,
+                amtLikes: originalPost.amtLikes,
+                amtComments: originalPost.amtComments,
+                amtReposts: originalPost.amtReposts,
+                createdAt: originalPost.createdAt,
+                imageUrl: originalPost.imageUrl,
+                hashTags: originalPost.hashTags,
+                mentionedUsers: originalPost.mentionedUsers,
+                parentID: (originalPost as CommentType).parentID,
+                parentType: (originalPost as CommentType).parentType,
+                controversyRatio: controversyRatio,
+              };
+            })
+          );
+
+          combinedResults = combinedResults.concat(formattedReposts);
+        }
+
+        if (filter === 'LATEST' || filter === 'FOLLOWING') {
+          combinedResults.sort((a, b) => {
+            const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+            const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+        } else if (filter === 'POPULAR') {
+          combinedResults.sort((a, b) => {
+            if (b.amtLikes !== a.amtLikes) {
+              return b.amtLikes - a.amtLikes;
+            } else {
+              const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+              const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            }
+          });
+        } else if (filter === 'CONTROVERSIAL') {
+          combinedResults.sort((a, b) => {
+            if (b.controversyRatio !== a.controversyRatio) {
+              return b.controversyRatio - a.controversyRatio;
+            } else {
+              const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+              const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            }
+          });
+        }
+
+        combinedResults = combinedResults.slice(0, ITEMS_PER_PAGE);
+
+        return combinedResults;
       } catch (err) {
         console.error(err);
         throw new Error('Error fetching posts');
       }
     },
+
     getUsers: async (_, { page }) => {
       const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
@@ -80,88 +266,6 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching post');
       }
     },
-    getReposts: async (_, { page, filter, limit }, { user }) => {
-      const REPOSTS_PER_PAGE = limit ?? 10;
-      const skip = (page - 1) * REPOSTS_PER_PAGE;
-
-      if (!user && filter === 'FOLLOWING') {
-        throw new AuthenticationError('You must be logged in to view posts.');
-      }
-
-      try {
-        let query: any = {};
-        let sort: Record<string, SortOrder> = { repostedAt: -1 };
-
-        switch (filter) {
-          case 'LATEST':
-            query = {};
-            break;
-
-          case 'FOLLOWING':
-            const followingIds = user.following.map((followedUser: UserType) => followedUser._id);
-            query = { author: { $in: followingIds } };
-            break;
-
-          case 'POPULAR':
-            sort = { amtLikes: -1, repostedAt: -1 };
-            query = {};
-            break;
-
-          case 'CONTROVERSIAL':
-            sort = { amtComments: -1, repostedAt: -1 };
-            query = {};
-            break;
-
-          default:
-            throw new UserInputError('Invalid filter type.');
-        }
-
-        const reposts = await Repost.find(query)
-          .sort(sort)
-          .skip(skip)
-          .limit(REPOSTS_PER_PAGE)
-          .populate('author');
-
-        const repostedPosts = await Promise.all(
-          reposts.map(async (repost) => {
-            let originalPost: PostType | CommentType | null = null;
-            if (repost.originalType === 'Post') {
-              originalPost = await Post.findById(repost.originalID);
-            } else if (repost.originalType === 'Comment') {
-              originalPost = await Comment.findById(repost.originalID);
-            }
-            if (!originalPost) {
-              throw new Error('Original post not found');
-            }
-            const originalAuthor = await User.findById(originalPost.author);
-
-            return {
-              id: repost.id,
-              author: repost.author,
-              originalID: originalPost.id,
-              originalType: repost.originalType,
-              originalAuthor,
-              repostedAt: repost.repostedAt,
-              body: originalPost.body,
-              originalBody: originalPost.originalBody,
-              amtLikes: originalPost.amtLikes,
-              amtComments: originalPost.amtComments,
-              amtReposts: originalPost.amtReposts,
-              createdAt: originalPost.createdAt,
-              imageUrl: originalPost.imageUrl,
-              hashTags: originalPost.hashTags,
-              mentionedUsers: originalPost.mentionedUsers,
-              parentID: (originalPost as CommentType).parentID,
-              parentType: (originalPost as CommentType).parentType,
-            };
-          })
-        );
-
-        return repostedPosts;
-      } catch (err) {
-        throw new Error('Error fetching reposts');
-      }
-    },
     getRepostsByUser: async (_, { username, page, limit }) => {
       const user = await User.findOne({ username });
       const REPOSTS_PER_PAGE = limit ?? 10;
@@ -169,7 +273,7 @@ export const resolvers: IResolvers = {
       if (!user) {
         throw new UserInputError('User not found');
       }
-      const reposts = await Repost.find({ author: user?.id })
+      const reposts = await Repost.find({ author: user._id })
         .sort({ repostedAt: -1 })
         .skip(skip)
         .limit(REPOSTS_PER_PAGE)
@@ -190,9 +294,9 @@ export const resolvers: IResolvers = {
             const originalAuthor = await User.findById(originalPost.author);
 
             return {
-              id: repost.id,
+              id: repost._id,
               author: repost.author,
-              originalID: originalPost.id,
+              originalID: originalPost._id,
               originalType: repost.originalType,
               originalAuthor,
               repostedAt: repost.repostedAt,
@@ -210,6 +314,7 @@ export const resolvers: IResolvers = {
             };
           })
         );
+        console.log(repostedPosts);
         return repostedPosts;
       } catch (err) {
         throw new Error('Error fetching reposts by IDs');
@@ -273,6 +378,22 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching comments by IDs');
       }
     },
+    getNotifications: async (_, __, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to view notifications');
+      }
+
+      try {
+        const user = await User.findById(context.user._id);
+
+        if (!user) {
+          throw new UserInputError('User not found');
+        }
+        return await Notification.find({ recipient: user._id }).sort({ createdAt: -1 });
+      } catch (err) {
+        throw new Error('Error fetching notifications');
+      }
+    },
 
     searchPosts: async (_: any, { query, page }: { query: string; page: string }) => {
       if (query.length > 40) {
@@ -316,6 +437,7 @@ export const resolvers: IResolvers = {
               author: '$authorDetails',
               amtLikes: 1,
               amtComments: 1,
+              amtReposts: 1,
               createdAt: 1,
               imageUrl: 1,
             },
@@ -599,9 +721,25 @@ export const resolvers: IResolvers = {
         await user.save();
 
         if (mentionedUsers) {
-          mentionedUsers.forEach(
-            async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedPostIds: savedPost.id } })
-          );
+          mentionedUsers.forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedPostIds.push(savedPost.id);
+
+            if (user.id !== savedPost.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'post',
+                postID: savedPost.id,
+                recipient: user,
+                sender: savedPost.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
         }
 
         return await savedPost.populate('author');
@@ -647,6 +785,18 @@ export const resolvers: IResolvers = {
         await User.findByIdAndUpdate(user.id, { $push: { repostedPostIds: repost.originalID } });
 
         const originalAuthor = await User.findById(originalPost.author);
+
+        if (originalAuthor && originalAuthor._id !== user.id) {
+          const notification = new Notification({
+            type: 'REPOST',
+            postType: type,
+            postID: id,
+            recipient: originalAuthor,
+            sender: user,
+          });
+
+          await notification.save();
+        }
 
         const combinedPost = {
           id: repost.id,
@@ -705,6 +855,15 @@ export const resolvers: IResolvers = {
         await originalPost.save();
 
         await User.findByIdAndUpdate(user.id, { $pull: { repostedPostIds: repost.originalID } });
+
+        if (originalPost.author !== user.id) {
+          await Notification.findOneAndDelete({
+            type: 'REPOST',
+            postType: repost.originalType,
+            postID: id,
+            sender: user,
+          });
+        }
 
         return repost;
       } catch (err) {
@@ -867,10 +1026,44 @@ export const resolvers: IResolvers = {
       ) {
         mentionedUsers
           .filter((id) => !post.mentionedUsers?.includes(id))
-          .forEach(async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedPostIds: post.id } }));
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedPostIds.push(post.id);
+
+            if (user.id !== post.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'post',
+                postID: post.id,
+                recipient: user,
+                sender: post.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
         post.mentionedUsers
           .filter((id) => !mentionedUsers.includes(id))
-          .forEach(async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: post.id } }));
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedPostIds = user.mentionedPostIds.filter((postId) => postId !== post.id);
+
+            if (user.id !== post.author) {
+              await Notification.findOneAndDelete({
+                type: 'MENTION',
+                postType: 'post',
+                postID: post.id,
+                recipient: user,
+                sender: post.author,
+              });
+            }
+
+            return await user.save();
+          });
       }
       post.mentionedUsers = mentionedUsers;
       await post.save();
@@ -938,14 +1131,44 @@ export const resolvers: IResolvers = {
       ) {
         mentionedUsers
           .filter((id) => !comment.mentionedUsers?.includes(id))
-          .forEach(
-            async (id) => await User.findByIdAndUpdate(id, { $push: { mentionedCommentIds: comment.id } })
-          );
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedCommentIds.push(comment.id);
+
+            if (user.id !== comment.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'reply',
+                postID: comment.id,
+                recipient: user,
+                sender: comment.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
         comment.mentionedUsers
           .filter((id) => !mentionedUsers.includes(id))
-          .forEach(
-            async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: comment.id } })
-          );
+          .forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedCommentIds = user.mentionedCommentIds.filter((postId) => postId !== comment.id);
+
+            if (user.id !== comment.author) {
+              await Notification.findOneAndDelete({
+                type: 'MENTION',
+                postType: 'reply',
+                postID: comment.id,
+                recipient: user,
+                sender: comment.author,
+              });
+            }
+
+            return await user.save();
+          });
       }
       comment.mentionedUsers = mentionedUsers;
 
@@ -1144,20 +1367,48 @@ export const resolvers: IResolvers = {
         });
         const savedComment = await newComment.save();
 
+        let parent: PostType | CommentType | null = null;
         if (parentType === 'post') {
-          await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+          parent = await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
         } else {
-          await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
+          parent = await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: 1 } });
         }
 
         user.commentIds.push(savedComment.id);
         await user.save();
 
         if (mentionedUsers) {
-          mentionedUsers.forEach(
-            async (id) =>
-              await User.findByIdAndUpdate(id, { $push: { mentionedCommentIds: savedComment.id } })
-          );
+          mentionedUsers.forEach(async (id) => {
+            const user = await User.findById(id);
+            if (!user) return;
+            user.mentionedCommentIds.push(savedComment.id);
+
+            if (user.id !== savedComment.author) {
+              const notification = new Notification({
+                type: 'MENTION',
+                postType: 'reply',
+                postID: savedComment.id,
+                recipient: user,
+                sender: savedComment.author,
+              });
+
+              await notification.save();
+            }
+
+            return await user.save();
+          });
+        }
+
+        if (parent && user.id !== parent.author._id) {
+          const notification = new Notification({
+            type: 'COMMENT',
+            postType: 'reply',
+            postID: savedComment._id,
+            recipient: parent.author,
+            sender: user,
+          });
+
+          await notification.save();
         }
 
         return await savedComment.populate('author');
@@ -1201,9 +1452,25 @@ export const resolvers: IResolvers = {
 
         user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
 
-        deletedPost.mentionedUsers?.forEach(
-          async (id) => await User.findByIdAndUpdate(id, { $pull: { mentionedPostIds: deletedPost.id } })
-        );
+        deletedPost.mentionedUsers?.forEach(async (id) => {
+          const user = await User.findById(id);
+
+          if (!user) return;
+
+          user.mentionedPostIds = user.mentionedPostIds.filter(
+            (commentId) => String(commentId) !== String(deletedPost.id)
+          );
+
+          if (user.id !== deletedPost.author) {
+            await Notification.findOneAndDelete({
+              type: 'MENTION',
+              postType: 'post',
+              postID: deletedPost._id,
+              sender: user,
+            });
+          }
+          return;
+        });
 
         await user.save();
 
@@ -1241,22 +1508,47 @@ export const resolvers: IResolvers = {
           }
         }
 
+        let parent: PostType | CommentType | null = null;
         if (parentType === 'post') {
-          await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+          parent = await Post.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
         } else {
-          await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
+          parent = await Comment.findByIdAndUpdate(parentID, { $inc: { amtComments: -1 } });
         }
 
         user.commentIds = user.commentIds.filter(
           (commentId) => String(commentId) !== String(deletedComment.id)
         );
 
-        deletedComment.mentionedUsers?.forEach(
-          async (id) =>
-            await User.findByIdAndUpdate(id, { $pull: { mentionedCommentIds: deletedComment.id } })
-        );
+        deletedComment.mentionedUsers?.forEach(async (id) => {
+          const user = await User.findById(id);
+
+          if (!user) return;
+
+          user.mentionedCommentIds = user.mentionedCommentIds.filter(
+            (commentId) => String(commentId) !== String(deletedComment.id)
+          );
+
+          if (user.id !== deletedComment.author) {
+            await Notification.findOneAndDelete({
+              type: 'MENTION',
+              postType: 'reply',
+              postID: deletedComment._id,
+              sender: user,
+            });
+          }
+          return;
+        });
 
         await user.save();
+
+        if (parent && parent.author._id !== user.id) {
+          await Notification.findOneAndDelete({
+            type: 'COMMENT',
+            postType: 'reply',
+            postID: deletedComment._id,
+            sender: user,
+          });
+        }
 
         return deletedComment;
       } catch (err) {
@@ -1286,6 +1578,18 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
+      if (post.author._id !== user.id) {
+        const notification = new Notification({
+          type: 'LIKE',
+          postType: 'post',
+          postID,
+          recipient: post.author,
+          sender: user,
+        });
+
+        await notification.save();
+      }
+
       return await post.populate('author');
     },
 
@@ -1312,6 +1616,15 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
+      if (post.author._id !== user.id) {
+        await Notification.findOneAndDelete({
+          type: 'LIKE',
+          postType: 'post',
+          postID,
+          sender: user,
+        });
+      }
+
       return await post.populate('author');
     },
 
@@ -1335,6 +1648,18 @@ export const resolvers: IResolvers = {
         user.likedCommentIds.push(id);
         await comment.save();
         await user.save();
+      }
+
+      if (comment.author._id !== user.id) {
+        const notification = new Notification({
+          type: 'LIKE',
+          postType: 'reply',
+          postID: id,
+          recipient: comment.author,
+          sender: user,
+        });
+
+        await notification.save();
       }
 
       return await comment.populate('author');
@@ -1363,6 +1688,15 @@ export const resolvers: IResolvers = {
         await user.save();
       }
 
+      if (comment.author._id !== user.id) {
+        await Notification.findOneAndDelete({
+          type: 'LIKE',
+          postType: 'reply',
+          postID: id,
+          sender: user,
+        });
+      }
+
       return await comment.populate('author');
     },
 
@@ -1388,6 +1722,14 @@ export const resolvers: IResolvers = {
 
       await personToFollow.save();
       await user.save();
+
+      const notification = new Notification({
+        type: 'FOLLOW',
+        recipient: personToFollow,
+        sender: user,
+      });
+
+      await notification.save();
 
       return personToFollow;
     },
@@ -1419,7 +1761,55 @@ export const resolvers: IResolvers = {
       await personToUnfollow.save();
       await user.save();
 
+      await Notification.findOneAndDelete({
+        type: 'FOLLOW',
+        recipient: personToUnfollow,
+        sender: user,
+      });
+
       return personToUnfollow;
+    },
+    deleteNotification: async (_, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to delete a notification');
+      }
+
+      const notification = await Notification.findById(id);
+      if (!notification) {
+        throw new UserInputError('Notification not found');
+      }
+
+      if (!notification.recipient._id === context.user._id) {
+        throw new AuthenticationError('You are not authorized to delete this notification');
+      }
+
+      await Notification.findByIdAndDelete(id);
+      return notification;
+    },
+    deleteAllNotifications: async (_, __, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to delete notifications');
+      }
+
+      const notifications = await Notification.find({ recipient: context.user });
+      if (!notifications) {
+        throw new UserInputError('Notifications not found');
+      }
+
+      await Notification.deleteMany({ recipient: context.user });
+      return notifications;
+    },
+  },
+
+  PostItem: {
+    __resolveType(obj: any, context: any, info: any) {
+      if (obj.originalType) {
+        return 'Repost';
+      }
+      if (obj.body !== undefined) {
+        return 'Post';
+      }
+      return null;
     },
   },
 
@@ -1436,6 +1826,13 @@ export const resolvers: IResolvers = {
   },
 
   User: {
+    id: (parent) => {
+      const id = parent._id || parent.id;
+      if (!id) {
+        throw new Error('ID not found on User object');
+      }
+      return id.toString();
+    },
     followers: async (parent) => {
       return await User.find({ _id: { $in: parent.followers } });
     },
@@ -1444,11 +1841,43 @@ export const resolvers: IResolvers = {
     },
   },
 
+  Notification: {
+    sender: async (parent) => {
+      return await User.findById(parent.sender);
+    },
+    recipient: async (parent) => {
+      return await User.findById(parent.recipient);
+    },
+  },
+
   Post: {
+    id: (parent) => {
+      const id = parent._id || parent.id;
+      if (!id) {
+        throw new Error('ID not found on Post object');
+      }
+      return id.toString();
+    },
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.body !== undefined && obj.originalType === undefined;
+    },
     hashTags: (parent) => parent.hashTags,
     mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
+    },
+  },
+
+  Repost: {
+    id: (parent) => {
+      const id = parent._id || parent.id;
+      if (!id) {
+        throw new Error('ID not found on Repost object');
+      }
+      return id.toString();
+    },
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.originalType !== undefined;
     },
   },
 
