@@ -159,6 +159,7 @@ const MentionsView: React.FC<MentionsViewProps> = ({
       )}
       {(postsLoading || commentsLoading) && <p>Loading more mentions...</p>}
       {!hasMore && <p>No more mentions to load.</p>}
+      {!postsLoading && mentionedCommentIds.length === 0 && <p>No mentions</p>}
     </>
   );
 };
