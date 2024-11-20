@@ -25,6 +25,13 @@ enum PostFilter {
   CONTROVERSIAL
 }
 
+enum VerifiedTiers {
+  UNVERIFIED
+  VERIFIED
+  MADS
+  DEVELOPER
+}
+
 union Parent = Post | Comment
 
 input ParentInput {
@@ -85,7 +92,7 @@ type User {
   followers: [User!]!
   profilePicture: String
   backgroundPicture: String
-  verified: Boolean!
+  verified: VerifiedTiers!
 }
 
 type Repost {

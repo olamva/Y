@@ -63,6 +63,7 @@ export const resolvers: IResolvers = {
       const skip = (page - 1) * USERS_PER_PAGE;
 
       try {
+        User.updateMany({ $set: { verified: 'UNVERIFIED' } });
         return await User.find({ username: { $nin: ['admin', 'fredrik'] } })
           .sort({ createdAt: -1 })
           .skip(skip)
@@ -216,6 +217,7 @@ export const resolvers: IResolvers = {
     },
     getUser: async (_, { username }) => {
       try {
+        User.updateMany({ $set: { verified: 'UNVERIFIED' } });
         return await User.findOne({ username: username });
       } catch (err) {
         throw new Error('Error fetching user');

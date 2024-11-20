@@ -54,5 +54,12 @@ export type UserType = {
   following: UserType[];
   profilePicture?: string;
   backgroundPicture?: string;
-  verified?: boolean;
+  verified: VerifiedTiers;
 };
+
+export enum VerifiedTiers {
+  UNVERIFIED = "UNVERIFIED",
+  VERIFIED = "VERIFIED",
+  MADS = "MADS",
+  DEVELOPER = "DEVELOPER",
+}
