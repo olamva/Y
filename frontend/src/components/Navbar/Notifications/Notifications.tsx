@@ -90,9 +90,9 @@ const Notifications = () => {
             )}
           </button>
         </PopoverTrigger>
-        {!loading && notifications && (
+        {!loading && (
           <PopoverContent ref={popoverRef} className="z-[70] w-fit p-0">
-            {notifications.length > 2 && (
+            {notifications && notifications?.length > 2 && (
               <div className="flex justify-between border-b border-gray-200 p-2 lg:p-3">
                 <p className="text-sm font-light">Mark all as read?</p>
                 <button disabled={deleteLoading}>
@@ -108,7 +108,7 @@ const Notifications = () => {
               </div>
             )}
             <div className="max-h-60 w-fit overflow-auto">
-              {notifications.length > 0 ? (
+              {notifications && notifications.length > 0 ? (
                 notifications.map((notification) => (
                   <NotificationCard
                     key={notification.id}
