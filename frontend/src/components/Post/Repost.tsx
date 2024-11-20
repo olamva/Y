@@ -5,6 +5,7 @@ import FollowButton from "../FollowButton";
 import Username from "../Username";
 import Comment from "./Comment";
 import Post from "./Post";
+import { RecycleIcon } from "lucide-react";
 
 const Repost = ({ repost }: { repost: RepostType }) => {
   const { user } = useAuth();
@@ -31,7 +32,10 @@ const Repost = ({ repost }: { repost: RepostType }) => {
           {repost.author.username !== user?.username && (
             <FollowButton targetUsername={repost.author.username} />
           )}
-          <p>reposted</p>
+          <div>
+            <p className="hidden sm:flex">reposted</p>
+            <RecycleIcon className="relative h-4 w-4 text-black dark:text-white sm:hidden" />
+          </div>
           <p>·</p>
           <p>{formatTimestamp(repost.repostedAt)}</p>
         </div>
