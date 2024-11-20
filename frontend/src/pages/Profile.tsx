@@ -40,6 +40,7 @@ const Profile = () => {
     variables: { username },
     onCompleted: () => {
       toast.success("User deleted successfully");
+      window.location.href = "/project2/";
     },
     onError: (err) => {
       toast.error(`Error deleting user: ${err.message}`);
@@ -54,7 +55,6 @@ const Profile = () => {
 
     try {
       await deleteUser();
-      window.location.href = "/project2/";
     } catch (error) {
       toast.error(`Error deleting post: ${(error as Error).message}`);
     }
@@ -129,9 +129,9 @@ const Profile = () => {
             </div>
             {/* User Info */}
             <div className="mx-auto max-w-5xl">
-              <div className="relative -mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
-                <Avatar user={user} large={true} />
-                <div className="sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:pb-1">
+              <div className="-mt-16 flex items-end space-x-5">
+                <Avatar user={user} large />
+                <div className="flex min-w-0 flex-1 items-center justify-end pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
                     <h1 className="flex items-center gap-2 truncate text-2xl font-bold text-gray-900 dark:text-white">
                       <span>
@@ -150,12 +150,13 @@ const Profile = () => {
                   </div>
                   <div className="flex gap-2 md:mt-0">
                     {loggedInUser &&
+                      username !== "admin" &&
                       (loggedInUser.username === username ||
                         loggedInUser.username === "admin") && (
                         <button
                           onClick={handleDelete}
                           disabled={deleteLoading}
-                          className="transform rounded-md bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-red-600 hover:to-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 dark:from-red-400 dark:to-red-500 dark:hover:from-red-500 dark:hover:to-red-600"
+                          className="transform rounded-md bg-gradient-to-r from-red-500 to-red-600 px-2 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:from-red-600 hover:to-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 dark:from-red-400 dark:to-red-500 dark:hover:from-red-500 dark:hover:to-red-600 sm:px-4 sm:text-base"
                         >
                           Delete User
                         </button>
@@ -167,7 +168,7 @@ const Profile = () => {
                 </div>
               </div>
               {/* Mobile User Info */}
-              <div className="mt-6 min-w-0 flex-1 sm:block md:hidden">
+              <div className="mt-6 block min-w-0 flex-1 md:hidden">
                 <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
                   {user?.firstName} {user?.lastName}
                 </h1>

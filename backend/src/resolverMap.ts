@@ -758,7 +758,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (user.username !== username && user.username !== 'admin') {
+      if ((user.username !== username && user.username !== 'admin') || username === 'admin') {
         throw new AuthenticationError('You are not authorized to delete this user');
       }
 

@@ -134,7 +134,7 @@ const Navbar = () => {
           </h1>
         </a>
 
-        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 sm:max-w-lg lg:justify-end">
+        <div className="mx-4 flex max-w-xs flex-1 items-center justify-center gap-2 lg:max-w-lg lg:justify-end">
           <Popover open={showSuggestions}>
             <PopoverTrigger asChild>
               <input
