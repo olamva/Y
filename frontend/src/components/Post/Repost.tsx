@@ -1,11 +1,11 @@
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
+import { RecycleIcon } from "lucide-react";
 import { useAuth } from "../AuthContext";
 import FollowButton from "../FollowButton";
 import Username from "../Username";
 import Comment from "./Comment";
 import Post from "./Post";
-import { RecycleIcon } from "lucide-react";
 
 const Repost = ({ repost }: { repost: RepostType }) => {
   const { user } = useAuth();
@@ -23,14 +23,21 @@ const Repost = ({ repost }: { repost: RepostType }) => {
     parentID: repost.parentID ?? "",
     parentType: repost.parentType ?? "post",
   };
+  const yourRepost = repost.author.username === user?.username;
   return (
     <div className="flex w-full max-w-xl flex-col justify-self-center">
       <header className="mx-1 flex h-fit items-end">
         <div className="h-6 w-4 rounded-tl-lg border-b-0 border-l border-t border-gray-300 dark:border-gray-700"></div>
-        <div className="flex items-center gap-2 rounded rounded-b-none bg-gray-200/70 p-2 shadow-lg dark:bg-gray-900/80">
-          <Username user={repost.author} />
-          {repost.author.username !== user?.username && (
-            <FollowButton targetUsername={repost.author.username} />
+        <div
+          className={`flex items-center ${yourRepost ? "gap-1" : "gap-2"} rounded rounded-b-none bg-gray-200/70 p-2 shadow-lg dark:bg-gray-900/80`}
+        >
+          {yourRepost ? (
+            <p className="font-extrabold">You</p>
+          ) : (
+            <>
+              <Username user={repost.author} />
+              <FollowButton targetUsername={repost.author.username} />
+            </>
           )}
           <div>
             <p className="hidden sm:flex">reposted</p>
