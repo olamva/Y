@@ -63,3 +63,14 @@ export enum VerifiedTiers {
   MADS = "MADS",
   DEVELOPER = "DEVELOPER",
 }
+
+export type NotificationType = {
+  __typename: "Notification";
+  id: string;
+  type: "LIKE" | "COMMENT" | "REPOST" | "MENTION" | "FOLLOW";
+  recipient: UserType;
+  sender: UserType;
+  createdAt: string;
+  postType?: "post" | "comment";
+  postID?: string;
+};
