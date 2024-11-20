@@ -17,6 +17,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HashtagPage from "./pages/HashtagPage";
 import HashtagsPage from "./pages/HashtagsPage";
 import UsersPage from "./pages/UsersPage";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
   {
     path: "/project2/hashtag/:hashtag",
     element: <HashtagPage />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
