@@ -24,6 +24,7 @@ export const GET_CONTENT_BY_HASHTAG = gql`
         }
         amtLikes
         amtComments
+        amtReposts
         imageUrl
         createdAt
       }
@@ -40,6 +41,7 @@ export const GET_CONTENT_BY_HASHTAG = gql`
         }
         amtLikes
         amtComments
+        amtReposts
         createdAt
         imageUrl
       }
