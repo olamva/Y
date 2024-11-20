@@ -3,6 +3,7 @@ import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
 import Avatar from "../Profile/Avatar";
 import Username from "../Username";
+import Notifications from "./Notifications/Notifications";
 import SearchBar from "./SearchBar";
 
 const Navbar = () => {
@@ -39,6 +40,7 @@ const Navbar = () => {
                   <div className="hidden xl:block">
                     <Username user={user} />
                   </div>
+                  <Notifications />
                 </>
               )}
               {user ? (

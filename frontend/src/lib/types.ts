@@ -71,6 +71,6 @@ export type NotificationType = {
   recipient: UserType;
   sender: UserType;
   createdAt: string;
-  postType?: "post" | "comment";
+  postType?: "post" | "reply";
   postID?: string;
 };

@@ -285,7 +285,6 @@ export const resolvers: IResolvers = {
         if (!user) {
           throw new UserInputError('User not found');
         }
-
         return await Notification.find({ recipient: user._id }).sort({ createdAt: -1 });
       } catch (err) {
         throw new Error('Error fetching notifications');
@@ -625,7 +624,7 @@ export const resolvers: IResolvers = {
             if (user.id !== savedPost.author) {
               const notification = new Notification({
                 type: 'MENTION',
-                postType: 'Post',
+                postType: 'post',
                 postID: savedPost.id,
                 recipient: user,
                 sender: savedPost.author,
@@ -930,7 +929,7 @@ export const resolvers: IResolvers = {
             if (user.id !== post.author) {
               const notification = new Notification({
                 type: 'MENTION',
-                postType: 'Post',
+                postType: 'post',
                 postID: post.id,
                 recipient: user,
                 sender: post.author,
@@ -951,7 +950,7 @@ export const resolvers: IResolvers = {
             if (user.id !== post.author) {
               await Notification.findOneAndDelete({
                 type: 'MENTION',
-                postType: 'Post',
+                postType: 'post',
                 postID: post.id,
                 recipient: user,
                 sender: post.author,
@@ -1035,7 +1034,7 @@ export const resolvers: IResolvers = {
             if (user.id !== comment.author) {
               const notification = new Notification({
                 type: 'MENTION',
-                postType: 'Comment',
+                postType: 'reply',
                 postID: comment.id,
                 recipient: user,
                 sender: comment.author,
@@ -1056,7 +1055,7 @@ export const resolvers: IResolvers = {
             if (user.id !== comment.author) {
               await Notification.findOneAndDelete({
                 type: 'MENTION',
-                postType: 'Comment',
+                postType: 'reply',
                 postID: comment.id,
                 recipient: user,
                 sender: comment.author,
@@ -1282,7 +1281,7 @@ export const resolvers: IResolvers = {
             if (user.id !== savedComment.author) {
               const notification = new Notification({
                 type: 'MENTION',
-                postType: 'Comment',
+                postType: 'reply',
                 postID: savedComment.id,
                 recipient: user,
                 sender: savedComment.author,
@@ -1298,7 +1297,7 @@ export const resolvers: IResolvers = {
         if (parent && user.id !== parent.author._id) {
           const notification = new Notification({
             type: 'COMMENT',
-            postType: 'Comment',
+            postType: 'reply',
             postID: savedComment._id,
             recipient: parent.author,
             sender: user,
@@ -1360,7 +1359,7 @@ export const resolvers: IResolvers = {
           if (user.id !== deletedPost.author) {
             await Notification.findOneAndDelete({
               type: 'MENTION',
-              postType: 'Post',
+              postType: 'post',
               postID: deletedPost._id,
               sender: user,
             });
@@ -1427,7 +1426,7 @@ export const resolvers: IResolvers = {
           if (user.id !== deletedComment.author) {
             await Notification.findOneAndDelete({
               type: 'MENTION',
-              postType: 'Comment',
+              postType: 'reply',
               postID: deletedComment._id,
               sender: user,
             });
@@ -1440,7 +1439,7 @@ export const resolvers: IResolvers = {
         if (parent && parent.author._id !== user.id) {
           await Notification.findOneAndDelete({
             type: 'COMMENT',
-            postType: 'Comment',
+            postType: 'reply',
             postID: deletedComment._id,
             sender: user,
           });
@@ -1477,7 +1476,7 @@ export const resolvers: IResolvers = {
       if (post.author._id !== user.id) {
         const notification = new Notification({
           type: 'LIKE',
-          postType: 'Post',
+          postType: 'post',
           postID,
           recipient: post.author,
           sender: user,
@@ -1515,7 +1514,7 @@ export const resolvers: IResolvers = {
       if (post.author._id !== user.id) {
         await Notification.findOneAndDelete({
           type: 'LIKE',
-          postType: 'Post',
+          postType: 'post',
           postID,
           sender: user,
         });
@@ -1549,7 +1548,7 @@ export const resolvers: IResolvers = {
       if (comment.author._id !== user.id) {
         const notification = new Notification({
           type: 'LIKE',
-          postType: 'Comment',
+          postType: 'reply',
           postID: id,
           recipient: comment.author,
           sender: user,
@@ -1587,7 +1586,7 @@ export const resolvers: IResolvers = {
       if (comment.author._id !== user.id) {
         await Notification.findOneAndDelete({
           type: 'LIKE',
-          postType: 'Comment',
+          postType: 'reply',
           postID: id,
           sender: user,
         });
@@ -1675,7 +1674,7 @@ export const resolvers: IResolvers = {
         throw new UserInputError('Notification not found');
       }
 
-      if (!notification.recipient.equals(context.user)) {
+      if (!notification.recipient._id === context.user._id) {
         throw new AuthenticationError('You are not authorized to delete this notification');
       }
 
