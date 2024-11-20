@@ -42,9 +42,10 @@ const HomePage = () => {
   }>(GET_POSTS, {
     variables: { page: 1, filter, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
     skip: filter === "FOLLOWING" && !user,
   });
+
+  const posts = data?.getPosts || [];
 
   const { data: usersData, error: usersError } = useQuery<{
     getUsers: UserType[];
@@ -105,27 +106,29 @@ const HomePage = () => {
 
     try {
       const { data: fetchMoreData } = await fetchMore({
-        variables: { page: page + 1, filter, limit: PAGE_SIZE },
+        variables: { page: page + 1 },
       });
 
       if (fetchMoreData?.getPosts) {
-        if (fetchMoreData.getPosts.length < PAGE_SIZE) {
+        if (fetchMoreData.getPosts.length < 16) {
           setHasMore(false);
         }
-        setPage((prev) => prev + 1);
+        if (fetchMoreData.getPosts.length > 0) {
+          setPage((prev) => prev + 1);
+        }
       } else {
         setHasMore(false);
       }
     } catch (error) {
       toast.error(`Failed to load more posts: ${(error as Error).message}`);
     }
-  }, [fetchMore, hasMore, loading, page, filter, networkStatus]);
+  }, [fetchMore, hasMore, loading, page, networkStatus]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 200 &&
+          document.body.offsetHeight - 400 &&
         hasMore
       ) {
         loadMorePosts();
@@ -146,8 +149,6 @@ const HomePage = () => {
       setShowLoginPrompt(false);
     }
   }, [filter]);
-
-  const posts = data?.getPosts ?? [];
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
@@ -276,14 +277,13 @@ const HomePage = () => {
             )}
 
             {loading &&
+              networkStatus === NetworkStatus.loading &&
+              page === 1 &&
               Array.from({ length: PAGE_SIZE }).map((_, index) => (
                 <PostSkeleton key={index} />
               ))}
-            {!loading && posts.length === 0 && (
-              <p className="mt-4">No posts available.</p>
-            )}
-            {!loading &&
-              posts.length > 0 &&
+
+            {posts &&
               posts.map((post) =>
                 post.__typename === "Post" ? (
                   <Post key={post.id} post={post as PostType} />
@@ -291,6 +291,9 @@ const HomePage = () => {
                   <Repost key={post.id} repost={post as RepostType} />
                 ),
               )}
+            {!loading && posts.length === 0 && (
+              <p className="mt-4">No posts available.</p>
+            )}
           </div>
         )}
 
