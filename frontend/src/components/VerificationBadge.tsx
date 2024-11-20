@@ -45,11 +45,9 @@ const VerificationBadge = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            (
             <CheckBadgeIcon
               className={`${small ? "size-4" : "size-6"} cursor-pointer ${colorsTouse}`}
             />
-            )
           </TooltipTrigger>
           <TooltipContent className="z-[70]">
             <p className="max-w-48 break-words">{verifiedText}</p>
