@@ -207,15 +207,33 @@ export const resolvers: IResolvers = {
           combinedResults = combinedResults.concat(formattedReposts);
         }
 
-        combinedResults.sort((a, b) => {
-          if (b.controversyRatio !== a.controversyRatio) {
-            return b.controversyRatio - a.controversyRatio;
-          } else {
+        if (filter === 'LATEST' || filter === 'FOLLOWING') {
+          combinedResults.sort((a, b) => {
             const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
             const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
             return dateB.getTime() - dateA.getTime();
-          }
-        });
+          });
+        } else if (filter === 'POPULAR') {
+          combinedResults.sort((a, b) => {
+            if (b.amtLikes !== a.amtLikes) {
+              return b.amtLikes - a.amtLikes;
+            } else {
+              const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+              const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            }
+          });
+        } else if (filter === 'CONTROVERSIAL') {
+          combinedResults.sort((a, b) => {
+            if (b.controversyRatio !== a.controversyRatio) {
+              return b.controversyRatio - a.controversyRatio;
+            } else {
+              const dateA = a.repostedAt ? new Date(a.repostedAt) : new Date(a.createdAt);
+              const dateB = b.repostedAt ? new Date(b.repostedAt) : new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime();
+            }
+          });
+        }
 
         combinedResults = combinedResults.slice(0, ITEMS_PER_PAGE);
 
