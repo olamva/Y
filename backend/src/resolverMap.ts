@@ -1034,6 +1034,11 @@ export const resolvers: IResolvers = {
           if (post.amtLikes > 0) {
             await User.updateMany({ $pull: { likedPostIds: post.id } });
           }
+
+          if (post.amtReposts > 0) {
+            await User.updateMany({ $pull: { repostedPostIds: post.id } });
+            await Repost.deleteMany({ originalID: post.id });
+          }
         }
 
         for (const comment of userComments) {
