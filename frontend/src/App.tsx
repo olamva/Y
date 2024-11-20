@@ -277,8 +277,7 @@ const HomePage = () => {
             )}
 
             {loading &&
-              networkStatus === NetworkStatus.loading &&
-              page === 1 &&
+              posts.length === 0 &&
               Array.from({ length: PAGE_SIZE }).map((_, index) => (
                 <PostSkeleton key={index} />
               ))}
