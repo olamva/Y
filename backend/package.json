@@ -7,7 +7,8 @@
     "start": "node dist/index.ts",
     "build": "tsc -p . && cpy src/schema/**/* dist/schema --parents",
     "start:dev": "nodemon src/index.ts --exec ts-node -r dotenv/config",
-    "build:dev": "tsc && node dist/index.ts"
+    "build:dev": "tsc && node dist/index.ts",
+    "repost:validate": "ts-node ./src/repostCountValidation.ts"
   },
   "keywords": [
     "nodejs",
