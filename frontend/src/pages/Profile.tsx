@@ -239,7 +239,9 @@ const Profile = () => {
                 aria-label="View Posts"
                 className="text-center"
               >
-                <p>{user?.postIds.length} Posts</p>
+                <p>
+                  {user?.postIds.length + user.repostedPostIds.length} Posts
+                </p>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="comments"
