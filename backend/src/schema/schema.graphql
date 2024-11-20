@@ -1,5 +1,5 @@
 type Query {
-  getPosts(page: Int!, filter: PostFilter!, limit: Int!): [Post!]!
+  getPosts(page: Int!, filter: PostFilter!, limit: Int!): [PostItem!]!
   getPost(id: ID!): Post
   getReposts(page: Int!, filter: PostFilter!, limit: Int!): [Repost!]!
   getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!
@@ -17,6 +17,8 @@ type Query {
   getTrendingHashtags(page: Int!): [TrendingHashtag!]!
   getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
 }
+
+union PostItem = Post | Repost
 
 enum PostFilter {
   LATEST

@@ -3,20 +3,57 @@ import { gql } from "@apollo/client";
 export const GET_POSTS = gql`
   query GetPosts($page: Int!, $filter: PostFilter!, $limit: Int!) {
     getPosts(page: $page, filter: $filter, limit: $limit) {
-      id
-      body
-      originalBody
-      author {
+      __typename
+      ... on Post {
         id
-        username
-        profilePicture
-        verified
+        body
+        originalBody
+        author {
+          id
+          username
+          profilePicture
+          verified
+        }
+        amtLikes
+        amtComments
+        amtReposts
+        imageUrl
+        createdAt
       }
-      amtLikes
-      amtComments
-      amtReposts
-      imageUrl
-      createdAt
+      ... on Repost {
+        id
+        author {
+          id
+          username
+          profilePicture
+          verified
+        }
+        originalID
+        originalType
+        originalAuthor {
+          id
+          username
+          profilePicture
+          verified
+        }
+        repostedAt
+        body
+        originalBody
+        amtLikes
+        amtComments
+        amtReposts
+        imageUrl
+        createdAt
+        hashTags
+        mentionedUsers {
+          id
+          username
+          profilePicture
+          verified
+        }
+        parentID
+        parentType
+      }
     }
   }
 `;

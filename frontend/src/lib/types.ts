@@ -36,6 +36,10 @@ export type RepostType = ContentType & {
   repostedAt: string;
 };
 
+export type PostItem =
+  | (PostType & { __typename: "Post" })
+  | (RepostType & { __typename: "Repost" });
+
 export type UserType = {
   __typename: "User";
   id: string;
