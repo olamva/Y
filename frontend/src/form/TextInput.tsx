@@ -69,7 +69,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       } else {
         refetchHashtags();
       }
-    }, [debouncedQuery, refetchHashtags, refetchUsers]);
+    }, [debouncedQuery, refetchHashtags, refetchUsers, suggestionType]);
 
     useEffect(() => {
       if (suggestionType === "users") {
@@ -101,7 +101,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
       };
-    }, []);
+    }, [ref]);
 
     const handleAutofill = () => {
       const selectedSuggestion = currentSuggestions[activeSuggestionIndex];
