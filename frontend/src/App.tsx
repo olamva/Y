@@ -291,8 +291,11 @@ const HomePage = () => {
                   <Repost key={post.id} repost={post as RepostType} />
                 ),
               )}
+            {loading && posts.length > 0 && hasMore && (
+              <p className="mt-4 text-center">Loading more posts...</p>
+            )}
             {!loading && posts.length === 0 && (
-              <p className="mt-4">No posts available.</p>
+              <p className="mt-4 text-center">No posts available.</p>
             )}
           </div>
         )}
