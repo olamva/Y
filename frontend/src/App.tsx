@@ -91,7 +91,7 @@ const HomePage = () => {
     try {
       await createPost({
         variables: {
-          body: postBody,
+          body: postBody.trim(),
           file: file,
         },
       });
