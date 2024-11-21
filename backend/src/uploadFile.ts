@@ -40,9 +40,7 @@ export const uploadFile = async (
       };
     }
 
-    const uniqueFilename = username
-      ? `${sanitize(username)}-${uuidv4()}${fileExtension}`
-      : `${uuidv4()}-${sanitizedFilename}`;
+    const uniqueFilename = `${uuidv4()}-${sanitizedFilename}`;
 
     const filepath = path.join(UPLOADS_PATH, uniqueFilename);
 
@@ -82,7 +80,8 @@ export const uploadFile = async (
             await sharp(tempFilePath).rotate().resize(300, 300, { fit: 'cover' }).toFile(filepath);
             fs.unlinkSync(tempFilePath);
           } else {
-            fs.renameSync(tempFilePath, filepath);
+            await sharp(tempFilePath).rotate().resize(600).toFile(filepath);
+            fs.unlinkSync(tempFilePath);
           }
           resolve({
             success: true,

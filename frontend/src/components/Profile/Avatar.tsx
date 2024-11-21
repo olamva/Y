@@ -30,18 +30,14 @@ const Avatar = ({
   const [currentExtensionIndex, setCurrentExtensionIndex] = useState(0);
   const [hasImage, setHasImage] = useState(!!user.profilePicture);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [cacheBuster, setCacheBuster] = useState<string>("");
-
   const profilePictureHasExtension = /\.(png|jpg|jpeg|gif)$/.test(
     user.profilePicture || "",
   );
 
-  const generateCacheBuster = () => `cb=${new Date().getTime()}`;
-
   const imageUrl = user.profilePicture
     ? profilePictureHasExtension
-      ? `${BACKEND_URL}${user.profilePicture}?${cacheBuster}`
-      : `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}?${cacheBuster}`
+      ? `${BACKEND_URL}${user.profilePicture}`
+      : `${BACKEND_URL}${user.profilePicture}.${supportedExtensions[currentExtensionIndex]}`
     : "";
 
   const handleError = () => {
@@ -56,10 +52,13 @@ const Avatar = ({
     setCurrentExtensionIndex(0);
     setHasImage(!!user.profilePicture);
     setIsLoaded(false);
-    setCacheBuster(generateCacheBuster());
   }, [user.profilePicture]);
 
-  const sizeClasses = large ? "size-24 md:size-36" : small ? "size-6" : "size-8";
+  const sizeClasses = large
+    ? "size-24 md:size-36"
+    : small
+      ? "size-6"
+      : "size-8";
 
   const containerClasses = `relative flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
     disableHover ? "" : "hover:scale-105"
@@ -67,7 +66,11 @@ const Avatar = ({
 
   const FirstLetterAvatar = () => (
     <div className="absolute inset-0 flex items-center justify-center">
-      <p className={large ? "text-4xl md:text-7xl" : small ? "text-xs" : "text-base"}>
+      <p
+        className={
+          large ? "text-4xl md:text-7xl" : small ? "text-xs" : "text-base"
+        }
+      >
         {user.username && user.username.trim().length > 0
           ? user.username.charAt(0).toUpperCase()
           : "U"}
