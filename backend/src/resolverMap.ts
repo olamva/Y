@@ -145,7 +145,7 @@ export const resolvers: IResolvers = {
           posts = fetchedPosts;
           reposts = fetchedReposts as RepostType[];
         } else {
-          if (filter === 'CONTROVERSIAL') {
+          if (filter === 'CONTROVERSIAL' || filter === 'POPULAR') {
             posts = await buildPostAggregation();
           } else {
             posts = (await Post.find(postQuery)
