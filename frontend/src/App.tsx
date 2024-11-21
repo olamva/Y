@@ -51,7 +51,7 @@ const HomePage = () => {
   const { data: usersData, error: usersError } = useQuery<{
     getUsers: UserType[];
   }>(GET_USERS, {
-    variables: { page: 1 },
+    variables: { page: 1, excludeFollowing: true },
   });
 
   const { data: hashtagsData, error: hashtagsError } = useQuery<{

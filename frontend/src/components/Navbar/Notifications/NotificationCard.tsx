@@ -78,7 +78,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
 
   return (
     <a
-      className="flex w-full items-center justify-between gap-4 p-2 text-center text-sm transition-colors hover:bg-gray-200 lg:p-3"
+      className="flex w-full items-center justify-between gap-4 p-2 text-center text-sm transition-colors dark:hover:bg-gray-800 hover:bg-gray-200 lg:p-3"
       href={href}
     >
       <div className="flex items-center justify-start gap-1 break-words">

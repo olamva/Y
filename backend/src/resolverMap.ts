@@ -244,15 +244,21 @@ export const resolvers: IResolvers = {
       }
     },
 
-    getUsers: async (_, { page }) => {
+    getUsers: async (_, { page, excludeFollowing }, context) => {
       const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
 
+      let query: any = { username: { $nin: ['admin', 'fredrik'] } };
+
+      if (excludeFollowing && context.user) {
+        query = {
+          username: { $nin: ['admin', 'fredrik'] },
+          _id: { $nin: context.user.following },
+        };
+      }
+
       try {
-        return await User.find({ username: { $nin: ['admin', 'fredrik'] } })
-          .sort({ createdAt: -1, username: 1 })
-          .skip(skip)
-          .limit(USERS_PER_PAGE);
+        return await User.find(query).sort({ createdAt: -1, username: 1 }).skip(skip).limit(USERS_PER_PAGE);
       } catch (err) {
         throw new Error('Error fetching users');
       }
@@ -1416,8 +1422,8 @@ export const resolvers: IResolvers = {
         if (parent && user._id.toString() !== parent.author._id.toString()) {
           const notification = new Notification({
             type: 'COMMENT',
-            postType: 'reply',
-            postID: savedComment._id,
+            postType: savedComment.parentType.toLowerCase(),
+            postID: parent._id,
             recipient: parent.author,
             sender: user,
           });
@@ -1560,8 +1566,8 @@ export const resolvers: IResolvers = {
         if (parent && parent.author._id.toString() !== user.id.toString()) {
           await Notification.findOneAndDelete({
             type: 'COMMENT',
-            postType: 'reply',
-            postID: deletedComment._id,
+            postType: deletedComment.parentType.toLowerCase(),
+            postID: parent._id,
             sender: user,
             recipient: parent.author,
           });
@@ -1831,11 +1837,11 @@ export const resolvers: IResolvers = {
   },
 
   Parent: {
-    __resolveType(parent: { body?: string; author?: Types.ObjectId; parentID?: string }) {
-      if (parent.body && parent.author) {
-        if (parent.parentID) {
-          return 'Comment';
-        }
+    __resolveType(obj: any, context: any, info: any) {
+      if (obj.parentType) {
+        return 'Comment';
+      }
+      if (obj.body !== undefined) {
         return 'Post';
       }
       return null;
@@ -1905,6 +1911,9 @@ export const resolvers: IResolvers = {
     mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
+    },
+    __isTypeOf(obj: any, context: any, info: any) {
+      return obj.body !== undefined && obj.parentType !== undefined;
     },
   },
 };
