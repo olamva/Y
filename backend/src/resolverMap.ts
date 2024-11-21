@@ -1896,6 +1896,8 @@ export const resolvers: IResolvers = {
     __isTypeOf(obj: any, context: any, info: any) {
       return obj.originalType !== undefined;
     },
+    mentionedUsers: async (parent) =>
+      parent.mentionedUsers.map(async (id: string) => await User.findById(id)),
   },
 
   Comment: {
