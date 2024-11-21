@@ -236,9 +236,11 @@ const CommentPage = () => {
     <div className="w-full">
       <BackButton
         overrideRedirect={
-          editing
-            ? `/project2/reply/${reply.id}`
-            : `/project2/${reply.parentType}/${reply.parentID}`
+          !parentPost
+            ? undefined
+            : editing
+              ? `/project2/reply/${reply.id}`
+              : `/project2/${reply.parentType}/${reply.parentID}`
         }
       />
       <main className="flex flex-col items-center px-4 pt-5">
