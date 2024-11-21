@@ -344,11 +344,13 @@ export const resolvers: IResolvers = {
       try {
         const posts = await Post.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
-          .skip((page - 1) * limit)
+          .skip((page - 1) * POSTS_PER_PAGE)
           .limit(limit)
           .populate('author');
 
-        return posts;
+        const validPosts = posts.filter((post) => post.author);
+
+        return validPosts;
       } catch (err) {
         throw new Error('Error fetching posts by IDs');
       }
@@ -366,15 +368,20 @@ export const resolvers: IResolvers = {
     getCommentsByIds: async (_, { ids, page }) => {
       const limit = 10;
       try {
-        return await Comment.find({ _id: { $in: ids } })
+        const comments = await Comment.find({ _id: { $in: ids } })
           .sort({ createdAt: -1 })
           .skip((page - 1) * limit)
           .limit(limit)
           .populate('author');
+
+        const validComments = comments.filter((comment) => comment.author);
+
+        return validComments;
       } catch (err) {
         throw new Error('Error fetching comments by IDs');
       }
     },
+
     getNotifications: async (_, __, context) => {
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to view notifications');
@@ -555,10 +562,10 @@ export const resolvers: IResolvers = {
           parents.map(async (parent: { id: string; type: string }) => {
             if (parent.type === 'post') {
               const post = await Post.findById(parent.id).populate('author');
-              if (post) fetchedParents.push(post);
+              if (post && post.author) fetchedParents.push(post);
             } else {
               const comment = await Comment.findById(parent.id).populate('author');
-              if (comment) fetchedParents.push(comment);
+              if (comment && comment.author) fetchedParents.push(comment);
             }
           })
         );
@@ -567,6 +574,7 @@ export const resolvers: IResolvers = {
         throw new Error('Error fetching parents');
       }
     },
+
     getTrendingHashtags: async (_, { page }, context) => {
       const HASHTAGS_PER_PAGE = 16;
       const pageNumber = parseInt(page, 16);
