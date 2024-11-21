@@ -25,7 +25,7 @@ const Repost = ({ repost }: { repost: RepostType }) => {
   };
   const yourRepost = repost.author.username === user?.username;
   return (
-    <div className="flex w-full max-w-xl flex-col justify-self-center">
+    <div className="mt-2 flex w-full max-w-xl flex-col justify-self-center">
       <header className="mx-1 flex h-fit items-end">
         <div className="h-6 w-4 rounded-tl-lg border-b-0 border-l border-t border-gray-300 dark:border-gray-700"></div>
         <div
