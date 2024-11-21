@@ -76,13 +76,17 @@ export const uploadFile = async (
 
       out.on('finish', async () => {
         try {
-          if (username) {
-            await sharp(tempFilePath).rotate().resize(300, 300, { fit: 'cover' }).toFile(filepath);
-            fs.unlinkSync(tempFilePath);
+          if (mimetype === 'image/gif') {
+            fs.renameSync(tempFilePath, filepath);
           } else {
-            await sharp(tempFilePath).rotate().resize(600).toFile(filepath);
+            if (username) {
+              await sharp(tempFilePath).rotate().resize(300, 300, { fit: 'cover' }).toFile(filepath);
+            } else {
+              await sharp(tempFilePath).rotate().resize(600).toFile(filepath);
+            }
             fs.unlinkSync(tempFilePath);
           }
+
           resolve({
             success: true,
             message: 'File uploaded successfully',
