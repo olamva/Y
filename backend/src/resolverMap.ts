@@ -249,7 +249,6 @@ export const resolvers: IResolvers = {
       const skip = (page - 1) * USERS_PER_PAGE;
 
       try {
-        User.updateMany({ $set: { verified: 'UNVERIFIED' } });
         return await User.find({ username: { $nin: ['admin', 'fredrik'] } })
           .sort({ createdAt: -1, username: 1 })
           .skip(skip)
@@ -321,7 +320,6 @@ export const resolvers: IResolvers = {
     },
     getUser: async (_, { username }) => {
       try {
-        User.updateMany({ $set: { verified: 'UNVERIFIED' } });
         return await User.findOne({ username: username });
       } catch (err) {
         throw new Error('Error fetching user');
@@ -788,7 +786,7 @@ export const resolvers: IResolvers = {
         if (originalAuthor && originalAuthor.id.toString() !== user._id.toString()) {
           const notification = new Notification({
             type: 'REPOST',
-            postType: type,
+            postType: type.toLowerCase(),
             postID: id,
             recipient: originalAuthor,
             sender: user,
@@ -820,9 +818,15 @@ export const resolvers: IResolvers = {
         throw new Error('Error reposting');
       }
     },
-    unrepost: async (_, { id }, { user }) => {
-      if (!user) {
+    unrepost: async (_, { id }, context) => {
+      if (!context.user) {
         throw new AuthenticationError('You must be logged in to unrepost');
+      }
+
+      const user = await User.findById(context.user.id);
+
+      if (!user) {
+        throw new UserInputError('User not found');
       }
 
       const repost = await Repost.findOne({ author: user.id, originalID: id });
@@ -855,12 +859,13 @@ export const resolvers: IResolvers = {
 
         await User.findByIdAndUpdate(user.id, { $pull: { repostedPostIds: repost.originalID } });
 
-        if (originalPost.author._id.toString() !== user._id.toString()) {
+        if (originalPost.author._id.toString() !== user.id.toString()) {
           await Notification.findOneAndDelete({
             type: 'REPOST',
-            postType: repost.originalType,
+            postType: repost.originalType.toLowerCase(),
             postID: id,
             sender: user,
+            recipient: originalPost.author,
           });
         }
 
@@ -1387,7 +1392,7 @@ export const resolvers: IResolvers = {
             if (user.id !== savedComment.author.id) {
               const notification = new Notification({
                 type: 'MENTION',
-                postType: 'reply',
+                postType: savedComment.parentType,
                 postID: savedComment.id,
                 recipient: user,
                 sender: savedComment.author,
@@ -1466,8 +1471,9 @@ export const resolvers: IResolvers = {
             await Notification.findOneAndDelete({
               type: 'MENTION',
               postType: 'post',
-              postID: deletedPost._id,
-              sender: user,
+              postID: deletedPost.id,
+              recipient: user,
+              sender: deletedPost.author,
             });
           }
           return;
