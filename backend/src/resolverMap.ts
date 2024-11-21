@@ -1392,7 +1392,7 @@ export const resolvers: IResolvers = {
             if (user.id !== savedComment.author.id) {
               const notification = new Notification({
                 type: 'MENTION',
-                postType: savedComment.parentType,
+                postType: 'reply',
                 postID: savedComment.id,
                 recipient: user,
                 sender: savedComment.author,
@@ -1471,7 +1471,7 @@ export const resolvers: IResolvers = {
             await Notification.findOneAndDelete({
               type: 'MENTION',
               postType: 'post',
-              postID: deletedPost.id,
+              postID: deletedPost._id,
               recipient: user,
               sender: deletedPost.author,
             });
@@ -1540,7 +1540,8 @@ export const resolvers: IResolvers = {
               type: 'MENTION',
               postType: 'reply',
               postID: deletedComment._id,
-              sender: user,
+              recipient: user,
+              sender: deletedComment.author,
             });
           }
           return;
@@ -1554,6 +1555,7 @@ export const resolvers: IResolvers = {
             postType: 'reply',
             postID: deletedComment._id,
             sender: user,
+            recipient: parent.author,
           });
         }
 
