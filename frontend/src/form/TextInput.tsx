@@ -119,7 +119,10 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
           ? `@${selectedSuggestion.username} `
           : `#${selectedSuggestion.tag} `;
 
-      const newValue = value.substring(0, lastSymbol) + finalSuggestion;
+      const newValue =
+        value.substring(0, lastSymbol) +
+        finalSuggestion +
+        value.substring(lastSymbol + query.length + 1);
       if (newValue.length <= maxChars) {
         handleInputChange({
           target: {
