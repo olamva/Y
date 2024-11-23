@@ -95,21 +95,46 @@ export const resolvers: IResolvers = {
           const pipeline: any[] = [
             { $match: repostQuery },
             {
-              $lookup: {
-                from: 'posts',
-                localField: 'originalID',
-                foreignField: '_id',
-                as: 'originalPost',
+              $facet: {
+                repostsOfPosts: [
+                  { $match: { originalType: 'Post' } },
+                  {
+                    $lookup: {
+                      from: 'posts',
+                      localField: 'originalID',
+                      foreignField: '_id',
+                      as: 'originalContent',
+                    },
+                  },
+                ],
+                repostsOfComments: [
+                  { $match: { originalType: 'Comment' } },
+                  {
+                    $lookup: {
+                      from: 'comments',
+                      localField: 'originalID',
+                      foreignField: '_id',
+                      as: 'originalContent',
+                    },
+                  },
+                ],
               },
             },
-            { $unwind: '$originalPost' },
+            {
+              $project: {
+                reposts: { $concatArrays: ['$repostsOfPosts', '$repostsOfComments'] },
+              },
+            },
+            { $unwind: '$reposts' },
+            { $replaceRoot: { newRoot: '$reposts' } },
+            { $unwind: '$originalContent' },
             {
               $addFields: {
                 controversyRatio: {
                   $cond: [
-                    { $eq: ['$originalPost.amtLikes', 0] },
+                    { $eq: ['$originalContent.amtLikes', 0] },
                     0,
-                    { $divide: ['$originalPost.amtComments', '$originalPost.amtLikes'] },
+                    { $divide: ['$originalContent.amtComments', '$originalContent.amtLikes'] },
                   ],
                 },
               },
