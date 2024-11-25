@@ -2,7 +2,7 @@ import Username from "@/components/Username";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { NotificationType } from "@/lib/types";
 import { DELETE_NOTIFICATION } from "@/queries/notifications";
-import { useMutation } from "@apollo/client";
+import { Reference, useMutation } from "@apollo/client";
 import { CheckIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -17,7 +17,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
         fields: {
           getNotifications(existingNotifications = [], { readField }) {
             return existingNotifications.filter(
-              (notificationRef: any) =>
+              (notificationRef: Reference) =>
                 notification.id !== readField("id", notificationRef),
             );
           },
