@@ -14,6 +14,10 @@ const HashtagsPage = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  useEffect(() => {
+    document.title = "Y · Trending";
+  }, []);
+
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getTrendingHashtags: HashtagType[];
   }>(GET_TRENDING_HASHTAGS, {

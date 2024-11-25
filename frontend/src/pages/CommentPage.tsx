@@ -51,6 +51,11 @@ const CommentPage = () => {
 
   const reply = postData?.getComment;
 
+  useEffect(() => {
+    if (reply && reply.body)
+      document.title = `Y · @${reply.author.username}: ${reply.body}`;
+  }, [reply]);
+
   const {
     data: parentPostData,
     loading: parentPostLoading,

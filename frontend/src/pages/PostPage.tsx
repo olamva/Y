@@ -47,6 +47,11 @@ const PostPage = () => {
   const post = postData?.getPost;
 
   useEffect(() => {
+    if (post && post.body)
+      document.title = `Y · @${post.author.username}: ${post.body}`;
+  }, [post]);
+
+  useEffect(() => {
     if (!user || !post || !editing) return;
     if (user.username !== post?.author.username) {
       window.location.href = `/project2/post/${id}`;

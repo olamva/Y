@@ -27,6 +27,10 @@ const HashtagPage = () => {
     fetchPolicy: "cache-and-network",
   });
 
+  useEffect(() => {
+    document.title = `Y · #${hashtag}`;
+  }, [hashtag]);
+
   const {
     data: parentPostsData,
     loading: parentPostsLoading,
