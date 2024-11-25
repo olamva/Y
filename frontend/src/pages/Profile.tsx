@@ -11,6 +11,7 @@ import PostsView from "@/components/Profile/PostsView";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
+import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
@@ -18,7 +19,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import NotFound from "./NotFound";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -101,7 +101,7 @@ const Profile = () => {
 
   return (
     <div className="w-full px-5">
-      <BackButton overrideRedirect="/project2/" />
+      <BackButton />
       {loggedInUser && loggedInUser.username === username && (
         <div className="mb-8 pt-5 text-center">
           <h2 className="mt-2 break-words text-3xl font-bold">
