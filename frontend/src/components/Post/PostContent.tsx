@@ -1,6 +1,7 @@
 import { useAuth } from "@/components/AuthContext";
 import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
+import Username from "@/components/Username";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
 import { REPOST_MUTATION, UNREPOST_MUTATION } from "@/queries/reposts";
@@ -10,7 +11,6 @@ import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { HeartIcon, PencilIcon, RecycleIcon, TrashIcon } from "lucide-react";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Username from "../Username";
 
 interface PostContentProps {
   post: PostType | CommentType;
@@ -98,11 +98,16 @@ const PostContent = ({
         disableBottomMargin ? "" : "mb-2"
       } ${disableTopMargin ? "" : "mt-2"} ${
         maxWidth !== undefined ? maxWidth : "max-w-xl"
-      } ${doesntRedirect ? "cursor-text" : "cursor-pointer"} ${className}`}
+      } ${doesntRedirect ? "cursor-default" : "cursor-pointer"} ${className}`}
       onClick={(e: MouseEvent | TouchEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (!doesntRedirect) {
+        const selection = window.getSelection();
+
+        if (
+          (!selection || selection.toString().length === 0) &&
+          !doesntRedirect
+        ) {
           document.location.href = `/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`;
         }
       }}

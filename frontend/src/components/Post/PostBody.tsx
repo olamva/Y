@@ -1,3 +1,4 @@
+import ProfilePreview from "@/components/ProfilePreview";
 import {
   Tooltip,
   TooltipContent,
@@ -9,7 +10,6 @@ import { GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery } from "@apollo/client";
 import { MouseEvent, TouchEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import ProfilePreview from "../ProfilePreview";
 
 interface PostBodyProps {
   text: string;
@@ -163,7 +163,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
     <div>
       <p
         ref={bodyRef}
-        className={`mx-1 whitespace-pre-wrap break-words ${
+        className={`mx-1 w-fit cursor-text whitespace-pre-wrap break-words ${
           isExpanded ? "" : "line-clamp-3"
         }`}
       >

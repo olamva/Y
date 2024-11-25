@@ -1,6 +1,6 @@
 import Avatar from "@/components/Profile/Avatar";
+import Username from "@/components/Username";
 import { UserType } from "@/lib/types";
-import Username from "./Username";
 import CoverPhoto from "/coverphoto.jpg";
 
 const ProfilePreview = ({ user }: { user: UserType }) => (

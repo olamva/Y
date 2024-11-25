@@ -6,18 +6,18 @@ import Navbar from "@/components/Navbar/Navbar.tsx";
 import "@/globals.css";
 import client from "@/lib/apolloClient";
 import CommentPage from "@/pages/CommentPage";
+import HashtagPage from "@/pages/HashtagPage";
+import HashtagsPage from "@/pages/HashtagsPage";
+import NotFound from "@/pages/NotFound";
 import PostPage from "@/pages/PostPage.tsx";
 import Profile from "@/pages/Profile";
 import SearchPage from "@/pages/Search.tsx";
+import UsersPage from "@/pages/UsersPage";
 import { ApolloProvider } from "@apollo/client";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HashtagPage from "./pages/HashtagPage";
-import HashtagsPage from "./pages/HashtagsPage";
-import UsersPage from "./pages/UsersPage";
-import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {

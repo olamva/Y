@@ -1,7 +1,7 @@
+import Username from "@/components/Username";
 import { UserType } from "@/lib/types";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
-import Username from "./Username";
 
 interface Props {
   isOpen: boolean;

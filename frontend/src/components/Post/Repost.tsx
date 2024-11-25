@@ -1,11 +1,11 @@
+import { useAuth } from "@/components/AuthContext";
+import FollowButton from "@/components/FollowButton";
+import Comment from "@/components/Post/Comment";
+import Post from "@/components/Post/Post";
+import Username from "@/components/Username";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
 import { RecycleIcon } from "lucide-react";
-import { useAuth } from "../AuthContext";
-import FollowButton from "../FollowButton";
-import Username from "../Username";
-import Comment from "./Comment";
-import Post from "./Post";
 
 const Repost = ({ repost }: { repost: RepostType }) => {
   const { user } = useAuth();

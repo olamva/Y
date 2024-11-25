@@ -1,7 +1,7 @@
 import Avatar from "@/components/Profile/Avatar";
+import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
 import { MouseEvent, TouchEvent } from "react";
-import VerificationBadge from "./VerificationBadge";
 
 interface UsernameProps {
   user: UserType;

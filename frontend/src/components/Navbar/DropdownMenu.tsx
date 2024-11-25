@@ -77,7 +77,7 @@ export const DropdownMenu = () => {
           }`}
         >
           {isOpen ? (
-            <XMarkIcon className="size-8" data-testid="xmark-icon"/>
+            <XMarkIcon className="size-8" data-testid="xmark-icon" />
           ) : (
             <Bars3Icon className="size-8" data-testid="bars-icon" />
           )}

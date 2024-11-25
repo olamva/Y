@@ -1,8 +1,8 @@
+import { useAuth } from "@/components/AuthContext";
+import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Profile/Avatar";
+import Username from "@/components/Username";
 import { UserType } from "@/lib/types";
-import { useAuth } from "./AuthContext";
-import FollowButton from "./FollowButton";
-import Username from "./Username";
 import CoverPhoto from "/coverphoto.jpg";
 
 interface Props {
@@ -32,7 +32,7 @@ const ProfileCard = ({ user, large }: Props) => {
             user={user}
             noHref
             noAvatar
-            className="text-base sm:text-xl font-bold md:text-2xl"
+            className="text-base font-bold sm:text-xl md:text-2xl"
           />
           <FollowButton targetUsername={user.username} />
         </div>
