@@ -71,7 +71,7 @@ export enum VerifiedTiers {
 export type NotificationType = {
   __typename: "Notification";
   id: string;
-  type: "LIKE" | "COMMENT" | "REPOST" | "MENTION" | "FOLLOW";
+  type: "LIKE" | "COMMENT" | "REPOST" | "MENTION" | "FOLLOW" | "FOLLOWING_POST";
   recipient: UserType;
   sender: UserType;
   createdAt: string;
