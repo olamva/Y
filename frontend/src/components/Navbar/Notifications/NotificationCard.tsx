@@ -3,7 +3,7 @@ import { formatTimestamp } from "@/lib/dateUtils";
 import { NotificationType } from "@/lib/types";
 import { DELETE_NOTIFICATION } from "@/queries/notifications";
 import { useMutation } from "@apollo/client";
-import { TrashIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface NotificationCardProps {
@@ -78,7 +78,8 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
 
   return (
     <a
-      className="flex w-full items-center justify-between gap-4 p-2 text-center text-sm transition-colors dark:hover:bg-gray-800 hover:bg-gray-200 lg:p-3"
+      className="flex w-full items-center justify-between gap-4 p-2 text-center text-sm transition-colors hover:bg-gray-200 dark:hover:bg-gray-800 lg:p-3"
+      onClick={handleDelete}
       href={href}
     >
       <div className="flex items-center justify-start gap-1 break-words">
@@ -87,9 +88,12 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
         <p>·</p>
         <p>{formatTimestamp(notification.createdAt)}</p>
       </div>
-      <button disabled={loading}>
-        <TrashIcon
-          className="size-4 text-gray-600 hover:text-gray-400"
+      <button
+        disabled={loading}
+        className="rounded p-1 text-gray-600 transition-colors hover:bg-gray-300 dark:hover:bg-gray-700"
+      >
+        <CheckIcon
+          className="size-4 text-gray-600 dark:text-gray-400"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

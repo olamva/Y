@@ -1823,15 +1823,14 @@ export const resolvers: IResolvers = {
       }
 
       const notification = await Notification.findById(id);
-      if (!notification) {
-        throw new UserInputError('Notification not found');
-      }
+      if (!notification) return;
 
       if (!notification.recipient._id === context.user._id) {
         throw new AuthenticationError('You are not authorized to delete this notification');
       }
 
       await Notification.findByIdAndDelete(id);
+      
       return notification;
     },
     deleteAllNotifications: async (_, __, context) => {
