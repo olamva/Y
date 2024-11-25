@@ -38,8 +38,8 @@ const Profile = () => {
   const username = paramUsername ?? loggedInUser?.username;
 
   useEffect(() => {
-    document.title = `Y · @${username} / ${currentView}`;
-  }, [username]);
+    document.title = `Y · @${username} / ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
+  }, [username, currentView]);
 
   const [deleteUser, { loading: deleteLoading }] = useMutation(DELETE_USER, {
     variables: { username },
