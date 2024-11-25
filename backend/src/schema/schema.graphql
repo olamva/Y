@@ -140,8 +140,8 @@ type Mutation {
   changeProfilePicture(file: Upload): User!
   changeBackgroundPicture(file: Upload): User!
   updateProfile(firstName: String, lastName: String, biography: String): User!
-  deleteNotification(id: ID!): Notification!
-  deleteAllNotifications: [Notification!]!
+  deleteNotification(id: ID!): Notification
+  deleteAllNotifications: [Notification!]
 }
 
 type Notification {

@@ -1,10 +1,14 @@
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Username from "@/components/Username";
 import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import Username from "../Username";
 
 const SearchBar = () => {
   const params = new URLSearchParams(location.search);

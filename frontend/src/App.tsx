@@ -1,7 +1,13 @@
 import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
+import HashTagCard from "@/components/HashtagCard";
 import Post from "@/components/Post/Post";
+import Repost from "@/components/Post/Repost";
+import ProfileCard from "@/components/ProfileCard";
+import CardSkeleton from "@/components/Skeletons/CardSkeleton";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import {
   HashtagType,
   PostItem,
@@ -17,12 +23,6 @@ import { HashtagIcon } from "@heroicons/react/24/outline";
 import { Users } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import HashTagCard from "./components/HashtagCard";
-import Repost from "./components/Post/Repost";
-import ProfileCard from "./components/ProfileCard";
-import CardSkeleton from "./components/Skeletons/CardSkeleton";
-import PostSkeleton from "./components/Skeletons/PostSkeleton";
-import { ToggleGroup, ToggleGroupItem } from "./components/ui/ToggleGroup";
 
 const PAGE_SIZE = 16;
 

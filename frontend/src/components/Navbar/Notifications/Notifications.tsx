@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/AuthContext";
+import NotificationCard from "@/components/Navbar/Notifications/NotificationCard";
 import {
   Popover,
   PopoverContent,
@@ -11,10 +12,9 @@ import {
 } from "@/queries/notifications";
 import { useMutation, useQuery } from "@apollo/client";
 import { BellIcon } from "@heroicons/react/24/outline";
-import { TrashIcon } from "lucide-react";
+import { CheckCheckIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import NotificationCard from "./NotificationCard";
 
 const Notifications = () => {
   const { user } = useAuth();
@@ -73,6 +73,10 @@ const Notifications = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (notifications?.length === 0) setShowNotifications(false);
+  }, [notifications]);
+
   return (
     <div className="flex items-center justify-center lg:mx-2">
       <Popover open={showNotifications}>
@@ -94,10 +98,13 @@ const Notifications = () => {
           <PopoverContent ref={popoverRef} className="z-[70] w-fit p-0">
             {notifications && notifications.length > 2 && (
               <div className="flex justify-between border-b border-gray-200 p-2 lg:p-3">
-                <p className="text-sm font-light">Mark all as read?</p>
-                <button disabled={deleteLoading}>
-                  <TrashIcon
-                    className="size-4 text-gray-600 hover:text-gray-400"
+                <p className="text-sm font-extrabold">Mark all as read?</p>
+                <button
+                  disabled={deleteLoading}
+                  className="rounded p-1 text-gray-600 transition-colors hover:bg-gray-300 dark:hover:bg-gray-700"
+                >
+                  <CheckCheckIcon
+                    className="size-4 text-gray-600 dark:text-gray-400"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

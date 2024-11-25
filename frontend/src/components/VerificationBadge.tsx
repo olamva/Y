@@ -42,9 +42,9 @@ const VerificationBadge = ({
     verified !== VerifiedTiers.UNVERIFIED && (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild>
             <CheckBadgeIcon
-              className={`${small ? "size-4" : "size-6"} cursor-pointer ${colorsTouse}`}
+              className={`cursor-pointer transition-colors ${small ? "size-4" : "size-6"} ${colorsTouse}`}
             />
           </TooltipTrigger>
           <TooltipContent className="z-[70]">

@@ -1,13 +1,13 @@
-import TextInput from "@/form/TextInput";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { ImageIcon, XIcon } from "lucide-react";
-import { MouseEvent, useEffect, useRef, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "@/components/ui/tooltip";
+import TextInput from "@/form/TextInput";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { ImageIcon, XIcon } from "lucide-react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 
 const MAX_CHARS = 281;
 
