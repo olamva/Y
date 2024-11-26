@@ -1532,12 +1532,12 @@ export const resolvers: IResolvers = {
 
         await user.save();
 
-        Notification.deleteMany({
+        await Notification.deleteMany({
           type: 'FOLLOWING_POST',
           postType: 'post',
-          postID: deletedPost.id,
+          postID: deletedPost._id,
           sender: user,
-        })
+        });
 
         return deletedPost;
       } catch (err) {
