@@ -1532,6 +1532,13 @@ export const resolvers: IResolvers = {
 
         await user.save();
 
+        Notification.deleteMany({
+          type: 'FOLLOWING_POST',
+          postType: 'post',
+          postID: deletedPost.id,
+          sender: user,
+        })
+
         return deletedPost;
       } catch (err) {
         throw new Error(`Error deleting post: ${(err as Error).message}`);
@@ -1842,7 +1849,7 @@ export const resolvers: IResolvers = {
       }
 
       await Notification.findByIdAndDelete(id);
-      
+
       return notification;
     },
     deleteAllNotifications: async (_, __, context) => {
