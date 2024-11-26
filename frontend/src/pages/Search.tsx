@@ -30,6 +30,10 @@ const SearchPage = () => {
   const [hasMoreUsers, setHasMoreUsers] = useState(true);
   const [hasMoreHashtags, setHasMoreHashtags] = useState(true);
 
+  useEffect(() => {
+    document.title = `Y · Search: ${searchQuery}`;
+  }, [searchQuery]);
+
   const {
     data: postsData,
     loading: postsLoading,

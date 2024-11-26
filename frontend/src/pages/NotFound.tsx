@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 interface NotFoundProps {
@@ -5,6 +6,11 @@ interface NotFoundProps {
 }
 
 const NotFound = ({ page }: NotFoundProps) => {
+  
+  useEffect(() => {
+    document.title = "Y";
+  }, []);
+
   return (
     <main className="flex h-screen w-full flex-col items-center justify-center px-5 text-center">
       <h1 className="text-4xl font-bold">UwU 404</h1>

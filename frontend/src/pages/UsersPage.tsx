@@ -13,6 +13,10 @@ const UsersPage = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  useEffect(() => {
+    document.title = `Y · All Users`;
+  }, []);
+
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getUsers: UserType[];
   }>(GET_USERS, {

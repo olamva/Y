@@ -37,6 +37,10 @@ const HomePage = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [filter, setFilter] = useState<FilterType>("LATEST");
 
+  useEffect(() => {
+    document.title = "Y";
+  }, []);
+
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getPosts: PostItem[];
   }>(GET_POSTS, {

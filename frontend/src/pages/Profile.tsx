@@ -15,7 +15,7 @@ import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useMutation, useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
@@ -36,6 +36,10 @@ const Profile = () => {
 
   const [currentView, setCurrentView] = useState<ViewState>(view ?? "posts");
   const username = paramUsername ?? loggedInUser?.username;
+
+  useEffect(() => {
+    document.title = `Y · @${username} / ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
+  }, [username, currentView]);
 
   const [deleteUser, { loading: deleteLoading }] = useMutation(DELETE_USER, {
     variables: { username },
