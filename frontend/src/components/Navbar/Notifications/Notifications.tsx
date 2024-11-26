@@ -40,11 +40,6 @@ const Notifications = () => {
   );
 
   const handleDeleteAll = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to mark all notifications as read?",
-    );
-    if (!confirmDelete) return;
-
     try {
       await deleteAllNotifications();
       toast.success("All notifications marked as read");
@@ -76,6 +71,18 @@ const Notifications = () => {
   useEffect(() => {
     if (notifications?.length === 0) setShowNotifications(false);
   }, [notifications]);
+
+  useEffect(() => {
+    if (showNotifications) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showNotifications]);
 
   return (
     <div className="flex items-center justify-center lg:mx-2">
