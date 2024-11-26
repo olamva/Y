@@ -1515,7 +1515,7 @@ export const resolvers: IResolvers = {
           if (!user) return;
 
           user.mentionedPostIds = user.mentionedPostIds.filter(
-            (commentId) => String(commentId) !== String(deletedPost.id)
+            (commentId) => String(commentId) !== String(deletedPost._id)
           );
 
           if (user.id.toString() !== deletedPost.author._id.toString()) {
