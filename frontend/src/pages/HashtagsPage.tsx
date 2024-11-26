@@ -8,7 +8,7 @@ import { NetworkStatus, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 32;
 
 const HashtagsPage = () => {
   const [page, setPage] = useState(1);
@@ -21,7 +21,7 @@ const HashtagsPage = () => {
   const { data, loading, error, fetchMore, networkStatus } = useQuery<{
     getTrendingHashtags: HashtagType[];
   }>(GET_TRENDING_HASHTAGS, {
-    variables: { page: 1 },
+    variables: { page: 1, limit: PAGE_SIZE },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
   });
@@ -67,7 +67,7 @@ const HashtagsPage = () => {
   const hashtags = data?.getTrendingHashtags || [];
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-5">
+    <div className="mx-auto min-h-screen w-full max-w-screen-xl px-5">
       <BackButton />
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>

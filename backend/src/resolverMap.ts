@@ -606,15 +606,14 @@ export const resolvers: IResolvers = {
       }
     },
 
-    getTrendingHashtags: async (_, { page }, context) => {
-      const HASHTAGS_PER_PAGE = 16;
+    getTrendingHashtags: async (_, { page, limit = 16 }, context) => {
       const pageNumber = parseInt(page, 16);
 
       if (isNaN(pageNumber) || pageNumber < 1) {
         throw new UserInputError('Page must be a positive integer');
       }
 
-      const skip = (pageNumber - 1) * HASHTAGS_PER_PAGE;
+      const skip = (pageNumber - 1) * limit;
 
       try {
         const postHashtags = await Post.aggregate([
@@ -671,7 +670,7 @@ export const resolvers: IResolvers = {
           return b.count - a.count;
         });
 
-        const paginatedHashtags = sortedHashtags.slice(skip, skip + HASHTAGS_PER_PAGE);
+        const paginatedHashtags = sortedHashtags.slice(skip, skip + limit);
 
         return paginatedHashtags;
       } catch (error) {
