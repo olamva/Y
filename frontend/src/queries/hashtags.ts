@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_TRENDING_HASHTAGS = gql`
-  query GetTrendingHashtags($page: Int!) {
-    getTrendingHashtags(page: $page) {
+  query GetTrendingHashtags($page: Int!, $limit: Int) {
+    getTrendingHashtags(page: $page, limit: $limit) {
       tag
       count
     }
