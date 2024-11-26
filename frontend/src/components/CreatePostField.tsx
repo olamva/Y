@@ -74,7 +74,7 @@ const CreatePostField = ({
             ref={textInputRef}
             value={value}
             onChange={(e) => {
-              setValue(e.target.value.trim());
+              setValue(e.target.value);
             }}
             placeholder={placeholder}
             maxChars={MAX_CHARS}
