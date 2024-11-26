@@ -163,7 +163,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
     <div>
       <p
         ref={bodyRef}
-        className={`mx-1 w-fit cursor-text whitespace-pre-wrap break-words ${
+        className={`mx-1 w-fit max-w-full cursor-text whitespace-pre-wrap break-words ${
           isExpanded ? "" : "line-clamp-3"
         }`}
       >
