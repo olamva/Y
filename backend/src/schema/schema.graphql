@@ -14,7 +14,7 @@ type Query {
   getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!
   getParent(parentID: ID!, parentType: String!): Parent
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
-  getTrendingHashtags(page: Int!): [TrendingHashtag!]!
+  getTrendingHashtags(page: Int!, limit: Int): [TrendingHashtag!]!
   getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
   getNotifications: [Notification!]!
 }
@@ -36,7 +36,6 @@ enum VerifiedTiers {
   MADS
   DEVELOPER
 }
-
 
 input ParentInput {
   id: ID!
