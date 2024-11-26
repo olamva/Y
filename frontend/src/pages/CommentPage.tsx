@@ -162,7 +162,7 @@ const CommentPage = () => {
     try {
       await createComment({
         variables: {
-          body: comment,
+          body: comment.trim(),
           parentID: id!,
           parentType: "reply",
           file: commentFile,

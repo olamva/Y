@@ -146,7 +146,7 @@ const PostPage = () => {
     try {
       await createComment({
         variables: {
-          body: comment,
+          body: comment.trim(),
           parentID: id!,
           parentType: "post",
           file: commentFile,
