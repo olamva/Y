@@ -70,6 +70,14 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
       text = `mentioned you in a ${notification.postType === "post" ? "post" : "comment"}`;
       href = `/project2/${notification.postType}/${notification.postID}`;
       break;
+    case "FOLLOWING_POST":
+      if (!notification.postType) {
+        text = "Unknown post type";
+        break;
+      }
+      text = "posted a new post";
+      href = `/project2/post/${notification.postID}`;
+      break;
     case "FOLLOW":
       text = "followed you";
       href = `/project2/user/${notification.sender.username}`;
@@ -84,7 +92,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
     >
       <div className="flex items-center justify-start gap-1 break-words">
         <Username smallAvatar smallBadge user={notification.sender} noHref />
-        <p className="">{text}</p>
+        <p>{text}</p>
         <p>·</p>
         <p>{formatTimestamp(notification.createdAt)}</p>
       </div>

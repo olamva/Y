@@ -778,6 +778,18 @@ export const resolvers: IResolvers = {
           });
         }
 
+        user.followers.forEach(async (follower) => {
+          const notification = new Notification({
+            type: 'FOLLOWING_POST',
+            postType: 'post',
+            postID: savedPost.id,
+            recipient: follower,
+            sender: user,
+          });
+
+          await notification.save();
+        });
+
         return await savedPost.populate('author');
       } catch (err) {
         throw new Error('Error creating post');
