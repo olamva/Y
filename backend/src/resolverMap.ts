@@ -755,7 +755,7 @@ export const resolvers: IResolvers = {
         user.postIds.push(savedPost.id);
         await user.save();
 
-        if (mentionedUsers) {
+        if (mentionedUsers && mentionedUsers.length > 0) {
           mentionedUsers.forEach(async (id) => {
             const user = await User.findById(id);
             if (!user) return;
@@ -1062,8 +1062,8 @@ export const resolvers: IResolvers = {
         }
       }
 
-      const hashTags = body ? extractHashtags(body) : undefined;
-      const mentionedUsers = body ? await extractMentions(body) : undefined;
+      const hashTags = body ? extractHashtags(body) : [];
+      const mentionedUsers = body ? await extractMentions(body) : [];
 
       if (!post.originalBody) post.originalBody = post.body;
       if (post.originalBody === body) post.originalBody = undefined;
@@ -1072,12 +1072,7 @@ export const resolvers: IResolvers = {
       post.imageUrl = imageUrl;
       post.hashTags = hashTags;
 
-      if (
-        mentionedUsers &&
-        mentionedUsers.length > 0 &&
-        post.mentionedUsers &&
-        post.mentionedUsers.length > 0
-      ) {
+      if (mentionedUsers && post.mentionedUsers && mentionedUsers.length !== post.mentionedUsers.length) {
         mentionedUsers
           .filter((id) => !post.mentionedUsers?.includes(id))
           .forEach(async (id) => {
@@ -1100,7 +1095,7 @@ export const resolvers: IResolvers = {
             return await user.save();
           });
         post.mentionedUsers
-          .filter((id) => !mentionedUsers.includes(id))
+          ?.filter((id) => !mentionedUsers.includes(id))
           .forEach(async (id) => {
             const user = await User.findById(id);
             if (!user) return;
