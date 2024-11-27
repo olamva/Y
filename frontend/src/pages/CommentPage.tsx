@@ -267,6 +267,7 @@ const CommentPage = () => {
           <PostWithReply
             goHomeOnParentDelete
             replyDoesntRedirect
+            expandedReply
             post={parentPost}
             reply={reply}
           />

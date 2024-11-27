@@ -58,6 +58,7 @@ describe("PostContent", () => {
           deleteError={undefined}
           disableTopMargin={false}
           disableBottomMargin={false}
+          expanded={false}
         />
       </MockedProvider>,
     );
@@ -81,6 +82,7 @@ describe("PostContent", () => {
           deleteError={undefined}
           disableTopMargin={false}
           disableBottomMargin={false}
+          expanded={false}
         />
       </MockedProvider>,
     );
@@ -104,6 +106,7 @@ describe("PostContent", () => {
           deleteError={undefined}
           disableTopMargin={false}
           disableBottomMargin={false}
+          expanded={false}
         />
       </MockedProvider>,
     );
@@ -127,6 +130,7 @@ describe("PostContent", () => {
           deleteError={{ message: "Failed to delete post" } as ApolloError}
           disableTopMargin={false}
           disableBottomMargin={false}
+          expanded={false}
         />
       </MockedProvider>,
     );

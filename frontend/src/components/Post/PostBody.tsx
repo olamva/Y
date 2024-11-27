@@ -13,10 +13,11 @@ import { Link } from "react-router-dom";
 
 interface PostBodyProps {
   text: string;
+  expanded: boolean;
 }
 
-const PostBody: React.FC<PostBodyProps> = ({ text }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const PostBody: React.FC<PostBodyProps> = ({ text, expanded }) => {
+  const [isExpanded, setIsExpanded] = useState(expanded);
   const bodyRef = useRef<HTMLParagraphElement>(null);
   const [showReadMore, setShowReadMore] = useState(false);
 
@@ -169,7 +170,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text }) => {
       >
         {Linkify(text)}
       </p>
-      {showReadMore && (
+      {showReadMore && !expanded && (
         <button
           onClick={toggleExpand}
           className="p-2 pl-1 text-gray-500 hover:underline focus:outline-none dark:text-gray-300"

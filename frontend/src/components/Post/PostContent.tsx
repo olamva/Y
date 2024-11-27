@@ -25,6 +25,7 @@ interface PostContentProps {
   doesntRedirect?: boolean;
   disableTopMargin: boolean;
   disableBottomMargin: boolean;
+  expanded: boolean;
 }
 
 const PostContent = ({
@@ -40,6 +41,7 @@ const PostContent = ({
   doesntRedirect,
   disableTopMargin,
   disableBottomMargin,
+  expanded
 }: PostContentProps) => {
   const { user } = useAuth();
   const [amtReposts, setAmtReposts] = useState(post.amtReposts);
@@ -199,6 +201,7 @@ const PostContent = ({
             ? (post.originalBody ?? post.body ?? "")
             : (post.body ?? "")
         }
+        expanded={expanded}
       />
 
       {post.imageUrl && (

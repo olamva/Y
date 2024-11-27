@@ -10,6 +10,7 @@ interface PostWithReplyProps {
   replyDoesntRedirect?: boolean;
   parentsLoading?: boolean;
   goHomeOnParentDelete?: boolean;
+  expandedReply?: boolean;
 }
 const PostWithReply = ({
   post,
@@ -17,6 +18,7 @@ const PostWithReply = ({
   replyDoesntRedirect = false,
   parentsLoading = false,
   goHomeOnParentDelete = false,
+  expandedReply = false,
 }: PostWithReplyProps) => (
   <div className="flex w-full flex-col items-center">
     {!post ? (
@@ -45,6 +47,7 @@ const PostWithReply = ({
       redirectToParentOnDelete={!!post}
       disableTopMargin
       maxWidth="max-w-lg"
+      expanded={expandedReply}
     />
   </div>
 );
