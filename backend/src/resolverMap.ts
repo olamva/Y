@@ -1509,20 +1509,23 @@ export const resolvers: IResolvers = {
         user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
 
         deletedPost.mentionedUsers?.forEach(async (id) => {
-          const user = await User.findById(id);
+          const mentionedUser = await User.findById(id);
 
-          if (!user) return;
+          if (!mentionedUser) return;
 
-          user.mentionedPostIds = user.mentionedPostIds.filter(
-            (commentId) => String(commentId) !== String(deletedPost._id)
-          );
+          mentionedUser.mentionedPostIds = mentionedUser.mentionedPostIds.filter((postID) => {
+            console.log(postID, deletedPost.id.toString(), postID !== deletedPost.id.toString());
+            return postID !== deletedPost.id.toString();
+          });
 
-          if (user.id.toString() !== deletedPost.author._id.toString()) {
+          await mentionedUser.save();
+
+          if (mentionedUser.id.toString() !== deletedPost.author._id.toString()) {
             await Notification.findOneAndDelete({
               type: 'MENTION',
               postType: 'post',
               postID: deletedPost._id,
-              recipient: user,
+              recipient: mentionedUser,
               sender: deletedPost.author,
             });
           }
