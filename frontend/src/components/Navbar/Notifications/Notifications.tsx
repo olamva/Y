@@ -10,22 +10,32 @@ import {
   DELETE_ALL_NOTIFICATIONS,
   GET_NOTIFICATIONS,
 } from "@/queries/notifications";
-import { useMutation, useQuery } from "@apollo/client";
+import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { CheckCheckIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
+const NOTIFICATIONS_PER_PAGE = 16;
+
 const Notifications = () => {
   const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
   const popoverRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const scrollableDivRef = useRef<HTMLDivElement>(null);
 
-  const { data, loading } = useQuery<{ getNotifications: NotificationType[] }>(
-    GET_NOTIFICATIONS,
-    { skip: !user },
-  );
+  const { data, loading, fetchMore, networkStatus } = useQuery<{
+    getNotifications: NotificationType[];
+  }>(GET_NOTIFICATIONS, {
+    variables: { page: 1, limit: NOTIFICATIONS_PER_PAGE },
+    skip: !user,
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const notifications = data?.getNotifications;
 
   const [deleteAllNotifications, { loading: deleteLoading }] = useMutation(
     DELETE_ALL_NOTIFICATIONS,
@@ -47,8 +57,6 @@ const Notifications = () => {
       toast.error(`Error deleting notifications: ${(error as Error).message}`);
     }
   };
-
-  const notifications = data?.getNotifications;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -84,6 +92,40 @@ const Notifications = () => {
     };
   }, [showNotifications]);
 
+  const loadMoreNotifications = async () => {
+    if (!hasMore || loading || networkStatus === NetworkStatus.fetchMore)
+      return;
+    try {
+      const { data: fetchMoreData } = await fetchMore({
+        variables: { page: page + 1, limit: NOTIFICATIONS_PER_PAGE },
+      });
+
+      if (fetchMoreData?.getNotifications) {
+        if (fetchMoreData.getNotifications.length < NOTIFICATIONS_PER_PAGE) {
+          setHasMore(false);
+        }
+        if (fetchMoreData.getNotifications.length > 0) {
+          setPage((prev) => prev + 1);
+        }
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      toast.error(`Failed to load more posts: ${(error as Error).message}`);
+    }
+  };
+
+  const handleScroll = async () => {
+    if (
+      scrollableDivRef.current &&
+      scrollableDivRef.current.scrollTop +
+        scrollableDivRef.current.clientHeight >=
+        scrollableDivRef.current.scrollHeight - 120
+    ) {
+      await loadMoreNotifications();
+    }
+  };
+
   return (
     <div className="flex items-center justify-center lg:mx-2">
       <Popover open={showNotifications}>
@@ -101,42 +143,44 @@ const Notifications = () => {
             )}
           </button>
         </PopoverTrigger>
-        {!loading && (
-          <PopoverContent ref={popoverRef} className="z-[70] w-fit p-0">
-            {notifications && notifications.length > 2 && (
-              <div className="flex justify-between border-b border-gray-200 p-2 lg:p-3">
-                <p className="text-sm font-extrabold">Mark all as read?</p>
-                <button
-                  disabled={deleteLoading}
-                  className="rounded p-1 text-gray-600 transition-colors hover:bg-gray-300 dark:hover:bg-gray-700"
-                >
-                  <CheckCheckIcon
-                    className="size-4 text-gray-600 dark:text-gray-400"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleDeleteAll();
-                    }}
-                  />
-                </button>
+        <PopoverContent ref={popoverRef} className="z-[70] w-fit p-0">
+          {notifications && notifications.length > 2 && (
+            <div className="flex justify-between border-b border-gray-200 p-2 lg:p-3">
+              <p className="text-sm font-extrabold">Mark all as read?</p>
+              <button
+                disabled={deleteLoading}
+                className="rounded p-1 text-gray-600 transition-colors hover:bg-gray-300 dark:hover:bg-gray-700"
+              >
+                <CheckCheckIcon
+                  className="size-4 text-gray-600 dark:text-gray-400"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDeleteAll();
+                  }}
+                />
+              </button>
+            </div>
+          )}
+          <div
+            className="max-h-60 w-fit overflow-auto"
+            ref={scrollableDivRef}
+            onScroll={handleScroll}
+          >
+            {notifications && notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <NotificationCard
+                  key={notification.id}
+                  notification={notification}
+                />
+              ))
+            ) : (
+              <div className="p-4 text-center">
+                <p>You have no new notifications 🤖</p>
               </div>
             )}
-            <div className="max-h-60 w-fit overflow-auto">
-              {notifications && notifications.length > 0 ? (
-                notifications.map((notification) => (
-                  <NotificationCard
-                    key={notification.id}
-                    notification={notification}
-                  />
-                ))
-              ) : (
-                <div className="p-4 text-center">
-                  <p>You have no new notifications 🤖</p>
-                </div>
-              )}
-            </div>
-          </PopoverContent>
-        )}
+          </div>
+        </PopoverContent>
       </Popover>
     </div>
   );

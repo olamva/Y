@@ -16,7 +16,7 @@ type Query {
   getParentsByIds(parents: [ParentInput!]!): [Parent!]!
   getTrendingHashtags(page: Int!, limit: Int): [TrendingHashtag!]!
   getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!
-  getNotifications: [Notification!]!
+  getNotifications(page: Int!, limit: Int!): [Notification!]!
 }
 
 union PostItem = Post | Repost
