@@ -141,7 +141,7 @@ const PostPage = () => {
 
   const handleAddComment = async (e: FormEvent) => {
     e.preventDefault();
-    if (comment.trim() === "" && file === null) return;
+    if (comment.trim() === "" && commentFile === null) return;
 
     try {
       await createComment({
@@ -256,7 +256,7 @@ const PostPage = () => {
               file={commentFile}
               setFile={setCommentFile}
               className={
-                (comment || file) && user
+                (comment || commentFile) && user
                   ? "bg-indigo-600 hover:bg-indigo-700"
                   : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
               }

@@ -1408,8 +1408,8 @@ export const resolvers: IResolvers = {
           throw new Error('Error uploading file');
         }
       }
-      const hashTags = body ? extractHashtags(body) : undefined;
-      const mentionedUsers = body ? await extractMentions(body) : undefined;
+      const hashTags = body ? extractHashtags(body) : [];
+      const mentionedUsers = body ? await extractMentions(body) : [];
 
       try {
         const newComment = new Comment({

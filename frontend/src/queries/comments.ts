@@ -7,6 +7,7 @@ export const GET_COMMENTS = gql`
       parentID
       parentType
       body
+      originalBody
       author {
         id
         username
@@ -29,6 +30,7 @@ export const GET_COMMENT = gql`
       parentID
       parentType
       body
+      originalBody
       author {
         id
         username
@@ -51,6 +53,7 @@ export const GET_COMMENTS_BY_IDS = gql`
       parentID
       parentType
       body
+      originalBody
       author {
         id
         username

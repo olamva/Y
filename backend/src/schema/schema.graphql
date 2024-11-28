@@ -61,6 +61,7 @@ type Post {
 type Comment {
   id: ID!
   body: String
+  originalBody: String
   author: User!
   parentID: ID!
   parentType: String!

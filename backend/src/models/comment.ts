@@ -3,7 +3,7 @@ import { Document, model, Schema, Types } from 'mongoose';
 export interface CommentType extends Document {
   parentID: string;
   parentType: string;
-  body: string;
+  body?: string;
   originalBody?: string;
   author: Types.ObjectId;
   amtLikes: number;
@@ -18,7 +18,7 @@ export interface CommentType extends Document {
 const CommentSchema = new Schema<CommentType>({
   parentID: { type: String, required: true },
   parentType: { type: String, required: true, default: 'post' },
-  body: { type: String, required: true },
+  body: { type: String, default: undefined },
   originalBody: { type: String, default: undefined },
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   amtLikes: { type: Number, default: 0 },
