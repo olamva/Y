@@ -426,10 +426,11 @@ export const resolvers: IResolvers = {
         if (!user) {
           throw new UserInputError('User not found');
         }
-        return await Notification.find({ recipient: user._id })
+        const notifications = await Notification.find({ recipient: user._id })
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(NOTIFICATIONS_PER_PAGE);
+        return notifications.filter((notification) => notification.sender);
       } catch (err) {
         throw new Error('Error fetching notifications');
       }
