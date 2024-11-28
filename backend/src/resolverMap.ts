@@ -413,7 +413,9 @@ export const resolvers: IResolvers = {
       }
     },
 
-    getNotifications: async (_, __, context) => {
+    getNotifications: async (_, { page, limit }, context) => {
+      const NOTIFICATIONS_PER_PAGE = limit || 16;
+      const skip = (page - 1) * NOTIFICATIONS_PER_PAGE;
       if (!context.user) {
         throw new AuthenticationError('You must be logged in to view notifications');
       }
@@ -424,7 +426,10 @@ export const resolvers: IResolvers = {
         if (!user) {
           throw new UserInputError('User not found');
         }
-        return await Notification.find({ recipient: user._id }).sort({ createdAt: -1 });
+        return await Notification.find({ recipient: user._id })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(NOTIFICATIONS_PER_PAGE);
       } catch (err) {
         throw new Error('Error fetching notifications');
       }
@@ -1403,8 +1408,8 @@ export const resolvers: IResolvers = {
           throw new Error('Error uploading file');
         }
       }
-      const hashTags = body ? extractHashtags(body) : undefined;
-      const mentionedUsers = body ? await extractMentions(body) : undefined;
+      const hashTags = body ? extractHashtags(body) : [];
+      const mentionedUsers = body ? await extractMentions(body) : [];
 
       try {
         const newComment = new Comment({

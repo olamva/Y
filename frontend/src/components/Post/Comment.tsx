@@ -18,6 +18,7 @@ interface CommentProps {
   redirectToParentOnDelete?: boolean;
   maxWidth?: string;
   goHomeOnDelete?: boolean;
+  expanded?: boolean;
 }
 const Comment = ({
   comment,
@@ -27,6 +28,7 @@ const Comment = ({
   redirectToParentOnDelete = false,
   maxWidth,
   goHomeOnDelete,
+  expanded = false,
 }: CommentProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
@@ -137,6 +139,7 @@ const Comment = ({
       disableTopMargin={disableTopMargin}
       disableBottomMargin={disableBottomMargin}
       maxWidth={maxWidth}
+      expanded={expanded}
     />
   );
 };

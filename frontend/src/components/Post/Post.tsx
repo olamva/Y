@@ -12,6 +12,7 @@ interface PostProps {
   disableTopMargin?: boolean;
   disableBottomMargin?: boolean;
   goHomeOnDelete?: boolean;
+  expanded?: boolean;
 }
 
 const Post = ({
@@ -20,6 +21,7 @@ const Post = ({
   disableBottomMargin = false,
   disableTopMargin = false,
   goHomeOnDelete = false,
+  expanded = false,
 }: PostProps) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
@@ -120,6 +122,7 @@ const Post = ({
       className="border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
       disableTopMargin={disableTopMargin}
       disableBottomMargin={disableBottomMargin}
+      expanded={expanded}
     />
   );
 };
