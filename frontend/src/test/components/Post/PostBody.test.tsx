@@ -1,10 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import { expect, describe, it } from "vitest";
-import userEvent from "@testing-library/user-event";
 import PostBody from "@/components/Post/PostBody";
-import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter } from "react-router-dom";
 import { GET_USER_QUERY } from "@/queries/user";
+import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it } from "vitest";
 
 describe("PostBody", () => {
   it("renders text and collapses/expands correctly", async () => {
@@ -33,7 +33,7 @@ describe("PostBody", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <PostBody text={text} />
+          <PostBody expanded={false} text={text} />
         </MockedProvider>
       </MemoryRouter>,
     );
