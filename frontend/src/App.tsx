@@ -158,16 +158,16 @@ const HomePage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-2 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-full max-w-60 py-8 lg:flex">
+      <aside className="hidden w-72 min-w-60 py-8 lg:flex">
         {hashtagsError && (
           <p className="mt-4 text-center text-red-500">
             Error loading hashtags: {hashtagsError.message}
           </p>
         )}
 
-        <div className="flex w-full flex-col items-center gap-5">
-          <h1 className="text-3xl font-extralight">Trending</h1>
-          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300">
+        <div className="flex w-full flex-col items-start gap-1">
+          <h1 className="mx-1 text-3xl font-extralight">Trending</h1>
+          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
             {!hashtagsData
               ? Array.from({ length: 16 }).map((_, index) => (
                   <HashtagBlockSkeleton key={index} />
@@ -178,9 +178,9 @@ const HomePage = () => {
           </div>
           <a
             href={`/project2/hashtag`}
-            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="mt-4 inline-flex items-center justify-center self-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            <HashtagIcon className="mr-2 h-5 w-5" aria-hidden="true" />
+            <HashtagIcon className="mr-2 size-5" aria-hidden="true" />
             <span>View All Hashtags</span>
           </a>
         </div>
@@ -313,10 +313,10 @@ const HomePage = () => {
         )}
       </main>
 
-      <aside className="hidden w-full max-w-72 py-8 lg:flex">
-        <div className="flex w-full flex-col items-center gap-5">
-          <h1 className="text-3xl font-extralight">People to follow</h1>
-          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300">
+      <aside className="hidden w-72 py-8 lg:flex">
+        <div className="flex w-full flex-col items-start gap-1">
+          <h1 className="mx-2 text-3xl font-extralight">People to follow</h1>
+          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
             {!usersData?.getUsers
               ? Array.from({ length: 10 }).map((_, index) => (
                   <ProfileBlockSkeleton key={index} />
@@ -330,7 +330,7 @@ const HomePage = () => {
           </div>
           <a
             href={`/project2/users`}
-            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="mt-4 inline-flex justify-center self-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             <Users className="mr-2 h-5 w-5" aria-hidden="true" />
             <span>View All Users</span>
