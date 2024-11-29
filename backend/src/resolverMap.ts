@@ -273,11 +273,11 @@ export const resolvers: IResolvers = {
       const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
 
-      let query: any = { username: { $nin: ['admin', 'fredrik'] } };
+      let query: any = { username: { $nin: ['admin', 'fredrik', 'cytest'] } };
 
       if (excludeFollowing && context.user) {
         query = {
-          username: { $nin: ['admin', 'fredrik', context.user.username] },
+          username: { $nin: ['admin', 'fredrik', 'cytest', context.user.username] },
           _id: { $nin: context.user.following },
         };
       }
