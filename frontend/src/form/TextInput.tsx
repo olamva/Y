@@ -293,7 +293,8 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                       >
                         {isUser ? (
                           <Username
-                            user={suggestion} hideFullName
+                            user={suggestion}
+                            hideFullName
                             customBadgeColors={
                               index === activeSuggestionIndex
                                 ? "text-white"
