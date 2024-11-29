@@ -7,7 +7,7 @@ import {
 import TextInput from "@/form/TextInput";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { ImageIcon, XIcon } from "lucide-react";
-import { MouseEvent, useEffect, useRef, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "./AuthContext";
 
 interface CreatePostFieldProps {
@@ -66,11 +66,49 @@ const CreatePostField = ({
 
   const percentage = (value.length / MAX_CHARS) * 100;
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handlePaste = useCallback(
+    (e: ClipboardEvent) => {
+      if (e.clipboardData && e.clipboardData.files.length > 0) {
+        const pastedFile = e.clipboardData.files[0];
+        if (pastedFile.type.startsWith("image/")) {
+          setFile(pastedFile);
+        }
+      }
+    },
+    [setFile],
+  );
+
+  useEffect(() => {
+    const input = textInputRef.current;
+    if (input) {
+      input.addEventListener(
+        "paste",
+        handlePaste as (e: ClipboardEvent) => void,
+      );
+    }
+    return () => {
+      if (input) {
+        input.removeEventListener(
+          "paste",
+          handlePaste as (e: ClipboardEvent) => void,
+        );
+      }
+    };
+  }, [handlePaste]);
+
   return (
     <TooltipProvider>
       <div
         className="my-2 flex w-full max-w-xl cursor-text flex-col rounded-md border-gray-900 bg-gray-200 p-2 shadow-sm dark:border-gray-300 dark:bg-gray-700"
         onClick={handleDivClick}
+        onDrop={handleDrop}
       >
         <div className="flex flex-col">
           <TextInput
