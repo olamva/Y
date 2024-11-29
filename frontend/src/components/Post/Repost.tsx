@@ -35,7 +35,7 @@ const Repost = ({ repost }: { repost: RepostType }) => {
             <p className="font-extrabold">You</p>
           ) : (
             <>
-              <Username user={repost.author} />
+              <Username verticalWhenSmall user={repost.author} />
               <FollowButton targetUsername={repost.author.username} />
             </>
           )}
