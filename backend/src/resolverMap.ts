@@ -277,7 +277,7 @@ export const resolvers: IResolvers = {
 
       if (excludeFollowing && context.user) {
         query = {
-          username: { $nin: ['admin', 'fredrik', context.user.username] },
+          username: { $nin: ['admin', 'fredrik'] },
           _id: { $nin: context.user.following },
         };
       }
