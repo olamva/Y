@@ -39,7 +39,7 @@ const Navbar = () => {
                       <Avatar user={user} />
                     </div>
                     <div className="hidden xl:block">
-                      <Username user={user} />
+                      <Username hideFullName user={user} />
                     </div>
                   </>
                 )}

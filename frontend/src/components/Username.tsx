@@ -50,7 +50,7 @@ const Username = ({
             className={`flex ${vertical ? "flex-col items-start" : "items-center gap-1"}`}
           >
             <p
-              className={` ${noHref ? "" : "underline-offset-2 group-hover:underline"} ${vertical ? "text-sm" : "text-base"} `}
+              className={` ${noHref ? "" : "underline-offset-2 group-hover:underline"} ${vertical ? "text-base" : "text-base"} `}
             >
               {user.firstName} {user.lastName ? user.lastName : ""}
             </p>

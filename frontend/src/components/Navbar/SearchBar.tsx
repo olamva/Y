@@ -136,13 +136,13 @@ const SearchBar = () => {
         <PopoverContent
           ref={popoverRef}
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className="z-[70] overflow-hidden p-0"
+          className="z-[70] w-fit overflow-hidden p-0"
           align="start"
         >
           {hashtagsLoading || mentionsLoading ? (
-            <p className="w-full p-2">Loading...</p>
+            <p className="w-fit p-2">Loading...</p>
           ) : (
-            <div className="flex w-full appearance-none flex-col overflow-hidden outline-none">
+            <div className="flex w-80 appearance-none flex-col overflow-hidden outline-none">
               {suggestions.slice(0, 5).map((suggestion, index) => {
                 const isUser = suggestion.__typename === "User";
                 return (

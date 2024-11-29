@@ -29,6 +29,8 @@ export const SEARCH_USERS = gql`
       ... on User {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
