@@ -6,7 +6,6 @@ interface NotFoundProps {
 }
 
 const NotFound = ({ page }: NotFoundProps) => {
-  
   useEffect(() => {
     document.title = "Y";
   }, []);

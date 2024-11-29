@@ -51,16 +51,16 @@ const Username = ({
           <div
             className={`flex ${vertical ? "flex-col items-start" : verticalWhenSmall ? "flex-col items-start sm:flex-row sm:items-center sm:gap-1" : "items-center gap-1"}`}
           >
-            <div className="flex gap-1 items-center">
-             <span
-              className={`inline-block break-words ${noHref ? "" : "underline-offset-2 group-hover:underline"}`}
-            >
-              {user.firstName}{" "}
-              {user.lastName &&
-              user.firstName.length + user.lastName.length <= 20
-                ? user.lastName
-                : ""}
-            </span>
+            <div className="flex items-center gap-1">
+              <span
+                className={`inline-block break-words ${noHref ? "" : "underline-offset-2 group-hover:underline"}`}
+              >
+                {user.firstName}{" "}
+                {user.lastName &&
+                user.firstName.length + user.lastName.length <= 20
+                  ? user.lastName
+                  : ""}
+              </span>
               <VerificationBadge
                 customColors={customBadgeColors}
                 verified={user.verified}

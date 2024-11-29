@@ -40,7 +40,7 @@ const FormField = ({
             value={value}
             onChange={onChange}
             autoComplete={autocomplete}
-            className="flex-grow py-2 pl-3 outline-none bg-white dark:bg-gray-900"
+            className="flex-grow bg-white py-2 pl-3 outline-none dark:bg-gray-900"
             required
           />
           <button
