@@ -51,7 +51,8 @@ const Username = ({
           <div
             className={`flex ${vertical ? "flex-col items-start" : verticalWhenSmall ? "flex-col items-start sm:flex-row sm:items-center sm:gap-1" : "items-center gap-1"}`}
           >
-            <span
+            <div className="flex gap-1 items-center">
+             <span
               className={`inline-block break-words ${noHref ? "" : "underline-offset-2 group-hover:underline"}`}
             >
               {user.firstName}{" "}
@@ -60,6 +61,12 @@ const Username = ({
                 ? user.lastName
                 : ""}
             </span>
+              <VerificationBadge
+                customColors={customBadgeColors}
+                verified={user.verified}
+                small={smallBadge}
+              />
+            </div>
             <p
               className={`break-words font-mono ${vertical ? "text-xs" : verticalWhenSmall ? "text-xs sm:text-sm" : "text-sm"} text-gray-600 dark:text-gray-300`}
             >
@@ -68,18 +75,20 @@ const Username = ({
             </p>
           </div>
         ) : (
-          <p
-            className={`break-words font-mono text-sm ${noHref ? "" : "underline-offset-4 group-hover:underline"}`}
-          >
-            <span className="font-sans">@</span>
-            {user.username}
-          </p>
+          <>
+            <p
+              className={`break-words font-mono text-sm ${noHref ? "" : "underline-offset-4 group-hover:underline"}`}
+            >
+              <span className="font-sans">@</span>
+              {user.username}
+            </p>
+            <VerificationBadge
+              customColors={customBadgeColors}
+              verified={user.verified}
+              small={smallBadge}
+            />
+          </>
         )}
-        <VerificationBadge
-          customColors={customBadgeColors}
-          verified={user.verified}
-          small={smallBadge}
-        />
       </div>
     </Tag>
   );
