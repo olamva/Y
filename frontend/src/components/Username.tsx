@@ -51,13 +51,13 @@ const Username = ({
           <div
             className={`flex ${vertical ? "flex-col items-start" : verticalWhenSmall ? "flex-col items-start sm:flex-row sm:items-center sm:gap-1" : "items-center gap-1"}`}
           >
-            <p
-              className={` ${noHref ? "" : "underline-offset-2 group-hover:underline"} `}
+            <span
+              className={`inline-block break-words ${noHref ? "" : "underline-offset-2 group-hover:underline"}`}
             >
-              {user.firstName} {user.lastName ? user.lastName : ""}
-            </p>
+              {`${user.firstName} ${user.lastName && user.firstName.length + user.lastName.length <= 20 ? user.lastName : ""}`}
+            </span>
             <p
-              className={`break-words font-mono ${vertical ? "text-xs" : verticalWhenSmall ? "text-xs sm:text-sm"  : "text-sm"} text-gray-600 dark:text-gray-300`}
+              className={`break-words font-mono ${vertical ? "text-xs" : verticalWhenSmall ? "text-xs sm:text-sm" : "text-sm"} text-gray-600 dark:text-gray-300`}
             >
               <span className="font-sans">@</span>
               {user.username}
