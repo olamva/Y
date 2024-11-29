@@ -33,6 +33,7 @@ const CreatePostField = ({
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { user } = useAuth();
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const MAX_CHARS =
     user?.verified === "VERIFIED" || user?.verified === "DEVELOPER" ? 562 : 281;
@@ -66,8 +67,19 @@ const CreatePostField = ({
 
   const percentage = (value.length / MAX_CHARS) * 100;
 
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    setIsDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setFile(e.dataTransfer.files[0]);
     }
@@ -106,9 +118,11 @@ const CreatePostField = ({
   return (
     <TooltipProvider>
       <div
-        className="my-2 flex w-full max-w-xl cursor-text flex-col rounded-md border-gray-900 bg-gray-200 p-2 shadow-sm dark:border-gray-300 dark:bg-gray-700"
+        className={`my-2 flex w-full max-w-xl cursor-text flex-col rounded-md ${isDragOver ? "border-4 border-dotted border-blue-500 dark:border-blue-400" : "border-gray-900 bg-gray-200 dark:border-gray-300 dark:bg-gray-700"} p-2 shadow-sm`}
         onClick={handleDivClick}
         onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
       >
         <div className="flex flex-col">
           <TextInput
@@ -117,9 +131,10 @@ const CreatePostField = ({
             onChange={(e) => {
               setValue(e.target.value);
             }}
-            placeholder={placeholder}
+            placeholder={isDragOver ? "Drop your image here" : placeholder}
             maxChars={MAX_CHARS}
           />
+
           {imagePreview && (
             <div className="relative inline-block">
               <img
