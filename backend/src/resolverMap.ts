@@ -361,11 +361,12 @@ export const resolvers: IResolvers = {
       const skip = (page - 1) * COMMENTS_PER_PAGE;
 
       try {
-        return await Comment.find({ parentID: postID })
+        const comments = await Comment.find({ parentID: postID })
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(COMMENTS_PER_PAGE)
           .populate('author');
+        return comments.filter((comment) => comment.author);
       } catch (err) {
         throw new Error('Error fetching comments');
       }
