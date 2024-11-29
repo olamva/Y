@@ -30,6 +30,7 @@ const SearchBar = () => {
     refetch: refetchHashtags,
   } = useQuery<{ searchHashtags: HashtagType[] }>(SEARCH_HASHTAGS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
+    skip: !showSuggestions,
   });
 
   const {
@@ -38,11 +39,14 @@ const SearchBar = () => {
     refetch: refetchUsers,
   } = useQuery<{ searchUsers: UserType[] }>(SEARCH_USERS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
+    skip: !showSuggestions,
   });
 
   useEffect(() => {
-    refetchHashtags();
-    refetchUsers();
+    if (showSuggestions) {
+      refetchHashtags();
+      refetchUsers();
+    }
   }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
   useEffect(() => {

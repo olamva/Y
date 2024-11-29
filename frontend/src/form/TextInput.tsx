@@ -49,7 +49,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       searchHashtags: HashtagType[];
     }>(SEARCH_HASHTAGS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: suggestionType === "users",
+      skip: suggestionType === "users" || !showSuggestions,
     });
 
     const {
@@ -60,10 +60,11 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       searchUsers: UserType[];
     }>(SEARCH_USERS, {
       variables: { query: debouncedQuery, page: 1, limit: 5 },
-      skip: suggestionType === "hashtags",
+      skip: suggestionType === "hashtags" || !showSuggestions,
     });
 
     useEffect(() => {
+      if (!showSuggestions) return;
       if (suggestionType === "users") {
         refetchUsers();
       } else {
@@ -292,7 +293,7 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
                       >
                         {isUser ? (
                           <Username
-                            user={suggestion}
+                            user={suggestion} hideFullName
                             customBadgeColors={
                               index === activeSuggestionIndex
                                 ? "text-white"
