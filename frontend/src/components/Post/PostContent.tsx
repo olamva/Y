@@ -265,7 +265,7 @@ const PostContent = ({
             e.preventDefault();
             e.stopPropagation();
             navigator.clipboard.writeText(
-              `${window.location.origin}/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`,
+              `${BACKEND_URL}/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`,
             );
             toast.success("Link copied to clipboard");
           }}
