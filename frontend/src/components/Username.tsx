@@ -54,7 +54,11 @@ const Username = ({
             <span
               className={`inline-block break-words ${noHref ? "" : "underline-offset-2 group-hover:underline"}`}
             >
-              {`${user.firstName} ${user.lastName && user.firstName.length + user.lastName.length <= 20 ? user.lastName : ""}`}
+              {user.firstName}{" "}
+              {user.lastName &&
+              user.firstName.length + user.lastName.length <= 20
+                ? user.lastName
+                : ""}
             </span>
             <p
               className={`break-words font-mono ${vertical ? "text-xs" : verticalWhenSmall ? "text-xs sm:text-sm" : "text-sm"} text-gray-600 dark:text-gray-300`}

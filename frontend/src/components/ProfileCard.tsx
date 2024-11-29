@@ -24,12 +24,19 @@ const ProfileCard = ({ user, large }: Props) => {
         href={`/project2/user/${user.username}`}
         className="flex min-h-48 w-full flex-col items-center justify-center rounded-lg border border-gray-400 bg-zinc-200 bg-cover bg-no-repeat shadow-xl hover:opacity-80 dark:border-gray-600 dark:bg-zinc-800 md:min-h-64"
       >
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center justify-center gap-2 break-words">
           <div className="flex-shrink-0">
             <Avatar noHref user={user} large />
           </div>
-          <h1 className="text-xl">
-            {user?.firstName} {user.lastName}
+          <h1 className="text-lg">
+            {user.firstName
+              ? `${user.firstName} ${
+                  user.lastName &&
+                  user.firstName.length + user.lastName.length <= 20
+                    ? user.lastName
+                    : ""
+                }`
+              : user.username}
           </h1>
           <Username user={user} noHref hideFullName noAvatar />
           <FollowButton targetUsername={user.username} />
