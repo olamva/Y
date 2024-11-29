@@ -737,8 +737,12 @@ export const resolvers: IResolvers = {
       if (!user) {
         throw new UserInputError('User not found');
       }
-      if (body.length > 281) {
+      if (body.length > 281 && user.verified !== 'VERIFIED' && user.verified !== 'DEVELOPER') {
         throw new UserInputError('Post body exceeds 281 characters');
+      }
+
+      if (body.length > 562 && (user.verified === 'VERIFIED' || user.verified === 'DEVELOPER')) {
+        throw new UserInputError('Post body exceeds 562 characters');
       }
 
       let imageUrl = null;
@@ -1396,8 +1400,12 @@ export const resolvers: IResolvers = {
         throw new UserInputError('User not found');
       }
 
-      if (body.length > 281) {
-        throw new UserInputError('Comment body exceeds 281 characters');
+      if (body.length > 281 && user.verified !== 'VERIFIED' && user.verified !== 'DEVELOPER') {
+        throw new UserInputError('Post body exceeds 281 characters');
+      }
+
+      if (body.length > 562 && (user.verified === 'VERIFIED' || user.verified === 'DEVELOPER')) {
+        throw new UserInputError('Post body exceeds 562 characters');
       }
 
       let imageUrl = null;
