@@ -8,7 +8,13 @@ import { REPOST_MUTATION, UNREPOST_MUTATION } from "@/queries/reposts";
 import { ApolloError, useMutation } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { HeartIcon, PencilIcon, RecycleIcon, TrashIcon } from "lucide-react";
+import {
+  HeartIcon,
+  PencilIcon,
+  RecycleIcon,
+  Share2Icon,
+  TrashIcon,
+} from "lucide-react";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -41,7 +47,7 @@ const PostContent = ({
   doesntRedirect,
   disableTopMargin,
   disableBottomMargin,
-  expanded
+  expanded,
 }: PostContentProps) => {
   const { user } = useAuth();
   const [amtReposts, setAmtReposts] = useState(post.amtReposts);
@@ -212,7 +218,7 @@ const PostContent = ({
         />
       )}
 
-      <footer className="flex w-full justify-evenly">
+      <footer className="flex w-full justify-around">
         <button
           className="group flex items-center gap-1 p-2"
           aria-label="Like post"
@@ -253,6 +259,22 @@ const PostContent = ({
             <p className="hidden font-extralight md:block">Comments</p>
           </span>
         </div>
+        <button
+          className="group flex items-center gap-1 p-2"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            navigator.clipboard.writeText(
+              `${window.location.origin}/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`,
+            );
+            toast.success("Link copied to clipboard");
+          }}
+        >
+          <Share2Icon className="size-6" />
+          <p className="hidden select-none font-extralight underline-offset-2 group-hover:underline md:block">
+            Share
+          </p>
+        </button>
       </footer>
 
       {deleteError && (
