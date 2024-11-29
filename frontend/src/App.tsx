@@ -5,13 +5,7 @@ import Repost from "@/components/Post/Repost";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
-import {
-  HashtagType,
-  PostItem,
-  PostType,
-  RepostType,
-  UserType,
-} from "@/lib/types";
+import { HashtagType, PostItem, UserType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
@@ -292,9 +286,9 @@ const HomePage = () => {
             {posts &&
               posts.map((post) =>
                 post.__typename === "Post" ? (
-                  <Post key={post.id} post={post as PostType} />
+                  <Post key={post.id} post={post} />
                 ) : (
-                  <Repost key={post.id} repost={post as RepostType} />
+                  <Repost key={post.id} repost={post} />
                 ),
               )}
             {loading && posts.length > 0 && hasMore && (
