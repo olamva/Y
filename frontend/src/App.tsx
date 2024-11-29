@@ -2,8 +2,6 @@ import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
 import Post from "@/components/Post/Post";
 import Repost from "@/components/Post/Repost";
-import ProfileCard from "@/components/ProfileCard";
-import CardSkeleton from "@/components/Skeletons/CardSkeleton";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
@@ -23,7 +21,9 @@ import { Users } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import HashtagBlock from "./components/HashtagBlock";
-import BlockSkeleton from "./components/Skeletons/BlockSkeleton";
+import ProfileBlock from "./components/ProfileBlock";
+import HashtagBlockSkeleton from "./components/Skeletons/HashtagBlockSkeleton";
+import ProfileBlockSkeleton from "./components/Skeletons/ProfileBlockSkeleton";
 
 const PAGE_SIZE = 16;
 
@@ -157,7 +157,7 @@ const HomePage = () => {
   }, [filter]);
 
   return (
-    <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-5 py-5 lg:justify-evenly lg:gap-4">
+    <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-2 py-5 lg:justify-evenly lg:gap-4">
       <aside className="hidden w-full max-w-60 py-8 lg:flex">
         {hashtagsError && (
           <p className="mt-4 text-center text-red-500">
@@ -166,11 +166,11 @@ const HomePage = () => {
         )}
 
         <div className="flex w-full flex-col items-center gap-5">
-          <h1 className="text-3xl font-extralight">Trending Hashtags</h1>
+          <h1 className="text-3xl font-extralight">Trending</h1>
           <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300">
             {!hashtagsData
               ? Array.from({ length: 16 }).map((_, index) => (
-                  <BlockSkeleton key={index} />
+                  <HashtagBlockSkeleton key={index} />
                 ))
               : hashtagsData?.getTrendingHashtags.map((hashtag) => (
                   <HashtagBlock hashtag={hashtag} key={hashtag.tag} />
@@ -313,17 +313,21 @@ const HomePage = () => {
         )}
       </main>
 
-      <aside className="hidden w-full max-w-60 py-8 lg:flex">
+      <aside className="hidden w-full max-w-72 py-8 lg:flex">
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl font-extralight">People to follow</h1>
-
-          {!usersData?.getUsers
-            ? Array.from({ length: 10 }).map((_, index) => (
-                <CardSkeleton key={index} />
-              ))
-            : usersData?.getUsers.map((recommendedUser) => (
-                <ProfileCard user={recommendedUser} key={recommendedUser.id} />
-              ))}
+          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300">
+            {!usersData?.getUsers
+              ? Array.from({ length: 10 }).map((_, index) => (
+                  <ProfileBlockSkeleton key={index} />
+                ))
+              : usersData?.getUsers.map((recommendedUser) => (
+                  <ProfileBlock
+                    user={recommendedUser}
+                    key={recommendedUser.id}
+                  />
+                ))}
+          </div>
           <a
             href={`/project2/users`}
             className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

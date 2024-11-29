@@ -11,6 +11,8 @@ export const GET_POSTS = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -25,6 +27,8 @@ export const GET_POSTS = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -33,6 +37,8 @@ export const GET_POSTS = gql`
         originalAuthor {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -48,6 +54,8 @@ export const GET_POSTS = gql`
         mentionedUsers {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -67,6 +75,8 @@ export const GET_POST = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -88,6 +98,8 @@ export const GET_POSTS_BY_IDS = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -108,6 +120,8 @@ export const CREATE_POST = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -167,6 +181,8 @@ export const GET_PARENT = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -184,6 +200,8 @@ export const GET_PARENT = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -207,6 +225,8 @@ export const GET_PARENTS_BY_IDS = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -224,6 +244,8 @@ export const GET_PARENTS_BY_IDS = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }

@@ -9,6 +9,8 @@ export const SEARCH_POSTS = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }

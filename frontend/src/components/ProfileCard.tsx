@@ -32,7 +32,6 @@ const ProfileCard = ({ user, large }: Props) => {
             user={user}
             noHref
             noAvatar
-            className="text-base font-bold sm:text-xl md:text-2xl"
           />
           <FollowButton targetUsername={user.username} />
         </div>

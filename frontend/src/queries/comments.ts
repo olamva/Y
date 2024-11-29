@@ -11,6 +11,8 @@ export const GET_COMMENTS = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -34,6 +36,8 @@ export const GET_COMMENT = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -57,6 +61,8 @@ export const GET_COMMENTS_BY_IDS = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -90,6 +96,8 @@ export const CREATE_COMMENT = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
