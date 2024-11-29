@@ -169,7 +169,7 @@ const HomePage = () => {
           <h1 className="mx-1 text-3xl font-extralight">Trending</h1>
           <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
             {!hashtagsData
-              ? Array.from({ length: 16 }).map((_, index) => (
+              ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
                   <HashtagBlockSkeleton key={index} />
                 ))
               : hashtagsData?.getTrendingHashtags.map((hashtag) => (
@@ -318,7 +318,7 @@ const HomePage = () => {
           <h1 className="mx-2 text-3xl font-extralight">People to follow</h1>
           <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
             {!usersData?.getUsers
-              ? Array.from({ length: 10 }).map((_, index) => (
+              ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
                   <ProfileBlockSkeleton key={index} />
                 ))
               : usersData?.getUsers.map((recommendedUser) => (
