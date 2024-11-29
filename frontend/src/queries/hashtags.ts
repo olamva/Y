@@ -19,6 +19,8 @@ export const GET_CONTENT_BY_HASHTAG = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -36,6 +38,8 @@ export const GET_CONTENT_BY_HASHTAG = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }

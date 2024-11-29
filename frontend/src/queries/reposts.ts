@@ -6,6 +6,8 @@ export const REPOST_MUTATION = gql`
       originalAuthor {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -18,6 +20,8 @@ export const REPOST_MUTATION = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -44,6 +48,8 @@ export const GET_REPOSTS = gql`
       originalAuthor {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -56,6 +62,8 @@ export const GET_REPOSTS = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -76,6 +84,8 @@ export const GET_REPOSTS_BY_USER = gql`
       originalAuthor {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }
@@ -88,6 +98,8 @@ export const GET_REPOSTS_BY_USER = gql`
       author {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }

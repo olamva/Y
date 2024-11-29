@@ -25,7 +25,7 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
       <h2 className="text-lg">
         {user?.firstName} {user?.lastName}
       </h2>
-      <Username user={user} noHref noAvatar smallBadge />
+      <Username hideFullName user={user} noHref noAvatar smallBadge />
     </div>
   </a>
 );

@@ -9,6 +9,8 @@ export const SEARCH_POSTS = gql`
         author {
           id
           username
+          firstName
+          lastName
           profilePicture
           verified
         }
@@ -27,6 +29,8 @@ export const SEARCH_USERS = gql`
       ... on User {
         id
         username
+        firstName
+        lastName
         profilePicture
         verified
       }

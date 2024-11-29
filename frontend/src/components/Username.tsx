@@ -8,18 +8,20 @@ interface UsernameProps {
   noHref?: boolean;
   noAvatar?: boolean;
   customBadgeColors?: string;
-  className?: string;
   smallBadge?: boolean;
   smallAvatar?: boolean;
+  hideFullName?: boolean;
+  vertical?: boolean;
 }
 const Username = ({
   user,
   noHref,
   noAvatar,
   customBadgeColors,
-  className,
   smallBadge,
   smallAvatar,
+  hideFullName,
+  vertical,
 }: UsernameProps) => {
   const Tag = noHref ? "div" : "a";
   const tagProps = noHref
@@ -43,12 +45,30 @@ const Username = ({
         />
       )}
       <div className="flex items-center gap-1">
-        <p
-          className={`break-words font-mono ${noHref ? "" : "underline-offset-4 group-hover:underline"} ${className}`}
-        >
-          <span className="font-sans">@</span>
-          {user.username}
-        </p>
+        {!hideFullName && user.firstName ? (
+          <div
+            className={`flex ${vertical ? "flex-col items-start" : "items-center gap-1"}`}
+          >
+            <p
+              className={` ${noHref ? "" : "underline-offset-2 group-hover:underline"} ${vertical ? "text-base" : "text-base"} `}
+            >
+              {user.firstName} {user.lastName ? user.lastName : ""}
+            </p>
+            <p
+              className={`break-words font-mono ${vertical ? "text-xs" : "text-sm"} text-gray-600 dark:text-gray-300`}
+            >
+              <span className="font-sans">@</span>
+              {user.username}
+            </p>
+          </div>
+        ) : (
+          <p
+            className={`break-words font-mono text-sm ${noHref ? "" : "underline-offset-4 group-hover:underline"}`}
+          >
+            <span className="font-sans">@</span>
+            {user.username}
+          </p>
+        )}
         <VerificationBadge
           customColors={customBadgeColors}
           verified={user.verified}
