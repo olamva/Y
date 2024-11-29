@@ -8,8 +8,7 @@ import TextInput from "@/form/TextInput";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { ImageIcon, XIcon } from "lucide-react";
 import { MouseEvent, useEffect, useRef, useState } from "react";
-
-const MAX_CHARS = 281;
+import { useAuth } from "./AuthContext";
 
 interface CreatePostFieldProps {
   placeholder: string;
@@ -33,6 +32,10 @@ const CreatePostField = ({
 }: CreatePostFieldProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  const MAX_CHARS =
+    user?.verified === "VERIFIED" || user?.verified === "DEVELOPER" ? 562 : 281;
 
   const handleDivClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target !== textInputRef.current) {
