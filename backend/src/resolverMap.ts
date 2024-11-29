@@ -1317,7 +1317,7 @@ export const resolvers: IResolvers = {
 
           if (post.amtReposts > 0) {
             await User.updateMany({ $pull: { repostedPostIds: post.id } });
-            await Repost.deleteMany({ originalID: post.id });
+            await Repost.deleteMany({ originalID: post._id });
           }
         }
 
