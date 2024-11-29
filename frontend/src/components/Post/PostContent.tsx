@@ -264,7 +264,7 @@ const PostContent = ({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            navigator.clipboard.writeText(
+            navigator.clipboard?.writeText(
               `${BACKEND_URL}/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`,
             );
             toast.success("Link copied to clipboard");
