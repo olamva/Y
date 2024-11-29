@@ -712,7 +712,7 @@ export const resolvers: IResolvers = {
           (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
         );
 
-        const paginatedResults = combined.slice(skip, skip + limit);
+        const paginatedResults = combined.slice(skip, skip + limit).filter((item) => item.author);
 
         return paginatedResults;
       } catch (error) {
