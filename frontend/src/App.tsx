@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import CreatePostField from "@/components/CreatePostField";
+import HashTagCard from "@/components/HashtagCard";
 import Post from "@/components/Post/Post";
 import Repost from "@/components/Post/Repost";
 import ProfileCard from "@/components/ProfileCard";
@@ -22,8 +23,6 @@ import { HashtagIcon } from "@heroicons/react/24/outline";
 import { Users } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import HashtagBlock from "./components/HashtagBlock";
-import BlockSkeleton from "./components/Skeletons/BlockSkeleton";
 
 const PAGE_SIZE = 16;
 
@@ -167,15 +166,14 @@ const HomePage = () => {
 
         <div className="flex w-full flex-col items-center gap-5">
           <h1 className="text-3xl font-extralight">Trending Hashtags</h1>
-          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300">
-            {!hashtagsData
-              ? Array.from({ length: 16 }).map((_, index) => (
-                  <BlockSkeleton key={index} />
-                ))
-              : hashtagsData?.getTrendingHashtags.map((hashtag) => (
-                  <HashtagBlock hashtag={hashtag} key={hashtag.tag} />
-                ))}
-          </div>
+          {!hashtagsData
+            ? Array.from({ length: 10 }).map((_, index) => (
+                <CardSkeleton key={index} />
+              ))
+            : hashtagsData?.getTrendingHashtags.map((hashtag) => (
+                <HashTagCard hashtag={hashtag} key={hashtag.tag} />
+              ))}
+
           <a
             href={`/project2/hashtag`}
             className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
