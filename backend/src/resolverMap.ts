@@ -1054,8 +1054,12 @@ export const resolvers: IResolvers = {
         throw new AuthenticationError('You are not authorized to edit this post');
       }
 
-      if (body.length > 281) {
+      if (body.length > 281 && user.verified !== 'VERIFIED' && user.verified !== 'DEVELOPER') {
         throw new UserInputError('Post body exceeds 281 characters');
+      }
+
+      if (body.length > 562 && (user.verified === 'VERIFIED' || user.verified === 'DEVELOPER')) {
+        throw new UserInputError('Post body exceeds 562 characters');
       }
 
       let imageUrl: string | undefined = undefined;
@@ -1154,8 +1158,12 @@ export const resolvers: IResolvers = {
         throw new AuthenticationError('You are not authorized to edit this comment');
       }
 
-      if (body.length > 281) {
-        throw new UserInputError('Comment body exceeds 281 characters');
+      if (body.length > 281 && user.verified !== 'VERIFIED' && user.verified !== 'DEVELOPER') {
+        throw new UserInputError('Post body exceeds 281 characters');
+      }
+
+      if (body.length > 562 && (user.verified === 'VERIFIED' || user.verified === 'DEVELOPER')) {
+        throw new UserInputError('Post body exceeds 562 characters');
       }
 
       let imageUrl: string | undefined = undefined;
