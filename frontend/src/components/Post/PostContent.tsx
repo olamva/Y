@@ -100,6 +100,31 @@ const PostContent = ({
     },
   });
 
+  function fallbackCopyTextToClipboard(text: string) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        toast.success("Link copied to clipboard");
+      } else {
+        toast.error("Failed to copy link");
+      }
+    } catch (err) {
+      toast.error("Failed to copy link");
+    }
+
+    document.body.removeChild(textArea);
+  }
+
   return (
     <article
       className={`flex w-full flex-col gap-2 rounded-md border-2 p-4 pb-2 text-black shadow-md dark:text-white ${
@@ -264,10 +289,21 @@ const PostContent = ({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            navigator.clipboard?.writeText(
-              `${window.location.origin}/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`,
-            );
-            toast.success("Link copied to clipboard");
+
+            const shareURL = `${window.location.origin}/project2/${post.__typename === "Comment" ? "reply" : "post"}/${post.id}`;
+
+            if (navigator.clipboard) {
+              navigator.clipboard
+                .writeText(shareURL)
+                .then(() => {
+                  toast.success("Link copied to clipboard");
+                })
+                .catch(() => {
+                  fallbackCopyTextToClipboard(shareURL);
+                });
+            } else {
+              fallbackCopyTextToClipboard(shareURL);
+            }
           }}
         >
           <Share2Icon className="size-6" />
