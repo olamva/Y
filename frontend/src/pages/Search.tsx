@@ -269,6 +269,11 @@ const SearchPage = () => {
         {/* Hashtags */}
         <div className="flex w-full flex-wrap justify-center gap-4">
           {filterType === "hashtags" &&
+          hashtagsData?.searchHashtags.length === 0 ? (
+            <p className="col-span-1 mt-4 text-gray-500 dark:text-gray-400 sm:col-span-2 lg:col-span-3">
+              No hashtags found.
+            </p>
+          ) : (
             hashtagsData?.searchHashtags.map((hashtag) => (
               <div
                 key={hashtag.tag}
@@ -276,12 +281,17 @@ const SearchPage = () => {
               >
                 <HashtagCard hashtag={hashtag} />
               </div>
-            ))}
+            ))
+          )}
         </div>
 
         {/* Users */}
         <div className="flex w-full flex-wrap justify-center gap-4">
-          {filterType === "users" &&
+          {filterType === "users" && usersData?.searchUsers.length === 0 ? (
+            <p className="col-span-1 mt-4 text-gray-500 dark:text-gray-400 sm:col-span-2 lg:col-span-3">
+              No users found.
+            </p>
+          ) : (
             usersData?.searchUsers.map((user) => (
               <div
                 key={user.id}
@@ -289,17 +299,19 @@ const SearchPage = () => {
               >
                 <ProfileCard user={user} />
               </div>
-            ))}
+            ))
+          )}
         </div>
 
         {/* Posts */}
-        <div className="flex w-full flex-col gap-4">
-          {filterType === "posts" &&
-            postsData?.searchPosts.map((post) => (
-              <div key={post.id} className="flex justify-center">
-                <Post post={post} />
-              </div>
-            ))}
+        <div className="flex w-full flex-col items-center justify-center gap-4">
+          {filterType === "posts" && postsData?.searchPosts.length === 0 ? (
+            <p className="col-span-1 mt-4 text-gray-500 dark:text-gray-400 sm:col-span-2 lg:col-span-3">
+              No posts found.
+            </p>
+          ) : (
+            postsData?.searchPosts.map((post) => <Post post={post} />)
+          )}
         </div>
 
         {((!hasMorePosts && filterType === "posts") ||

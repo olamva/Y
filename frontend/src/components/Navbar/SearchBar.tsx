@@ -76,6 +76,7 @@ const SearchBar = () => {
 
   const handleSearch = () => {
     if (activeSuggestionIndex === 0 || suggestions.length === 0) {
+      if (searchQuery.trim().length === 0) return;
       window.location.href = `/project2/search?q=${encodeURIComponent(
         searchQuery,
       )}`;
