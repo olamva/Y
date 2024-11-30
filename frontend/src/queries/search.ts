@@ -18,6 +18,7 @@ export const SEARCH_POSTS = gql`
         amtComments
         amtReposts
         createdAt
+        imageUrl
       }
     }
   }
