@@ -140,7 +140,7 @@ const CreatePostField = ({
               <img
                 src={imagePreview}
                 alt="image preview"
-                className="h-auto w-full p-5"
+                className="h-auto max-h-[36rem] object-contain w-full p-5"
               />
               {!existingImageURL && (
                 <button

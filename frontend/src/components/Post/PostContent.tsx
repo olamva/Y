@@ -239,7 +239,7 @@ const PostContent = ({
         <img
           src={`${BACKEND_URL}${post.imageUrl}`}
           alt="Post"
-          className="h-auto w-full object-cover"
+          className="h-auto max-h-[36rem] w-full object-contain"
         />
       )}
 
