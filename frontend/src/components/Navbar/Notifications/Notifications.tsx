@@ -41,9 +41,12 @@ const Notifications = () => {
     DELETE_ALL_NOTIFICATIONS,
     {
       update: (cache) => {
-        cache.writeQuery({
-          query: GET_NOTIFICATIONS,
-          data: { getNotifications: [] },
+        cache.modify({
+          fields: {
+            getNotifications() {
+              return [];
+            },
+          },
         });
       },
     },
@@ -52,6 +55,7 @@ const Notifications = () => {
   const handleDeleteAll = async () => {
     try {
       await deleteAllNotifications();
+      // Manually update the cache
       toast.success("All notifications marked as read");
     } catch (error) {
       toast.error(`Error deleting notifications: ${(error as Error).message}`);
