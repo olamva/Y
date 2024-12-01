@@ -47,7 +47,7 @@ export const Linkify = (
           ) => {
             e.stopPropagation();
           }}
-          className="text-blue-500 hover:underline"
+          className="text-blue-700 hover:underline dark:text-blue-500"
         >
           {url}
         </a>,
@@ -62,7 +62,7 @@ export const Linkify = (
           ) => {
             e.stopPropagation();
           }}
-          className="text-blue-500 hover:underline"
+          className="text-blue-700 hover:underline dark:text-blue-500"
         >
           #{hashtag}
         </Link>,
@@ -82,7 +82,7 @@ export const Linkify = (
                 ) => {
                   e.stopPropagation();
                 }}
-                className="text-blue-500 underline-offset-4 hover:underline"
+                className="text-blue-700 underline-offset-4 hover:underline dark:text-blue-500"
               >
                 @{mention}
               </Link>

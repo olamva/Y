@@ -29,9 +29,9 @@ const FormField = ({
         {label}
       </label>
       {type === "password" ? (
-        <label
-          htmlFor={id}
+        <div
           className="mt-1 flex w-full items-center overflow-hidden rounded-md border border-gray-300 bg-white text-black shadow-sm focus-within:border-indigo-500 focus-within:outline-none focus-within:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+          onClick={() => document.getElementById(id)?.focus()}
         >
           <input
             type={showPassword ? "text" : type}
@@ -49,6 +49,7 @@ const FormField = ({
               e.preventDefault();
               setShowPassword((prev) => !prev);
             }}
+            aria-label="Toggle password visibility"
             className="p-3 text-sm text-indigo-600 hover:text-indigo-400 dark:text-indigo-600 dark:hover:text-indigo-400"
           >
             {showPassword ? (
@@ -57,7 +58,7 @@ const FormField = ({
               <EyeOffIcon className="size-4" />
             )}
           </button>
-        </label>
+        </div>
       ) : (
         <input
           type={type}

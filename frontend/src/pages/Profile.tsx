@@ -178,7 +178,7 @@ const Profile = () => {
                       <VerificationBadge verified={user.verified} />
                     </h1>
                     <div className="flex flex-row gap-2">
-                      <p className="text-md text-gray-500">@{user.username}</p>
+                      <p className="text-md text-gray-600 dark:text-gray-300">@{user.username}</p>
                       {loggedInUser?.username !== username && (
                         <FollowButton targetUsername={username || ""} />
                       )}
@@ -209,7 +209,7 @@ const Profile = () => {
                   {user?.firstName} {user?.lastName}
                 </h1>
                 <div className="flex flex-row gap-2">
-                  <p className="text-md text-gray-500">@{user.username}</p>
+                  <p className="text-md text-gray-600">@{user.username}</p>
                   {loggedInUser?.username !== username && (
                     <FollowButton targetUsername={username || ""} />
                   )}

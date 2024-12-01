@@ -137,6 +137,7 @@ const Notifications = () => {
           <button
             onClick={() => setShowNotifications((prev) => !prev)}
             className="relative"
+            aria-label="Notifications"
             ref={buttonRef}
           >
             <BellIcon className="size-6 text-gray-600 dark:text-gray-300" />

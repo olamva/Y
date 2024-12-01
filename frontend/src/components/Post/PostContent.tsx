@@ -286,6 +286,7 @@ const PostContent = ({
         </div>
         <button
           className="group flex items-center gap-1 p-2"
+          aria-label="Share post"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

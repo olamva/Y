@@ -17,8 +17,8 @@ interface CreatePostFieldProps {
   file: File | null;
   setFile: (file: File | null) => void;
   loading: boolean;
-  className?: string;
   existingImageURL?: string;
+  disabled?: boolean;
 }
 const CreatePostField = ({
   placeholder,
@@ -27,8 +27,8 @@ const CreatePostField = ({
   file,
   setFile,
   loading,
-  className,
   existingImageURL,
+  disabled,
 }: CreatePostFieldProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -140,7 +140,7 @@ const CreatePostField = ({
               <img
                 src={imagePreview}
                 alt="image preview"
-                className="h-auto max-h-[36rem] object-contain w-full p-5"
+                className="h-auto max-h-[36rem] w-full object-contain p-5"
               />
               {!existingImageURL && (
                 <button
@@ -182,9 +182,9 @@ const CreatePostField = ({
                     }
                   }}
                 >
-                  <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:hover:text-blue-600">
+                  <span className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:hover:text-blue-600">
                     @
-                  </h3>
+                  </span>
                 </button>
               </TooltipTrigger>
               <TooltipContent className="border border-gray-300 dark:border-gray-600">
@@ -214,9 +214,9 @@ const CreatePostField = ({
                     }
                   }}
                 >
-                  <h3 className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:hover:text-blue-600">
+                  <span className="h-fit text-xl text-blue-500 hover:text-blue-700 dark:hover:text-blue-600">
                     #
-                  </h3>
+                  </span>
                 </button>
               </TooltipTrigger>
               <TooltipContent className="border border-gray-300 dark:border-gray-600">
@@ -250,7 +250,7 @@ const CreatePostField = ({
               />
 
               <span
-                className="ml-1 select-none text-sm text-black dark:text-gray-500"
+                className="ml-1 select-none text-sm text-black dark:text-gray-300"
                 aria-live="polite"
               >
                 {value.length}/{MAX_CHARS}
@@ -295,7 +295,11 @@ const CreatePostField = ({
             <button
               type="submit"
               disabled={loading}
-              className={`flex w-fit select-none gap-1 rounded-md border border-transparent p-1 font-thin text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${className}`}
+              className={`flex w-fit select-none gap-1 rounded-md border border-transparent p-1 font-thin outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${
+                disabled
+                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                  : "cursor-not-allowed bg-gray-300 text-black dark:bg-gray-600 dark:text-white"
+              }`}
             >
               <p className="font-semibold">Post</p>
               <PaperAirplaneIcon className="size-6" />

@@ -197,10 +197,8 @@ const HomePage = () => {
             file={file}
             setFile={setFile}
             loading={createLoading}
-            className={
-              (postBody || file) && user
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+            disabled={
+              (postBody.trim() !== "" || file !== null) && user !== null
             }
           />
         </form>
@@ -218,21 +216,25 @@ const HomePage = () => {
             }}
             type="single"
             variant="outline"
+            role="radiogroup"
             className="mb-4 flex items-center justify-evenly gap-2"
           >
             <ToggleGroupItem
               value="LATEST"
-              aria-label="Latest"
-              aria-pressed={filter === "LATEST"}
+              aria-label="Filter by latest posts"
+              aria-checked={filter === "LATEST"}
+              role="radio"
               className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
               <ClockIcon className="hidden size-4 sm:block md:size-6" />
               <p>Latest</p>
             </ToggleGroupItem>
+
             <ToggleGroupItem
               value="FOLLOWING"
-              aria-label="Following"
-              aria-pressed={filter === "FOLLOWING"}
+              aria-label="Filter by posts from people you follow"
+              aria-checked={filter === "FOLLOWING"}
+              role="radio"
               className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               onClick={() => {
                 if (!user) setShowLoginPrompt(true);
@@ -241,19 +243,23 @@ const HomePage = () => {
               <ContactIcon className="hidden size-4 sm:block md:size-6" />
               <p>Following</p>
             </ToggleGroupItem>
+
             <ToggleGroupItem
               value="POPULAR"
-              aria-label="Popular"
-              aria-pressed={filter === "POPULAR"}
+              aria-label="Filter by popular posts"
+              aria-checked={filter === "POPULAR"}
+              role="radio"
               className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
               <FlameIcon className="hidden size-4 sm:block md:size-6" />
               <p>Popular</p>
             </ToggleGroupItem>
+
             <ToggleGroupItem
               value="CONTROVERSIAL"
-              aria-label="Controversial"
-              aria-pressed={filter === "CONTROVERSIAL"}
+              aria-label="Filter by controversial posts"
+              aria-checked={filter === "CONTROVERSIAL"}
+              role="radio"
               className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
               <MessageSquareMoreIcon className="hidden size-4 sm:block md:size-6" />

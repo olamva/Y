@@ -11,9 +11,10 @@ import toast from "react-hot-toast";
 
 interface FollowButtonProps {
   targetUsername: string;
+  darker?: boolean;
 }
 
-const FollowButton = ({ targetUsername }: FollowButtonProps) => {
+const FollowButton = ({ targetUsername, darker }: FollowButtonProps) => {
   const { user, refetchUser, following, setFollowing } = useAuth();
   const [isHovering, setIsHovering] = useState(false);
 
@@ -75,7 +76,7 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
     displayButton && (
       <button
         role="button"
-        className="inline-flex cursor-pointer select-none items-center"
+        className="inline-flex cursor-pointer select-none items-center p-1"
         tabIndex={0}
         aria-pressed={isFollowing}
         aria-label={
@@ -93,26 +94,30 @@ const FollowButton = ({ targetUsername }: FollowButtonProps) => {
         onMouseLeave={() => setIsHovering(false)}
       >
         {!isFollowing ? (
-          <>
-            <UserPlus className="mr-1 h-4 w-4 text-blue-500" />
-            <span className="hidden text-sm font-medium text-blue-500 transition-colors duration-200 hover:text-blue-700 sm:flex">
+          <div className="group flex items-center">
+            <UserPlus className="mr-1 h-4 w-4 text-blue-600 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600" />
+            <span className="hidden text-sm font-medium text-blue-600 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600 sm:flex">
               Follow
             </span>
-          </>
+          </div>
         ) : isHovering ? (
           <>
-            <X className="mr-1 h-4 w-4 text-red-500" />
-            <span className="hidden text-sm font-medium text-red-500 transition-colors duration-200 hover:text-red-700 sm:flex">
+            <X className="mr-1 h-4 w-4 text-red-600 dark:text-red-500" />
+            <span className="hidden text-sm font-medium text-red-600 dark:text-red-500 sm:flex">
               Unfollow
             </span>
           </>
         ) : (
-          <>
-            <Check className="mr-1 h-4 w-4 text-green-500" />
-            <span className="hidden text-sm font-medium text-green-500 transition-colors duration-200 hover:text-green-700 sm:flex">
+          <div className="group flex items-center">
+            <Check
+              className={`mr-1 h-4 w-4 ${darker ? "text-green-800 dark:text-green-500" : "text-green-700 dark:text-green-500"}`}
+            />
+            <span
+              className={`hidden text-sm font-medium ${darker ? "text-green-800 dark:text-green-500" : "text-green-700 dark:text-green-500"} sm:flex`}
+            >
               Following
             </span>
-          </>
+          </div>
         )}
       </button>
     )
