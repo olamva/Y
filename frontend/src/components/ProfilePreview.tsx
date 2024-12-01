@@ -9,7 +9,7 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
     onClick={(e) => {
       e.stopPropagation();
     }}
-    className="flex w-fit min-w-32 flex-col items-center justify-between"
+    className="flex w-fit min-w-32 max-w-64 flex-col items-center justify-between"
   >
     <div
       style={{
@@ -22,7 +22,7 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
       <Avatar noHref user={user} />
     </div>
     <div className="flex h-full flex-col items-center justify-center gap-1 p-2 pt-0">
-      <h2 className="text-lg">
+      <h2 className="break-words text-center text-lg">
         {user?.firstName} {user?.lastName}
       </h2>
       <Username hideFullName user={user} noHref noAvatar smallBadge />

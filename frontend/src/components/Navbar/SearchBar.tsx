@@ -20,6 +20,9 @@ const SearchBar = () => {
   const [suggestions, setSuggestions] = useState<
     (HashtagType | UserType | string)[]
   >([]);
+  const [suggestionType, setSuggestionType] = useState<
+    "user" | "hashtag" | "all"
+  >("all");
   const inputRef = useRef<HTMLInputElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +34,7 @@ const SearchBar = () => {
     refetch: refetchHashtags,
   } = useQuery<{ searchHashtags: HashtagType[] }>(SEARCH_HASHTAGS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
-    skip: !showSuggestions,
+    skip: !showSuggestions || suggestionType === "user",
   });
 
   const {
@@ -40,7 +43,7 @@ const SearchBar = () => {
     refetch: refetchUsers,
   } = useQuery<{ searchUsers: UserType[] }>(SEARCH_USERS, {
     variables: { query: debouncedQuery, page: 1, limit: 5 },
-    skip: !showSuggestions,
+    skip: !showSuggestions || suggestionType === "hashtag",
   });
 
   useEffect(() => {
@@ -48,7 +51,7 @@ const SearchBar = () => {
       refetchHashtags();
       refetchUsers();
     }
-  }, [debouncedQuery, refetchHashtags, refetchUsers]);
+  }, [debouncedQuery, refetchHashtags, refetchUsers, showSuggestions]);
 
   useEffect(() => {
     const storedTerms = JSON.parse(
@@ -133,7 +136,16 @@ const SearchBar = () => {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    if (e.target.value.startsWith("#")) {
+      setSuggestionType("hashtag");
+      setSearchQuery(e.target.value);
+    } else if (e.target.value.startsWith("@")) {
+      setSuggestionType("user");
+      setSearchQuery(e.target.value);
+    } else {
+      setSuggestionType("all");
+      setSearchQuery(e.target.value);
+    }
     if (!showSuggestions) {
       setShowSuggestions(true);
       setActiveSuggestionIndex(0);
@@ -169,6 +181,11 @@ const SearchBar = () => {
           ref={inputRef}
           type="search"
           id="search"
+          aria-label="Search field"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions}
+          aria-controls="suggestions-list"
           maxLength={40}
           placeholder="Search here..."
           autoComplete="off"

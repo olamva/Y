@@ -36,7 +36,7 @@ const Repost = ({ repost }: { repost: RepostType }) => {
           ) : (
             <>
               <Username verticalWhenSmall user={repost.author} />
-              <FollowButton targetUsername={repost.author.username} />
+              <FollowButton darker targetUsername={repost.author.username} />
             </>
           )}
           <div>

@@ -119,7 +119,7 @@ const PostContent = ({
         toast.error("Failed to copy link");
       }
     } catch (err) {
-      toast.error("Failed to copy link");
+      toast.error(`Failed to copy link: ${err}`);
     }
 
     document.body.removeChild(textArea);
@@ -270,7 +270,7 @@ const PostContent = ({
           }}
         >
           <RecycleIcon
-            className={`size-6 transition-all group-hover:scale-110 ${hasReposted ? "text-green-600 group-hover:text-red-600" : "group-hover:text-green-600"}`}
+            className={`size-6 transition-all sm:group-hover:scale-110 ${hasReposted ? "text-green-600 sm:group-hover:text-red-600" : "sm:group-hover:text-green-600"}`}
           />
           <span className="flex select-none gap-1">
             <p className="font-extrabold">{amtReposts}</p>{" "}
@@ -286,6 +286,7 @@ const PostContent = ({
         </div>
         <button
           className="group flex items-center gap-1 p-2"
+          aria-label="Share post"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

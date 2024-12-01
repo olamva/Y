@@ -70,7 +70,7 @@ describe("LoginForm", () => {
     fireEvent.change(screen.getByLabelText(/username/i), {
       target: { value: "testuser" },
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
+    fireEvent.change(screen.getByRole("button", { name: /password/i }), {
       target: { value: "password123" },
     });
 
@@ -149,12 +149,12 @@ describe("LoginForm", () => {
     fireEvent.change(screen.getByLabelText(/username/i), {
       target: { value: "testuser" },
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
+    fireEvent.change(screen.getByRole("input", { name: /password/i }), {
       target: { value: "password123" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
-    expect(screen.getAllByRole("button")[0]).toBeDisabled();
+    expect(screen.getAllByRole("button")[1]).toBeDisabled();
   });
 });

@@ -256,10 +256,8 @@ const CommentPage = () => {
               existingImageURL={
                 reply.imageUrl ? `${BACKEND_URL}${reply.imageUrl}` : undefined
               }
-              className={
-                (editBody !== reply.body || file) && user
-                  ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              disabled={
+                (editBody !== reply.body || file !== null) && user !== null
               }
             />
           </form>
@@ -285,10 +283,8 @@ const CommentPage = () => {
               loading={createLoading}
               file={commentFile}
               setFile={setCommentFile}
-              className={
-                (comment || file) && user
-                  ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-400 dark:bg-gray-600"
+              disabled={
+                (comment.trim() !== "" || file !== null) && user !== null
               }
             />
           </form>

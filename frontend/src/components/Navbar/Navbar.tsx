@@ -51,14 +51,16 @@ const Navbar = () => {
             {user ? (
               <button
                 onClick={logout}
-                className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+                aria-label="Log out"
+                className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700"
               >
                 Log out
               </button>
             ) : (
               <button
                 onClick={login}
-                className="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+                aria-label="Log in"
+                className="rounded-md bg-green-400 px-3 py-2 text-sm font-semibold text-black hover:bg-green-500"
               >
                 Log in
               </button>

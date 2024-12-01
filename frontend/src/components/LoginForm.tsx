@@ -88,9 +88,9 @@ const LoginForm = ({ view }: LoginFormProps) => {
       </h1>
       <div className="flex w-full justify-center">
         <div className="w-96 rounded-lg bg-gray-50 p-8 shadow-md dark:bg-gray-900">
-          <h3 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
+          <h2 className="mb-6 text-center text-2xl font-bold text-black dark:text-white">
             {currentView.charAt(0).toUpperCase() + currentView.slice(1)}
-          </h3>
+          </h2>
           <form
             onSubmit={currentView === "login" ? handleLogin : handleRegister}
             className="space-y-4"
@@ -124,7 +124,7 @@ const LoginForm = ({ view }: LoginFormProps) => {
             <button
               type="submit"
               disabled={loginLoading || registerLoading}
-              className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 ${
+              className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
                 (loginLoading || registerLoading) &&
                 "cursor-not-allowed opacity-50"
               }`}
@@ -146,7 +146,7 @@ const LoginForm = ({ view }: LoginFormProps) => {
                     ? "/project2/register"
                     : "/project2/login";
               }}
-              className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
+              className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
             >
               {currentView === "login"
                 ? "Need an account? Register"
