@@ -506,7 +506,14 @@ export const resolvers: IResolvers = {
       const skip = (pageNumber - 1) * PAGE_SIZE;
 
       try {
-        return await User.find({ username: { $regex: query, $options: 'i' } })
+        const searchQuery = query.startsWith('@') ? query.slice(1) : query;
+        return await User.find({
+          $or: [
+            { username: { $regex: searchQuery, $options: 'i' } },
+            { firstName: { $regex: query, $options: 'i' } },
+            { lastName: { $regex: query, $options: 'i' } },
+          ],
+        })
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(PAGE_SIZE);
@@ -527,12 +534,14 @@ export const resolvers: IResolvers = {
       }
       const skip = (pageNumber - 1) * PAGE_SIZE;
 
+      const modifiedQuery = query.startsWith('#') ? query.slice(1) : query;
+
       try {
         const postHashtags = await Post.aggregate([
           { $unwind: '$hashTags' },
           {
             $match: {
-              hashTags: { $regex: query, $options: 'i' },
+              hashTags: { $regex: modifiedQuery, $options: 'i' },
             },
           },
           {
@@ -547,7 +556,7 @@ export const resolvers: IResolvers = {
           { $unwind: '$hashTags' },
           {
             $match: {
-              hashTags: { $regex: query, $options: 'i' },
+              hashTags: { $regex: modifiedQuery, $options: 'i' },
             },
           },
           {
