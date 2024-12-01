@@ -8,6 +8,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
+import { X } from "lucide-react";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 const SearchBar = () => {
@@ -16,9 +17,9 @@ const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState(currentQuery);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-  const [suggestions, setSuggestions] = useState<(HashtagType | UserType)[]>(
-    [],
-  );
+  const [suggestions, setSuggestions] = useState<
+    (HashtagType | UserType | string)[]
+  >([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -50,11 +51,19 @@ const SearchBar = () => {
   }, [debouncedQuery, refetchHashtags, refetchUsers]);
 
   useEffect(() => {
+    const storedTerms = JSON.parse(
+      sessionStorage.getItem("searchTerms") || "[]",
+    );
+    const filteredTerms = storedTerms.filter((term: string) =>
+      term.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
     setSuggestions([
+      ...filteredTerms,
       ...(hashtagsData?.searchHashtags ?? []),
       ...(mentionsData?.searchUsers ?? []),
     ]);
-  }, [hashtagsData, mentionsData]);
+  }, [hashtagsData, mentionsData, searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -74,20 +83,53 @@ const SearchBar = () => {
     };
   }, []);
 
+  const saveSearchTerm = (term: string) => {
+    const storedTerms = JSON.parse(
+      sessionStorage.getItem("searchTerms") || "[]",
+    );
+    const updatedTerms = [
+      term,
+      ...storedTerms.filter((t: string) => t !== term),
+    ].slice(0, 3);
+    sessionStorage.setItem("searchTerms", JSON.stringify(updatedTerms));
+  };
+
+  const removeSearchTerm = (term: string) => {
+    const storedTerms = JSON.parse(
+      sessionStorage.getItem("searchTerms") || "[]",
+    );
+    const updatedTerms = storedTerms.filter((t: string) => t !== term);
+    sessionStorage.setItem("searchTerms", JSON.stringify(updatedTerms));
+    setSuggestions((prevSuggestions) =>
+      prevSuggestions.filter((suggestion) => suggestion !== term),
+    );
+  };
+
   const handleSearch = () => {
     if (activeSuggestionIndex === 0 || suggestions.length === 0) {
       if (searchQuery.trim().length === 0) return;
+      saveSearchTerm(searchQuery);
       window.location.href = `/project2/search?q=${encodeURIComponent(
         searchQuery,
       )}`;
       return;
     }
     const selectedSuggestion = suggestions[activeSuggestionIndex - 1];
-    window.location.href = `/project2/${
-      selectedSuggestion.__typename === "User"
-        ? `user/${selectedSuggestion.username}`
-        : `hashtag/${selectedSuggestion.tag}`
-    }`;
+    if (typeof selectedSuggestion === "string") {
+      window.location.href = `/project2/search?q=${encodeURIComponent(
+        selectedSuggestion,
+      )}`;
+    } else {
+      if (selectedSuggestion.__typename === "User") {
+        window.location.href = `/project2/user/${selectedSuggestion.username}`;
+        saveSearchTerm(`@${selectedSuggestion.username}`);
+        return;
+      } else {
+        window.location.href = `/project2/hashtag/${selectedSuggestion.tag}`;
+        saveSearchTerm(`#${selectedSuggestion.tag}`);
+        return;
+      }
+    }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -119,6 +161,7 @@ const SearchBar = () => {
       }
     }
   };
+
   return (
     <Popover open={showSuggestions}>
       <PopoverTrigger asChild>
@@ -148,24 +191,57 @@ const SearchBar = () => {
             <p className="w-fit p-2">Loading...</p>
           ) : (
             <div className="flex w-80 appearance-none flex-col overflow-hidden outline-none">
-              {suggestions.slice(0, 5).map((suggestion, index) => {
-                const isUser = suggestion.__typename === "User";
-                return (
+              {suggestions.slice(0, 5).map((suggestion, index) =>
+                typeof suggestion === "string" ? (
+                  <div
+                    key={suggestion}
+                    className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
+                      index + 1 === activeSuggestionIndex
+                        ? "bg-blue-500 text-white dark:bg-blue-800"
+                        : ""
+                    }`}
+                    onMouseEnter={() => setActiveSuggestionIndex(index + 1)}
+                  >
+                    <a
+                      href={`/project2/search?q=${encodeURIComponent(
+                        suggestion,
+                      )}`}
+                      className="flex-grow"
+                    >
+                      <p>{suggestion}</p>
+                    </a>
+                    <X
+                      onClick={() => removeSearchTerm(suggestion)}
+                      className={`size-4 ${index + 1 === activeSuggestionIndex ? "text-white" : "text-red-500"}`}
+                    />
+                  </div>
+                ) : (
                   <a
-                    key={isUser ? suggestion.id : suggestion.tag}
+                    key={
+                      suggestion.__typename === "User"
+                        ? suggestion.id
+                        : suggestion.tag
+                    }
                     className={`flex w-full cursor-pointer items-center gap-1 p-2 ${
                       index + 1 === activeSuggestionIndex
                         ? "bg-blue-500 text-white dark:bg-blue-800"
                         : ""
                     }`}
                     href={`/project2/${
-                      isUser
+                      suggestion.__typename === "User"
                         ? `user/${suggestion.username}`
                         : `hashtag/${suggestion.tag}`
                     }`}
+                    onClick={() =>
+                      saveSearchTerm(
+                        suggestion.__typename === "User"
+                          ? `@${suggestion.username}`
+                          : `#${suggestion.tag}`,
+                      )
+                    }
                     onMouseEnter={() => setActiveSuggestionIndex(index + 1)}
                   >
-                    {isUser ? (
+                    {suggestion.__typename === "User" ? (
                       <Username
                         noHref
                         user={suggestion}
@@ -184,8 +260,8 @@ const SearchBar = () => {
                       </div>
                     )}
                   </a>
-                );
-              })}
+                ),
+              )}
             </div>
           )}
         </PopoverContent>
