@@ -11,7 +11,13 @@ import { CREATE_POST, GET_POSTS } from "@/queries/posts";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { HashtagIcon } from "@heroicons/react/24/outline";
-import { Users } from "lucide-react";
+import {
+  ClockIcon,
+  ContactIcon,
+  FlameIcon,
+  MessageSquareMoreIcon,
+  Users,
+} from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import HashtagBlock from "./components/HashtagBlock";
@@ -152,7 +158,7 @@ const HomePage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-2 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-64 min-w-60 py-4 lg:flex">
+      <aside className="hidden w-full max-w-64 py-4 lg:flex">
         {hashtagsError && (
           <p className="mt-4 text-center text-red-500">
             Error loading hashtags: {hashtagsError.message}
@@ -212,41 +218,45 @@ const HomePage = () => {
             }}
             type="single"
             variant="outline"
-            className="mb-4 grid w-full grid-cols-2 gap-2 md:grid-cols-4"
+            className="mb-4 flex items-center justify-evenly gap-2"
           >
             <ToggleGroupItem
               value="LATEST"
               aria-label="Latest"
               aria-pressed={filter === "LATEST"}
-              className="p-5 text-center xl:text-lg"
+              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
+              <ClockIcon className="hidden size-4 sm:block md:size-6" />
               <p>Latest</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="FOLLOWING"
               aria-label="Following"
               aria-pressed={filter === "FOLLOWING"}
-              className="p-5 text-center xl:text-lg"
+              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               onClick={() => {
                 if (!user) setShowLoginPrompt(true);
               }}
             >
+              <ContactIcon className="hidden size-4 sm:block md:size-6" />
               <p>Following</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="POPULAR"
               aria-label="Popular"
               aria-pressed={filter === "POPULAR"}
-              className="p-5 text-center xl:text-lg"
+              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
+              <FlameIcon className="hidden size-4 sm:block md:size-6" />
               <p>Popular</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="CONTROVERSIAL"
               aria-label="Controversial"
               aria-pressed={filter === "CONTROVERSIAL"}
-              className="p-5 text-center xl:text-lg"
+              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
+              <MessageSquareMoreIcon className="hidden size-4 sm:block md:size-6" />
               <p>Controversial</p>
             </ToggleGroupItem>
           </ToggleGroup>
@@ -307,7 +317,7 @@ const HomePage = () => {
         )}
       </main>
 
-      <aside className="hidden w-80 py-4 lg:flex">
+      <aside className="hidden w-full max-w-80 py-4 lg:flex">
         <div className="flex w-full flex-col items-start gap-1">
           <h1 className="mx-2 text-3xl font-extralight">People to follow</h1>
           <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
