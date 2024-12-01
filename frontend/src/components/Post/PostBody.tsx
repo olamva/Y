@@ -11,6 +11,102 @@ import { useLazyQuery } from "@apollo/client";
 import { MouseEvent, TouchEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
+/**
+ * linkify function that converts URLs and hashtags into clickable links.
+ * URLs are converted to <a> tags.
+ * Hashtags are converted to <Link> components from react-router-dom.
+ */
+export const Linkify = (
+  text: string,
+  userMentions: {
+    [key: string]: UserType | null;
+  },
+) => {
+  const combinedRegex = /(https?:\/\/[^\s]+)|#([\wæøåÆØÅ]+)|@([\wæøåÆØÅ]+)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = combinedRegex.exec(text)) !== null) {
+    const { index } = match;
+    const [fullMatch, url, hashtag, mention] = match;
+
+    if (index > lastIndex) {
+      parts.push(text.substring(lastIndex, index));
+    }
+
+    if (url) {
+      parts.push(
+        <a
+          key={`url-${index}`}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(
+            e: MouseEvent<HTMLAnchorElement> | TouchEvent<HTMLAnchorElement>,
+          ) => {
+            e.stopPropagation();
+          }}
+          className="text-blue-500 hover:underline"
+        >
+          {url}
+        </a>,
+      );
+    } else if (hashtag) {
+      parts.push(
+        <Link
+          key={`hashtag-${index}`}
+          to={`/project2/hashtag/${hashtag}`}
+          onClick={(
+            e: MouseEvent<HTMLAnchorElement> | TouchEvent<HTMLAnchorElement>,
+          ) => {
+            e.stopPropagation();
+          }}
+          className="text-blue-500 hover:underline"
+        >
+          #{hashtag}
+        </Link>,
+      );
+    } else if (mention) {
+      const user = userMentions[mention];
+      parts.push(
+        <TooltipProvider key={`mention-${index}`}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                to={`/project2/user/${mention}`}
+                onClick={(
+                  e:
+                    | MouseEvent<HTMLAnchorElement>
+                    | TouchEvent<HTMLAnchorElement>,
+                ) => {
+                  e.stopPropagation();
+                }}
+                className="text-blue-500 underline-offset-4 hover:underline"
+              >
+                @{mention}
+              </Link>
+            </TooltipTrigger>
+            {user && (
+              <TooltipContent className="border border-gray-300 p-0 dark:border-gray-600">
+                <ProfilePreview user={user} />
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>,
+      );
+    }
+
+    lastIndex = index + fullMatch.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts;
+};
+
 interface PostBodyProps {
   text: string;
   expanded: boolean;
@@ -69,97 +165,6 @@ const PostBody: React.FC<PostBodyProps> = ({ text, expanded }) => {
     fetchUserMentions(mentions);
   }, [text, fetchUser]);
 
-  /**
-   * linkify function that converts URLs and hashtags into clickable links.
-   * URLs are converted to <a> tags.
-   * Hashtags are converted to <Link> components from react-router-dom.
-   */
-  const Linkify = (text: string) => {
-    const combinedRegex = /(https?:\/\/[^\s]+)|#([\wæøåÆØÅ]+)|@([\wæøåÆØÅ]+)/g;
-    const parts = [];
-    let lastIndex = 0;
-    let match;
-
-    while ((match = combinedRegex.exec(text)) !== null) {
-      const { index } = match;
-      const [fullMatch, url, hashtag, mention] = match;
-
-      if (index > lastIndex) {
-        parts.push(text.substring(lastIndex, index));
-      }
-
-      if (url) {
-        parts.push(
-          <a
-            key={`url-${index}`}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(
-              e: MouseEvent<HTMLAnchorElement> | TouchEvent<HTMLAnchorElement>,
-            ) => {
-              e.stopPropagation();
-            }}
-            className="text-blue-500 hover:underline"
-          >
-            {url}
-          </a>,
-        );
-      } else if (hashtag) {
-        parts.push(
-          <Link
-            key={`hashtag-${index}`}
-            to={`/project2/hashtag/${hashtag}`}
-            onClick={(
-              e: MouseEvent<HTMLAnchorElement> | TouchEvent<HTMLAnchorElement>,
-            ) => {
-              e.stopPropagation();
-            }}
-            className="text-blue-500 hover:underline"
-          >
-            #{hashtag}
-          </Link>,
-        );
-      } else if (mention) {
-        const user = userMentions[mention];
-        parts.push(
-          <TooltipProvider key={`mention-${index}`}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  to={`/project2/user/${mention}`}
-                  onClick={(
-                    e:
-                      | MouseEvent<HTMLAnchorElement>
-                      | TouchEvent<HTMLAnchorElement>,
-                  ) => {
-                    e.stopPropagation();
-                  }}
-                  className="text-blue-500 underline-offset-4 hover:underline"
-                >
-                  @{mention}
-                </Link>
-              </TooltipTrigger>
-              {user && (
-                <TooltipContent className="border border-gray-300 p-0 dark:border-gray-600">
-                  <ProfilePreview user={user} />
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>,
-        );
-      }
-
-      lastIndex = index + fullMatch.length;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex));
-    }
-
-    return parts;
-  };
-
   return (
     <div>
       <p
@@ -168,7 +173,7 @@ const PostBody: React.FC<PostBodyProps> = ({ text, expanded }) => {
           isExpanded ? "" : "line-clamp-3"
         }`}
       >
-        {Linkify(text)}
+        {Linkify(text, userMentions)}
       </p>
       {showReadMore && !expanded && (
         <button

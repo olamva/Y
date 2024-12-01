@@ -2,6 +2,7 @@ import { useAuth } from "@/components/AuthContext";
 import BackButton from "@/components/BackButton";
 import FollowButton from "@/components/FollowButton";
 import FollowingUsersModal from "@/components/FollowingUsersModal";
+import { Linkify } from "@/components/Post/PostBody";
 import Avatar from "@/components/Profile/Avatar";
 import CommentsView from "@/components/Profile/CommentsView";
 import EditProfile from "@/components/Profile/EditProfile";
@@ -13,7 +14,7 @@ import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
 import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { UserIcon, UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -98,6 +99,34 @@ const Profile = () => {
   });
 
   const user: UserType | undefined = userData?.getUser;
+
+  const [userMentions, setUserMentions] = useState<{
+    [key: string]: UserType | null;
+  }>({});
+  const [fetchUser] = useLazyQuery<{ getUser: UserType }>(GET_USER_QUERY);
+
+  useEffect(() => {
+    const fetchUserMentions = async (mentions: string[]) => {
+      const results = await Promise.all(
+        mentions.map(async (mention) => {
+          const { data } = await fetchUser({
+            variables: { username: mention },
+          });
+          return { mention, user: data?.getUser };
+        }),
+      );
+      const userMap: { [key: string]: UserType | null } = {};
+      results.forEach(({ mention, user }) => {
+        userMap[mention] = user ?? null;
+      });
+      setUserMentions(userMap);
+    };
+
+    const mentions = Array.from(
+      new Set(user?.biography?.match(/@(\w+)/g)?.map((m) => m.slice(1)) || []),
+    );
+    fetchUserMentions(mentions);
+  }, [user?.biography, fetchUser]);
 
   if (userLoading) return <p>Loading user...</p>;
   if (userError) return <p>Error loading user: {userError.message}</p>;
@@ -215,14 +244,16 @@ const Profile = () => {
                 </div>
               </div>
               {/* Biography */}
-              <div className="mb-8 mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-600">
-                <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-200">
-                  Biography
-                </h2>
-                <p className="text-gray-600 dark:text-gray-200">
-                  {user?.biography}
-                </p>
-              </div>
+              {user.biography && (
+                <div className="mb-8 mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-600">
+                  <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-200">
+                    Biography
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-200">
+                    {Linkify(user?.biography, userMentions)}
+                  </p>
+                </div>
+              )}
             </div>
           </section>
           {/* Toggle Group for Views */}
