@@ -30,7 +30,13 @@ const HomePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [filter, setFilter] = useState<FilterType>("LATEST");
+  const [filter, setFilter] = useState<FilterType>(
+    (localStorage.getItem("postFilter") as FilterType) ?? "LATEST",
+  );
+
+  useEffect(() => {
+    localStorage.setItem("postFilter", filter);
+  }, [filter]);
 
   useEffect(() => {
     document.title = "Y";
