@@ -70,7 +70,13 @@ const TextInput = forwardRef<HTMLTextAreaElement, TextInputProps>(
       } else {
         refetchHashtags();
       }
-    }, [debouncedQuery, refetchHashtags, refetchUsers, suggestionType]);
+    }, [
+      debouncedQuery,
+      refetchHashtags,
+      refetchUsers,
+      suggestionType,
+      showSuggestions,
+    ]);
 
     useEffect(() => {
       if (suggestionType === "users") {

@@ -15,7 +15,10 @@ const NotFound = ({ page }: NotFoundProps) => {
       <h1 className="text-4xl font-bold">UwU 404</h1>
       <h2>We couldn't find your {page ? page : "page"}</h2>
       <h3>Pweease go back home</h3>
-      <img src={"/project2/cute_cat_404.gif "} />
+      <img
+        src="/project2/cute_cat_404.gif"
+        alt="Cute cat screaming at its computer:("
+      />
       <Link
         className="my-4 rounded-lg bg-pink-600 px-4 py-2 text-white hover:opacity-80"
         to="/project2"

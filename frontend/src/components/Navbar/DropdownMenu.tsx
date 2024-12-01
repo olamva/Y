@@ -110,6 +110,7 @@ export const DropdownMenu = () => {
               closeMenu();
             }}
             className="flex w-full flex-row items-center gap-2 p-2 text-left text-lg hover:bg-gray-200 dark:hover:bg-gray-900"
+            name="Log out"
           >
             <LogOutIcon className="size-5" />
             Log out

@@ -47,7 +47,7 @@ const SearchBar = () => {
       refetchHashtags();
       refetchUsers();
     }
-  }, [debouncedQuery, refetchHashtags, refetchUsers]);
+  }, [debouncedQuery, refetchHashtags, refetchUsers, showSuggestions]);
 
   useEffect(() => {
     setSuggestions([
@@ -126,6 +126,11 @@ const SearchBar = () => {
           ref={inputRef}
           type="search"
           id="search"
+          aria-label="Search field"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions}
+          aria-controls="suggestions-list"
           maxLength={40}
           placeholder="Search here..."
           autoComplete="off"

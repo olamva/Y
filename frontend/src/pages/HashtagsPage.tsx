@@ -72,7 +72,7 @@ const HashtagsPage = () => {
       <main className="flex w-full flex-col items-center justify-center">
         <h1 className="my-4 text-3xl font-bold">All hashtags</h1>
         <Divider />
-        <div className="flex w-full flex-wrap justify-center gap-2 md:gap-4">
+        <div className="flex w-full flex-wrap justify-evenly gap-x-2 gap-y-4">
           {error && (
             <p className="mt-4 text-center text-red-500">
               Error loading hashtags: {error.message}
