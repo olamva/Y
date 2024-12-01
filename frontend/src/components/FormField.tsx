@@ -39,6 +39,7 @@ const FormField = ({
             name={id}
             value={value}
             onChange={onChange}
+            role="input"
             autoComplete={autocomplete}
             className="flex-grow bg-white py-2 pl-3 outline-none dark:bg-gray-900"
             required

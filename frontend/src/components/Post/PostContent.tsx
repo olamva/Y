@@ -119,7 +119,7 @@ const PostContent = ({
         toast.error("Failed to copy link");
       }
     } catch (err) {
-      toast.error("Failed to copy link");
+      toast.error(`Failed to copy link: ${err}`);
     }
 
     document.body.removeChild(textArea);

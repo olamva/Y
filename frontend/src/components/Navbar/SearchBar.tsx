@@ -47,7 +47,7 @@ const SearchBar = () => {
       refetchHashtags();
       refetchUsers();
     }
-  }, [debouncedQuery, refetchHashtags, refetchUsers]);
+  }, [debouncedQuery, refetchHashtags, refetchUsers, showSuggestions]);
 
   useEffect(() => {
     setSuggestions([
