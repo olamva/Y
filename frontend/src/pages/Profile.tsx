@@ -8,6 +8,7 @@ import EditProfile from "@/components/Profile/EditProfile";
 import LikesView from "@/components/Profile/LikesView";
 import MentionsView from "@/components/Profile/MentionsView";
 import PostsView from "@/components/Profile/PostsView";
+import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import VerificationBadge from "@/components/VerificationBadge";
 import { UserType } from "@/lib/types";
@@ -99,7 +100,7 @@ const Profile = () => {
 
   const user: UserType | undefined = userData?.getUser;
 
-  if (userLoading) return <p>Loading user...</p>;
+  if (userLoading) return <ProfileSkeleton />;
   if (userError) return <p>Error loading user: {userError.message}</p>;
   if (!user) return <NotFound page="user" />;
 
