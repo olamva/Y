@@ -24,7 +24,6 @@ const HashtagPage = () => {
   }>(GET_CONTENT_BY_HASHTAG, {
     variables: { hashtag, page: 1 },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
   });
 
   useEffect(() => {
@@ -49,7 +48,6 @@ const HashtagPage = () => {
           })),
       },
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: "cache-and-network",
       skip: !data?.getContentByHashtag.length,
     },
   );
