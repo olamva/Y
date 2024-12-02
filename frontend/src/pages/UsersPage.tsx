@@ -1,5 +1,6 @@
 import BackButton from "@/components/BackButton";
 import ProfileCard from "@/components/ProfileCard";
+import LargeCardSkeleton from "@/components/Skeletons/LargeCardSkeleton";
 import Divider from "@/components/ui/Divider";
 import { UserType } from "@/lib/types";
 import { GET_USERS } from "@/queries/user";
@@ -65,10 +66,6 @@ const UsersPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMoreUsers, hasMore, networkStatus]);
 
-  if (loading && networkStatus === NetworkStatus.loading) {
-    return <p className="mt-4 text-center">Loading users...</p>;
-  }
-
   return (
     <div className="mx-auto min-h-screen w-full max-w-screen-xl px-5">
       <BackButton />
@@ -81,14 +78,18 @@ const UsersPage = () => {
               Error loading users: {error.message}
             </p>
           )}
-          {users.map((user) => (
-            <div
-              className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
-              key={user.id}
-            >
-              <ProfileCard user={user} large />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: USERS_PER_PAGE }).map((_, index) => (
+                <LargeCardSkeleton key={index} />
+              ))
+            : users.map((user) => (
+                <div
+                  className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
+                  key={user.id}
+                >
+                  <ProfileCard user={user} large />
+                </div>
+              ))}
         </div>
 
         {loading && networkStatus === NetworkStatus.fetchMore && (
