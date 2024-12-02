@@ -5,6 +5,7 @@ import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
+import { isFileAllowed } from "@/lib/checkFile";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";
 import { EDIT_POST, GET_POST } from "@/queries/posts";
@@ -142,6 +143,8 @@ const PostPage = () => {
     e.preventDefault();
     if (comment.trim() === "" && commentFile === null) return;
 
+    if (commentFile && !isFileAllowed(commentFile)) return;
+
     try {
       await createComment({
         variables: {
@@ -163,6 +166,7 @@ const PostPage = () => {
       return;
     }
 
+    if (file && !isFileAllowed(file)) return;
     if (!postData) return;
 
     if (editBody === post?.body && !file) {
