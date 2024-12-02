@@ -23,7 +23,7 @@ const PostWithReply = ({
   <div className="flex w-full flex-col items-center">
     {!post ? (
       parentsLoading ? (
-        <PostSkeleton />
+        <PostSkeleton disableBottomMargin />
       ) : (
         <DeletedPost />
       )
