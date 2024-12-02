@@ -11,6 +11,7 @@ interface PostWithReplyProps {
   parentsLoading?: boolean;
   goHomeOnParentDelete?: boolean;
   expandedReply?: boolean;
+  redirectToParentOnDelete?: boolean;
 }
 const PostWithReply = ({
   post,
@@ -19,6 +20,7 @@ const PostWithReply = ({
   parentsLoading = false,
   goHomeOnParentDelete = false,
   expandedReply = false,
+  redirectToParentOnDelete = false,
 }: PostWithReplyProps) => (
   <div className="flex w-full flex-col items-center">
     {!post ? (
@@ -44,8 +46,9 @@ const PostWithReply = ({
     <Comment
       comment={reply}
       doesntRedirect={replyDoesntRedirect}
-      redirectToParentOnDelete={!!post}
+      redirectToParentOnDelete={!!post && redirectToParentOnDelete}
       disableTopMargin
+      goHomeOnDelete={!post}
       maxWidth="max-w-lg"
       expanded={expandedReply}
     />

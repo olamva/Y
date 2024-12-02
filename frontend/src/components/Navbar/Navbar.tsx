@@ -39,7 +39,7 @@ const Navbar = () => {
                       <Avatar user={user} />
                     </div>
                     <div className="hidden xl:block">
-                      <Username hideFullName smallBadge user={user} />
+                      <Username noPreview hideFullName smallBadge user={user} />
                     </div>
                   </>
                 )}
@@ -60,7 +60,7 @@ const Navbar = () => {
               <button
                 onClick={login}
                 aria-label="Log in"
-                className="rounded-md bg-green-400 px-3 py-2 text-sm font-semibold text-black hover:bg-green-500"
+                className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white hover:bg-green-800"
               >
                 Log in
               </button>

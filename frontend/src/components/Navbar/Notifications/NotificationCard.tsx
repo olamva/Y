@@ -91,7 +91,7 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
       href={href}
     >
       <div className="flex items-center justify-start gap-1 break-words">
-        <Username smallAvatar smallBadge user={notification.sender} noHref />
+        <Username noPreview smallAvatar smallBadge user={notification.sender} noHref />
         <p>{text}</p>
         <p>·</p>
         <p>{formatTimestamp(notification.createdAt)}</p>

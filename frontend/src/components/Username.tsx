@@ -14,6 +14,7 @@ interface UsernameProps {
   user: UserType;
   noHref?: boolean;
   noAvatar?: boolean;
+  noPreview?: boolean;
   customBadgeColors?: string;
   smallBadge?: boolean;
   smallAvatar?: boolean;
@@ -25,6 +26,7 @@ const Username = ({
   user,
   noHref,
   noAvatar,
+  noPreview,
   customBadgeColors,
   smallBadge,
   smallAvatar,
@@ -103,7 +105,7 @@ const Username = ({
           </Tag>
         </TooltipTrigger>
         <TooltipContent className="border border-gray-300 p-0 dark:border-gray-600">
-          <ProfilePreview user={user} />
+          {!noPreview && <ProfilePreview user={user} />}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

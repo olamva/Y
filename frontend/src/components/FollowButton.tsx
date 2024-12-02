@@ -95,8 +95,8 @@ const FollowButton = ({ targetUsername, darker }: FollowButtonProps) => {
       >
         {!isFollowing ? (
           <div className="group flex items-center">
-            <UserPlus className="mr-1 h-4 w-4 text-blue-600 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600" />
-            <span className="hidden text-sm font-medium text-blue-600 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600 sm:flex">
+            <UserPlus className="mr-1 h-4 w-4 text-blue-700 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600" />
+            <span className="hidden text-sm font-medium text-blue-700 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600 sm:flex">
               Follow
             </span>
           </div>

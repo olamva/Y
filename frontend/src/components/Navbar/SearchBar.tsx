@@ -261,6 +261,7 @@ const SearchBar = () => {
                     {suggestion.__typename === "User" ? (
                       <Username
                         noHref
+                        noPreview
                         user={suggestion}
                         customBadgeColors={
                           index + 1 === activeSuggestionIndex

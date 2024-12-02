@@ -25,7 +25,7 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
       <h2 className="break-words text-center text-lg">
         {user?.firstName} {user?.lastName}
       </h2>
-      <Username hideFullName user={user} noHref noAvatar smallBadge />
+      <Username noPreview hideFullName user={user} noHref noAvatar smallBadge />
     </div>
   </a>
 );

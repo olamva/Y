@@ -48,6 +48,10 @@ const HomePage = () => {
     document.title = "Y";
   }, []);
 
+  useEffect(() => {
+    setShowLoginPrompt(filter === "FOLLOWING" && !user);
+  }, [filter, user]);
+
   const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getPosts: PostItem[];
   }>(GET_POSTS, {

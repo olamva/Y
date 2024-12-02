@@ -260,6 +260,7 @@ const CommentPage = () => {
             expandedReply
             post={parentPost}
             reply={reply}
+            redirectToParentOnDelete
           />
         )}
         <Divider />
