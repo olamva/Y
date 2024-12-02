@@ -437,7 +437,7 @@ export const resolvers: IResolvers = {
       }
     },
 
-    searchPosts: async (_: any, { query, page }: { query: string; page: string }) => {
+    searchPosts: async (_: any, { query, page }) => {
       if (query.length > 40) {
         throw new UserInputError('Query can max be 40 characters');
       }

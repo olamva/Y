@@ -42,42 +42,6 @@ export const UNREPOST_MUTATION = gql`
   }
 `;
 
-export const GET_REPOSTS = gql`
-  query GetReposts($page: Int!, $filter: PostFilter!, $limit: Int!) {
-    getReposts(page: $page, filter: $filter, limit: $limit) {
-      originalAuthor {
-        id
-        username
-        firstName
-        lastName
-        profilePicture
-        verified
-      }
-      originalID
-      originalType
-      repostedAt
-      id
-      body
-      originalBody
-      author {
-        id
-        username
-        firstName
-        lastName
-        profilePicture
-        verified
-      }
-      amtLikes
-      amtComments
-      amtReposts
-      imageUrl
-      createdAt
-      parentID
-      parentType
-    }
-  }
-`;
-
 export const GET_REPOSTS_BY_USER = gql`
   query getRepostsByUser($username: String!, $page: Int!, $limit: Int!) {
     getRepostsByUser(username: $username, page: $page, limit: $limit) {
