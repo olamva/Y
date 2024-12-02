@@ -6,6 +6,7 @@ import { GET_REPOSTS_BY_USER } from "@/queries/reposts";
 import { NetworkStatus, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import PostSkeleton from "../Skeletons/PostSkeleton";
 
 const PAGE_SIZE = 16;
 
@@ -137,7 +138,12 @@ const PostsView: React.FC<PostsViewProps> = ({
           <Repost repost={post} key={post.id} />
         ),
       )}
-      {loading && repostsLoading && <p>Loading more posts...</p>}
+      {loading &&
+        repostsLoading &&
+        combinedPosts.length === 0 &&
+        Array.from({ length: PAGE_SIZE }).map((_, index) => (
+          <PostSkeleton key={index} />
+        ))}
       {!combinedPosts.length && <p>No posts to show.</p>}
       {!hasMore && combinedPosts.length !== 0 && (
         <p>You have reached the end of posts</p>

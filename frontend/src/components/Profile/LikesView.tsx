@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CommentType, PostType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
+import PostSkeleton from "../Skeletons/PostSkeleton";
 
 const PAGE_SIZE = 16;
 
@@ -177,7 +178,10 @@ const LikesView: React.FC<LikesViewProps> = ({
           />
         ),
       )}
-      {(postsLoading || commentsLoading) && <p>Loading more likes...</p>}
+      {(postsLoading || commentsLoading) &&
+        Array.from({ length: PAGE_SIZE }).map((_, index) => (
+          <PostSkeleton key={index} />
+        ))}
       {!likedContent.length && <p>No likes to show.</p>}
       {!hasMorePosts && !hasMoreComments && (
         <p>You have reached the end of likes</p>

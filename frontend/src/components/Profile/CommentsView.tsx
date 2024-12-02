@@ -4,6 +4,9 @@ import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_PARENTS_BY_IDS } from "@/queries/posts";
 import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import PostWithReplySkeleton from "../Skeletons/PostWithReplySkeleton";
+
+const PAGE_SIZE = 16;
 
 interface CommentsViewProps {
   commentIds: string[];
@@ -88,7 +91,10 @@ const CommentsView: React.FC<CommentsViewProps> = ({ commentIds }) => {
           parentsLoading={parentsLoading}
         />
       ))}
-      {loading && <p>Loading more comments...</p>}
+      {loading &&
+        Array.from({ length: PAGE_SIZE }).map((_, index) => (
+          <PostWithReplySkeleton key={index} />
+        ))}
       {!hasMore &&
         (comments.length === 0 ? (
           <p>No comments to show.</p>
