@@ -273,13 +273,11 @@ const PostPage = () => {
           <p>Error loading comments: {commentsError.message}</p>
         )}
 
-        {!commentsData && commentsLoading && (
-          <div className="flex w-full max-w-xl flex-col gap-4">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <PostSkeleton key={index} />
-            ))}
-          </div>
-        )}
+        {!commentsData &&
+          commentsLoading &&
+          Array.from({ length: 10 }).map((_, index) => (
+            <PostSkeleton comment key={index} />
+          ))}
 
         {!hasMore && (
           <p className="mt-4 text-gray-500 dark:text-gray-400">

@@ -4,6 +4,7 @@ import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import PostWithReply from "@/components/Post/PostWithReply";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
+import PostWithReplySkeleton from "@/components/Skeletons/PostWithReplySkeleton";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import {
@@ -215,25 +216,15 @@ const CommentPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [commentsLoading, page, hasMore, commentsNetworkStatus, loadMoreComments]);
 
-  if (postLoading || parentPostLoading) {
-    return (
-      <div className="mx-auto my-16 flex w-full max-w-xl flex-col gap-4">
-        <PostSkeleton />
-        <div className="mx-auto my-4 flex w-full max-w-lg flex-col gap-4">
-          <PostSkeleton />
-        </div>
-      </div>
-    );
-  }
-  if (postError) {
+  if (postError && !postLoading && !parentPostLoading) {
     return <p>Error loading post: {postError.message}</p>;
   }
 
-  if (parentPostError) {
+  if (parentPostError && !postLoading && !parentPostLoading) {
     return <p>Error loading parent post: {parentPostError.message}</p>;
   }
 
-  if (!reply) {
+  if (!reply && !postLoading && !parentPostLoading) {
     return <h1>Reply not found</h1>;
   }
 
@@ -254,13 +245,15 @@ const CommentPage = () => {
               file={file}
               setFile={setFile}
               existingImageURL={
-                reply.imageUrl ? `${BACKEND_URL}${reply.imageUrl}` : undefined
+                reply?.imageUrl ? `${BACKEND_URL}${reply.imageUrl}` : undefined
               }
               enabled={
-                (editBody !== reply.body || file !== null) && user !== null
+                (editBody !== reply?.body || file !== null) && user !== null
               }
             />
           </form>
+        ) : postLoading || parentPostLoading || !reply ? (
+          <PostWithReplySkeleton />
         ) : (
           <PostWithReply
             goHomeOnParentDelete
@@ -304,9 +297,10 @@ const CommentPage = () => {
         )}
 
         {commentsLoading ||
-          (commentsNetworkStatus === NetworkStatus.loading && (
-            <p>Loading comments...</p>
-          ))}
+          (commentsNetworkStatus === NetworkStatus.loading &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <PostSkeleton comment key={index} />
+            )))}
 
         {!hasMore && commentsData?.getComments.length !== 0 && (
           <p className="mt-4 text-gray-500 dark:text-gray-400">
