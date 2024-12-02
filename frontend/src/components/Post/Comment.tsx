@@ -53,6 +53,12 @@ const Comment = ({
                   deletedComment.id !== readField("id", c),
               );
             },
+            getCommentsByIds(existingComments = [], { readField }) {
+              return existingComments.filter(
+                (c: { __ref: string }) =>
+                  deletedComment.id !== readField("id", c),
+              );
+            },
           },
         });
       },
@@ -78,8 +84,6 @@ const Comment = ({
       await deleteComment();
       if (redirectToParentOnDelete) {
         window.location.href = `/project2/${comment.parentType}/${comment.parentID}`;
-      } else {
-        window.location.reload();
       }
     } catch (error) {
       toast.error(`Error deleting comment: ${(error as Error).message}`);
