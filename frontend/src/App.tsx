@@ -105,9 +105,7 @@ const HomePage = () => {
       return;
     }
 
-    if (file && !isFileAllowed(file)) {
-      return;
-    }
+    if (file && !isFileAllowed(file)) return;
 
     try {
       await createPost({

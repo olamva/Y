@@ -89,17 +89,14 @@ const EditProfile = ({ user }: Props) => {
     const promises = [];
 
     if (profileFile) {
-      if (!isFileAllowed(profileFile)) {
-        return;
-      }
+      if (!isFileAllowed(profileFile)) return;
 
       promises.push(changeProfilePicture({ variables: { file: profileFile } }));
     }
 
     if (backgroundFile) {
-      if (!isFileAllowed(backgroundFile)) {
-        return;
-      }
+      if (!isFileAllowed(backgroundFile)) return;
+
       promises.push(
         changeBackgroundPicture({ variables: { file: backgroundFile } }),
       );
