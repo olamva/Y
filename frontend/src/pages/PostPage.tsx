@@ -72,7 +72,6 @@ const PostPage = () => {
   } = useQuery<{ getComments: CommentType[] }>(GET_COMMENTS, {
     variables: { postID: id, page: 1 },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network",
   });
 
   const loadMoreComments = useCallback(async () => {
