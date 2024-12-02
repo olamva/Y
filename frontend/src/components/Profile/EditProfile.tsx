@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/AuthContext";
+import { isFileAllowed } from "@/lib/checkFile";
 import { UserType } from "@/lib/types";
 import {
   CHANGE_BACKGROUND_PICTURE,
@@ -88,10 +89,14 @@ const EditProfile = ({ user }: Props) => {
     const promises = [];
 
     if (profileFile) {
+      if (!isFileAllowed(profileFile)) return;
+
       promises.push(changeProfilePicture({ variables: { file: profileFile } }));
     }
 
     if (backgroundFile) {
+      if (!isFileAllowed(backgroundFile)) return;
+
       promises.push(
         changeBackgroundPicture({ variables: { file: backgroundFile } }),
       );
@@ -323,6 +328,7 @@ const EditProfile = ({ user }: Props) => {
                           accept="image/*"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
+                              if (!isFileAllowed(e.target.files[0])) return;
                               setProfileFile(e.target.files[0]);
                             }
                           }}
@@ -377,6 +383,7 @@ const EditProfile = ({ user }: Props) => {
                           accept="image/*"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
+                              if (!isFileAllowed(e.target.files[0])) return;
                               setBackgroundFile(e.target.files[0]);
                             }
                           }}

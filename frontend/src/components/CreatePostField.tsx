@@ -9,6 +9,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { ImageIcon, XIcon } from "lucide-react";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "./AuthContext";
+import { isFileAllowed } from "@/lib/checkFile";
 
 interface CreatePostFieldProps {
   placeholder: string;
@@ -81,6 +82,7 @@ const CreatePostField = ({
     e.preventDefault();
     setIsDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      if (!isFileAllowed(e.dataTransfer.files[0])) return;
       setFile(e.dataTransfer.files[0]);
     }
   };
@@ -90,6 +92,7 @@ const CreatePostField = ({
       if (e.clipboardData && e.clipboardData.files.length > 0) {
         const pastedFile = e.clipboardData.files[0];
         if (pastedFile.type.startsWith("image/")) {
+          if (!isFileAllowed(pastedFile)) return;
           setFile(pastedFile);
         }
       }
@@ -243,6 +246,7 @@ const CreatePostField = ({
                 accept="image/*"
                 onChange={(e) => {
                   if (e.target.files?.[0]) {
+                    if (!isFileAllowed(e.target.files[0])) return;
                     setFile(e.target.files[0]);
                   }
                 }}

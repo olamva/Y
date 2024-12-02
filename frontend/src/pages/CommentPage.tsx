@@ -6,6 +6,7 @@ import PostWithReply from "@/components/Post/PostWithReply";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import PostWithReplySkeleton from "@/components/Skeletons/PostWithReplySkeleton";
 import Divider from "@/components/ui/Divider";
+import { isFileAllowed } from "@/lib/checkFile";
 import { CommentType, PostType } from "@/lib/types";
 import {
   CREATE_COMMENT,
@@ -159,6 +160,8 @@ const CommentPage = () => {
     e.preventDefault();
     if (comment.trim() === "" && file === null) return;
 
+    if (file && !isFileAllowed(file)) return;
+
     try {
       await createComment({
         variables: {
@@ -179,6 +182,8 @@ const CommentPage = () => {
       toast.error("Reply content cannot be empty.");
       return;
     }
+
+    if (file && !isFileAllowed(file)) return;
 
     if (!postData) return;
 
