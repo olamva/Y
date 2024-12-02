@@ -18,7 +18,7 @@ interface CreatePostFieldProps {
   setFile: (file: File | null) => void;
   loading: boolean;
   existingImageURL?: string;
-  disabled?: boolean;
+  enabled?: boolean;
 }
 const CreatePostField = ({
   placeholder,
@@ -28,7 +28,7 @@ const CreatePostField = ({
   setFile,
   loading,
   existingImageURL,
-  disabled,
+  enabled,
 }: CreatePostFieldProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -294,11 +294,11 @@ const CreatePostField = ({
 
             <button
               type="submit"
-              disabled={loading}
-              className={`flex w-fit select-none gap-1 rounded-md border border-transparent p-1 font-thin outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${
-                disabled
+              disabled={!enabled || loading}
+              className={`flex w-fit select-none gap-1 rounded-md border border-transparent p-1 font-thin text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 ${
+                enabled
                   ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                  : "cursor-not-allowed bg-gray-300 text-black dark:bg-gray-600 dark:text-white"
+                  : "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
               }`}
             >
               <p className="font-semibold">Post</p>

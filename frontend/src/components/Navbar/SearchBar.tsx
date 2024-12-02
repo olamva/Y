@@ -225,11 +225,11 @@ const SearchBar = () => {
                       )}`}
                       className="flex-grow"
                     >
-                      <p>{suggestion}</p>
+                      <p className="p-1">{suggestion}</p>
                     </a>
                     <X
                       onClick={() => removeSearchTerm(suggestion)}
-                      className={`size-4 ${index + 1 === activeSuggestionIndex ? "text-white" : "text-red-500"}`}
+                      className={`size-4 ${index + 1 === activeSuggestionIndex ? "text-white hover:text-gray-300" : "text-red-500"}`}
                     />
                   </div>
                 ) : (

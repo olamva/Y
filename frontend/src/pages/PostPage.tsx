@@ -226,7 +226,7 @@ const PostPage = () => {
               existingImageURL={
                 post.imageUrl ? `${BACKEND_URL}${post.imageUrl}` : undefined
               }
-              disabled={
+              enabled={
                 (editBody !== post.body || file !== null) && user !== null
               }
             />
@@ -253,7 +253,7 @@ const PostPage = () => {
               loading={createLoading}
               file={commentFile}
               setFile={setCommentFile}
-              disabled={
+              enabled={
                 (comment.trim() !== "" || commentFile !== null) && user !== null
               }
             />

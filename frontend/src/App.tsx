@@ -88,6 +88,7 @@ const HomePage = () => {
       setPostBody("");
       setFile(null);
       toast.success("Post added successfully!");
+      setFilter("LATEST");
       refetch();
     },
   });
@@ -203,9 +204,7 @@ const HomePage = () => {
             file={file}
             setFile={setFile}
             loading={createLoading}
-            disabled={
-              (postBody.trim() !== "" || file !== null) && user !== null
-            }
+            enabled={(postBody.trim() !== "" || file !== null) && user !== null}
           />
         </form>
         <Divider />
