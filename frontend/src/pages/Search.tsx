@@ -310,7 +310,7 @@ const SearchPage = () => {
               No posts found.
             </p>
           ) : (
-            postsData?.searchPosts.map((post) => <Post post={post} />)
+            postsData?.searchPosts.map((post) => <Post key={post.id} post={post} />)
           )}
         </div>
 
