@@ -46,4 +46,24 @@ npm run dev
 
 ## Testing
 
-**TODO**
+The project includes unit and integration tests. To run tests, execute the following command:
+
+```bash
+npm run test
+```
+
+## Test Structure
+
+Tests are organized by components, with each component having its own test file. For example:
+
+- Footer component tests: test/components/Footer.test.tsx
+- LoginForm component tests: test/components/LoginForm.test.tsx
+- Navbar component tests, including:
+- Dropdown menu: test/components/Navbar/DropdownMenu.test.tsx
+- Navbar itself: test/components/Navbar/Navbar.test.tsx
+- Theme toggle: test/components/Navbar/ThemeToggle.test.tsx
+- Post component tests, including:
+- Post body: test/components/Post/PostBody.test.tsx
+- Post content: test/components/Post/PostContent.test.tsx
+
+Additional setup configurations are in test/setup.ts.
