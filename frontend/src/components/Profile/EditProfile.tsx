@@ -328,6 +328,7 @@ const EditProfile = ({ user }: Props) => {
                           accept="image/*"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
+                              if (!isFileAllowed(e.target.files[0])) return;
                               setProfileFile(e.target.files[0]);
                             }
                           }}
@@ -382,6 +383,7 @@ const EditProfile = ({ user }: Props) => {
                           accept="image/*"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
+                              if (!isFileAllowed(e.target.files[0])) return;
                               setBackgroundFile(e.target.files[0]);
                             }
                           }}
