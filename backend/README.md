@@ -11,7 +11,6 @@ An Appollo Express backend, with MongoDB as database
 - [GraphQL API](#graphql-api)
   - [Queries](#queries)
   - [Mutations](#mutations)
-  - [Resolvers](#resolvers)
 - [Authentication](#authentication)
 - [Contributing](#contributing)
 
@@ -58,15 +57,15 @@ npm run start:dev
 
 ## Queries
 
-### `getPosts(page: Int!, filter: PageFilter!, limit: Int!): [Post!]!`
+### `getPosts(page: Int!, filter: PostFilter!, limit: Int!): [PostItem!]!`
 
-Fetches a paginated list of the latest posts.
+Fetches a paginated list of posts or reposts based on the specified filter.
 
 - **Parameters:**
   - `page` (Int!): The page number to retrieve.
-  - `filter` (PageFilter!): The filter to apply to the posts.
-  - `limit` (Int!): The number of posts to retrieve per page.
-- **Returns:** An array of `Post` objects.
+  - `filter` (PostFilter!): The filter to apply (LATEST, FOLLOWING, POPULAR, CONTROVERSIAL).
+  - `limit` (Int!): The number of items to retrieve per page.
+- **Returns:** An array of `PostItem` (either `Post` or `Repost`).
 
 ---
 
@@ -80,33 +79,21 @@ Retrieves a single post by its ID.
 
 ---
 
-### `getReposts(page: Int!, filter: PageFilter!, limit: Int!): [Post!]!`
+### `getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!`
 
-Fetches a paginated list of the latest reposts.
-
-- **Parameters:**
-  - `page` (Int!): The page number to retrieve.
-  - `filter` (PageFilter!): The filter to apply to the reposts.
-  - `limit` (Int!): The number of reposts to retrieve per page.
-- **Returns:** An array of `Post` objects.
-
----
-
-### `getRepostsByUser(username: String!, page: Int!, limit: Int!): [Post!]!`
-
-Retrieves multiple reposts by their IDs.
+Fetches a paginated list of reposts made by a specific user.
 
 - **Parameters:**
   - `username` (String!): The username of the user.
-  - `page` (Int!): The page number to retrieve for pagination.
+  - `page` (Int!): The page number to retrieve.
   - `limit` (Int!): The number of reposts to retrieve per page.
-- **Returns:** An array of `Post` objects.
+- **Returns:** An array of `Repost` objects.
 
 ---
 
 ### `getComments(postID: ID!, page: Int!): [Comment!]!`
 
-Fetches comments associated with a specific post.
+Fetches a paginated list of comments for a specific post.
 
 - **Parameters:**
   - `postID` (ID!): The ID of the parent post.
@@ -125,14 +112,24 @@ Retrieves a user by their username.
 
 ---
 
-### `searchPosts(query: String!, page: Int!, limit: Int!): [Post!]!`
+### `getUsers(page: Int!, excludeFollowing: Boolean): [User!]!`
 
-Searches for posts and users matching the query.
+Fetches a paginated list of users, with an option to exclude users the current user is following.
+
+- **Parameters:**
+  - `page` (Int!): The page number to retrieve.
+  - `excludeFollowing` (Boolean): Whether to exclude followed users.
+- **Returns:** An array of `User` objects.
+
+---
+
+### `searchPosts(query: String!, page: Int!): [Post!]!`
+
+Searches for posts matching the query.
 
 - **Parameters:**
   - `query` (String!): The search term.
-  - `page` (Int!): The page number to retrieve for pagination.
-  - `limit` (Int!): The number of posts to retrieve per page.
+  - `page` (Int!): The page number to retrieve.
 - **Returns:** An array of `Post` objects.
 
 ---
@@ -143,23 +140,37 @@ Searches for users matching the query.
 
 - **Parameters:**
   - `query` (String!): The search term.
-  - `page` (Int!): The page number to retrieve for pagination.
-  - `limit` (Int!): The number of posts to retrieve per page.
+  - `page` (Int!): The page number to retrieve.
+  - `limit` (Int!): The number of users to retrieve per page.
 - **Returns:** An array of `User` objects.
 
 ---
 
-### `getPostsByIds(ids: [ID!]!): [Post!]!`
+### `searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!`
 
-Retrieves multiple posts by their IDs.
+Searches for trending hashtags matching the query.
+
+- **Parameters:**
+  - `query` (String!): The hashtag search term.
+  - `page` (Int!): The page number to retrieve.
+  - `limit` (Int!): The number of hashtags to retrieve per page.
+- **Returns:** An array of `TrendingHashtag` objects.
+
+---
+
+### `getPostsByIds(ids: [ID!]!, page: Int!, limit: Int!): [Post!]!`
+
+Fetches multiple posts by their IDs with pagination.
 
 - **Parameters:**
   - `ids` ([ID!]!): An array of post IDs.
+  - `page` (Int!): The page number to retrieve.
+  - `limit` (Int!): The number of posts to retrieve per page.
 - **Returns:** An array of `Post` objects.
 
 ---
 
-### `getComment(id: ID!): Comment!`
+### `getComment(id: ID!): Comment`
 
 Retrieves a comment by its ID.
 
@@ -169,155 +180,191 @@ Retrieves a comment by its ID.
 
 ---
 
----
+### `getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!`
 
-### `getCommentsByIds(ids: [ID!]!): [Comment!]!`
-
-Retrieves multiple comments by their IDs.
+Fetches multiple comments by their IDs with pagination.
 
 - **Parameters:**
   - `ids` ([ID!]!): An array of comment IDs.
+  - `page` (Int!): The page number to retrieve.
 - **Returns:** An array of `Comment` objects.
+
+---
+
+### `getParent(parentID: ID!, parentType: String!): Parent`
+
+Retrieves the parent post or comment of a comment.
+
+- **Parameters:**
+  - `parentID` (ID!): The ID of the parent.
+  - `parentType` (String!): The type of the parent ('Post' or 'Comment').
+- **Returns:** A `Parent` (either `Post` or `Comment`).
+
+---
+
+### `getParentsByIds(parents: [ParentInput!]!): [Parent!]!`
+
+Fetches multiple parent posts or comments by their IDs.
+
+- **Parameters:**
+  - `parents` ([ParentInput!]!): An array of parent IDs and types.
+- **Returns:** An array of `Parent` objects.
+
+---
+
+### `getTrendingHashtags(page: Int!, limit: Int): [TrendingHashtag!]!`
+
+Fetches a list of trending hashtags.
+
+- **Parameters:**
+  - `page` (Int!): The page number to retrieve.
+  - `limit` (Int!): The number of hashtags to retrieve per page.
+- **Returns:** An array of `TrendingHashtag` objects.
+
+---
+
+### `getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!`
+
+Fetches posts and comments associated with a specific hashtag.
+
+- **Parameters:**
+  - `hashtag` (String!): The hashtag to filter content by.
+  - `page` (Int!): The page number to retrieve.
+- **Returns:** An array of `Parent` objects (either `Post` or `Comment`).
+
+---
+
+### `getNotifications(page: Int!, limit: Int!): [Notification!]!`
+
+Fetches a paginated list of notifications for the authenticated user.
+
+- **Parameters:**
+  - `page` (Int!): The page number to retrieve.
+  - `limit` (Int!): The number of notifications to retrieve per page.
+- **Returns:** An array of `Notification` objects.
 
 ---
 
 ## Mutations
 
-### `createPost(body: String): Post!`
+### `createPost(body: String, file: Upload): Post!`
 
-Creates a new post.
+Creates a new post with optional image upload.
 
 - **Parameters:**
   - `body` (String): The content of the post.
+  - `file` (Upload): The image file to attach (optional).
 - **Requires Authentication:** Yes
 - **Returns:** The created `Post` object.
 
 ---
 
-### `createComment(body: String, parentID: ID!, parentType: String!): Comment!`
+### `repost(id: ID!, type: String!): Repost!`
 
-Creates a new comment on a post.
+Reposts a post.
+
+- **Parameters:**
+  - `id` (ID!): The ID of the post to repost.
+  - `type` (String!): The type of the post to repost ('Post' or 'Repost').
+- **Requires Authentication:** Yes
+- **Returns:** The created `Repost` object.
+
+---
+
+### `unrepost(id: ID!): Repost!`
+
+Removes a repost from the user's feed.
+
+- **Parameters:**
+  - `id` (ID!): The ID of the repost to remove.
+- **Requires Authentication:** Yes
+- **Returns:** The removed `Repost` object.
+
+---
+
+### `editPost(id: ID!, body: String, file: Upload): Post!`
+
+Edits an existing post.
+
+- **Parameters:**
+  - `id` (ID!): The ID of the post to edit.
+  - `body` (String): The updated content of the post.
+  - `file` (Upload): The updated image file (optional).
+- **Requires Authentication:** Yes
+- **Returns:** The updated `Post` object.
+
+---
+
+### `editComment(id: ID!, body: String, file: Upload): Comment!`
+
+Edits an existing comment.
+
+- **Parameters:**
+  - `id` (ID!): The ID of the comment to edit.
+  - `body` (String): The updated content of the comment.
+  - `file` (Upload): The updated image file (optional).
+- **Requires Authentication:** Yes
+- **Returns:** The updated `Comment` object.
+
+---
+
+### `createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!`
+
+Creates a new comment on a post or comment with optional image upload.
 
 - **Parameters:**
   - `body` (String): The content of the comment.
-  - `parentID` (ID!): The ID of the parent post.
-  - `parentType` (String!): The type of the parent post ('Post' or 'Comment').
+  - `parentID` (ID!): The ID of the parent post or comment.
+  - `parentType` (String!): The type of the parent ('Post' or 'Comment').
+  - `file` (Upload): The image file to attach (optional).
 - **Requires Authentication:** Yes
 - **Returns:** The created `Comment` object.
 
 ---
 
-### `deletePost(id: ID!): Post!`
-
-Deletes a post and all associated comments.
-
-- **Parameters:**
-  - `id` (ID!): The ID of the post to delete.
-- **Requires Authentication:** Yes (User must be the author)
-- **Returns:** The deleted `Post` object.
-
----
-
-### `deleteComment(id: ID!, parentID: ID!, parentType: String!): Comment!`
-
-Deletes a comment.
-
-- **Parameters:**
-  - `id` (ID!): The ID of the comment to delete.
-  - `parentID` (ID!): The ID of the parent post.
-  - `parentType` (String!): The type of the parent post ('Post' or 'Comment').
-- **Requires Authentication:** Yes (User must be the author)
-- **Returns:** The deleted `Comment` object.
-
----
-
-### `likePost(postID: ID!): Post!`
+### `likePost(id: ID!, type: String!): Post!`
 
 Likes a post.
 
 - **Parameters:**
-  - `postID` (ID!): The ID of the post to like.
+  - `id` (ID!): The ID of the post to like.
+  - `type` (String!): The type of post ('Post' or 'Repost').
 - **Requires Authentication:** Yes
 - **Returns:** The updated `Post` object.
 
 ---
 
-### `unlikePost(postID: ID!): Post!`
+### `unlikePost(id: ID!, type: String!): Post!`
 
 Unlikes a post.
 
 - **Parameters:**
-  - `postID` (ID!): The ID of the post to unlike.
+  - `id` (ID!): The ID of the post to unlike.
+  - `type` (String!): The type of post ('Post' or 'Repost').
 - **Requires Authentication:** Yes
 - **Returns:** The updated `Post` object.
 
 ---
 
-### `register(username: String!, password: String!): String!`
+### `followUser(username: String!): User!`
 
-Registers a new user.
+Follows a user.
 
 - **Parameters:**
-  - `username` (String!): The desired username.
-  - `password` (String!): The desired password.
-- **Returns:** A JWT token as a `String`.
+  - `username` (String!): The username of the user to follow.
+- **Requires Authentication:** Yes
+- **Returns:** The updated `User` object.
 
 ---
 
-### `login(username: String!, password: String!): String!`
+### `unfollowUser(username: String!): User!`
 
-Logs in an existing user.
-
-- **Parameters:**
-  - `username` (String!): The user's username.
-  - `password` (String!): The user's password.
-- **Returns:** A JWT token as a `String`.
-
-### `deleteUser(username: String!): User!`
-
-Deletes a user.
+Unfollows a user.
 
 - **Parameters:**
-  - `username` (String!): The username of the user to delete.
-- **Requires Authentication:** Yes (User must be the author or admin)
-- **Returns:** The deleted `User` object.
-
----
-
-## Resolvers
-
-The resolvers handle the logic for each field in the GraphQL schema. Below is an overview of the main resolvers implemented:
-
-### Query Resolvers
-
-- **getPosts**: Fetches posts with pagination (10 posts per page) and sorts by creation date in descending order.
-- **getPost**: Retrieves a single post by its ID.
-- **getUser**: Finds a user by their username.
-- **getComments**: Retrieves comments for a specific post, sorted by creation date.
-- **searchUsers**: Searches for users matching the query string.
-- **getPostsByIds**: Retrieves multiple posts based on an array of IDs.
-- **getComment**: Retrieves a single comment by its ID.
-- **getCommentsByIds**: Retrieves multiple comments based on an array of IDs.
-- **getParent**: Retrieves the parent post or comment of a comment.
-- **getParentsByIds**: Retrieves the parent posts or comments of multiple comments.
-
-### Mutation Resolvers
-
-- **createPost**: Creates a new post authored by the authenticated user and updates the user's `postIds` array.
-- **repost** : Reposts a post.
-- **editPost**: Edits an existing post (if the user is the author).
-- **editComment**: Edits an existing comment (if the user is the author).
-- **createComment**: Creates a new comment on a specified post, increments `amtComments` on the parent post, and updates the user's `commentIds` array.
-- **deletePost**: Deletes a post (if the user is the author) and associated comments.
-- **deleteComment**: Deletes a comment (if the user is the author) and decrements `amtComments` on the parent post.
-- **likePost**: Likes a post if not already liked, increments `amtLikes` on the post, and updates the user's `likedPostIds` array.
-- **unlikePost**: Unlikes a post if previously liked, decrements `amtLikes` on the post, and updates the user's `likedPostIds` array.
-- **likeComment**: Likes a comment if not already liked and updates the user's `likedCommentIds` array.
-- **unlikeComment**: Unlikes a comment if previously liked and updates the user's `likedCommentIds` array.
-- **register**: Registers a new user with a unique username and hashed password, returns a JWT token.
-- **login**: Authenticates a user and returns a JWT token.
-
----
+  - `username` (String!): The username of the user to unfollow.
+- **Requires Authentication:** Yes
+- **Returns:** The updated `User` object.
 
 ## Authentication
 
@@ -327,7 +374,3 @@ Authentication is handled using JSON Web Tokens (JWT). To perform mutations that
 Authorization: Bearer YOUR_JWT_TOKEN
 
 ```
-
-## Testing
-
-**TODO**
