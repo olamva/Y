@@ -12,7 +12,7 @@ Les [README for frontend her](frontend/README.md).
 
 ## Filstruktur
 
-```
+```bash
 .
 ├── README.md
 ├── backend
