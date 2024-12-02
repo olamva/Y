@@ -24,6 +24,7 @@ import HashtagBlock from "./components/HashtagBlock";
 import ProfileBlock from "./components/ProfileBlock";
 import HashtagBlockSkeleton from "./components/Skeletons/HashtagBlockSkeleton";
 import ProfileBlockSkeleton from "./components/Skeletons/ProfileBlockSkeleton";
+import { isFileAllowed } from "./lib/checkFile";
 
 const PAGE_SIZE = 16;
 
@@ -101,6 +102,10 @@ const HomePage = () => {
     e.preventDefault();
     if (postBody.trim() === "" && file === null) {
       toast.error("Post content cannot be empty.");
+      return;
+    }
+
+    if (file && !isFileAllowed(file)) {
       return;
     }
 
