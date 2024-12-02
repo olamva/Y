@@ -12,7 +12,7 @@ const PostSkeleton = ({
 }: PostSkeletonProps) => {
   return (
     <div
-      className={`${disableTopMargin ? "" : "mt-2"} ${disableBottomMargin ? "" : "mb-2"} ${maxWidth} w-full rounded-lg p-4 shadow ${comment ? "border bg-gray-100 dark:border-gray-700 dark:bg-gray-900" : "bg-white dark:bg-gray-900"}`}
+      className={`${disableTopMargin ? "" : "mt-2"} ${disableBottomMargin ? "" : "mb-2"} ${maxWidth} w-full rounded-lg p-4 shadow ${comment ? "border bg-gray-100 dark:border-gray-700 dark:bg-gray-900" : "border border-white bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"}`}
     >
       <div className="mb-4 flex items-center space-x-4">
         <div className="h-12 w-12 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
