@@ -38,7 +38,7 @@ const ProfileCard = ({ user, large }: Props) => {
                 }`
               : user.username}
           </h1>
-          <Username user={user} noHref hideFullName noAvatar />
+          <Username noPreview user={user} noHref hideFullName noAvatar />
           <FollowButton targetUsername={user.username} />
         </div>
       </a>
@@ -56,7 +56,7 @@ const ProfileCard = ({ user, large }: Props) => {
           ? `${user?.firstName} ${user.lastName}`
           : user?.username}
       </h1>
-      <Username hideFullName user={user} noHref />
+      <Username noPreview hideFullName user={user} noHref />
       {user?.username !== currentUser?.username && (
         <FollowButton targetUsername={user.username} />
       )}

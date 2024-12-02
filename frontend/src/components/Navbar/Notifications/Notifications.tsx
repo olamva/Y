@@ -140,11 +140,9 @@ const Notifications = () => {
             aria-label="Notifications"
             ref={buttonRef}
           >
-            <BellIcon className="size-6 text-gray-600 dark:text-gray-300" />
+            <BellIcon className="size-6 text-gray-600 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-400" />
             {notifications && notifications.length > 0 && (
-              <span className="absolute right-0 top-0 flex size-3 items-center justify-center rounded-full bg-red-500">
-                <span className="size-1 rounded-full bg-white"></span>
-              </span>
+              <span className="absolute right-1 top-[0.0625rem] flex size-2 items-center justify-center rounded-full bg-red-500"></span>
             )}
           </button>
         </PopoverTrigger>
