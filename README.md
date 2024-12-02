@@ -16,42 +16,42 @@ Les [README for frontend her](frontend/README.md).
 .
 ├── README.md
 ├── backend
-│   ├── README.md
-│   ├── express.d.ts
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── src
-│   │   ├── auth.ts
-│   │   ├── index.ts
-│   │   ├── models
-│   │   │   ├── comment.ts
-│   │   │   ├── context.ts
-│   │   │   ├── hashtag.ts
-│   │   │   ├── index.ts
-│   │   │   ├── notification.ts
-│   │   │   ├── post.ts
-│   │   │   ├── postItem.ts
-│   │   │   ├── repost.ts
-│   │   │   └── user.ts
-│   │   ├── resolverMap.ts
-│   │   ├── schema
-│   │   │   └── schema.graphql
-│   │   ├── schema.ts
-│   │   ├── uploadFile.ts
-│   │   ├── uploads
-│   │   └── utils.ts
-│   └── tsconfig.json
+│   ├── README.md
+│   ├── express.d.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── src
+│   │   ├── auth.ts
+│   │   ├── index.ts
+│   │   ├── models
+│   │   │   ├── comment.ts
+│   │   │   ├── context.ts
+│   │   │   ├── hashtag.ts
+│   │   │   ├── index.ts
+│   │   │   ├── notification.ts
+│   │   │   ├── post.ts
+│   │   │   ├── postItem.ts
+│   │   │   ├── repost.ts
+│   │   │   └── user.ts
+│   │   ├── resolverMap.ts
+│   │   ├── schema
+│   │   │   └── schema.graphql
+│   │   ├── schema.ts
+│   │   ├── uploadFile.ts
+│   │   ├── uploads
+│   │   └── utils.ts
+│   └── tsconfig.json
 └── frontend
     ├── README.md
     ├── components.json
     ├── cypress
-    │   ├── e2e
-    │   │   ├── home.cy.ts
-    │   │   └── user.cy.ts
-    │   └── support
-    │       ├── commands.d.ts
-    │       ├── commands.ts
-    │       └── e2e.ts
+    │   ├── e2e
+    │   │   ├── home.cy.ts
+    │   │   └── user.cy.ts
+    │   └── support
+    │       ├── commands.d.ts
+    │       ├── commands.ts
+    │       └── e2e.ts
     ├── cypress.config.js
     ├── eslint.config.js
     ├── index.html
@@ -59,106 +59,106 @@ Les [README for frontend her](frontend/README.md).
     ├── package.json
     ├── postcss.config.js
     ├── public
-    │   ├── coverphoto.jpg
-    │   ├── cute_cat_404.gif
-    │   └── y.jpg
+    │   ├── coverphoto.jpg
+    │   ├── cute_cat_404.gif
+    │   └── y.jpg
     ├── src
-    │   ├── App.tsx
-    │   ├── components
-    │   │   ├── AuthContext.tsx
-    │   │   ├── BackButton.tsx
-    │   │   ├── CreatePostField.tsx
-    │   │   ├── FollowButton.tsx
-    │   │   ├── FollowingUsersModal.tsx
-    │   │   ├── Footer.tsx
-    │   │   ├── FormField.tsx
-    │   │   ├── HashtagBlock.tsx
-    │   │   ├── HashtagCard.tsx
-    │   │   ├── LoginForm.tsx
-    │   │   ├── Navbar
-    │   │   │   ├── DropdownMenu.tsx
-    │   │   │   ├── Navbar.tsx
-    │   │   │   ├── Notifications
-    │   │   │   │   ├── NotificationCard.tsx
-    │   │   │   │   └── Notifications.tsx
-    │   │   │   ├── SearchBar.tsx
-    │   │   │   └── ThemeToggle.tsx
-    │   │   ├── Post
-    │   │   │   ├── Comment.tsx
-    │   │   │   ├── DeletedPost.tsx
-    │   │   │   ├── Post.tsx
-    │   │   │   ├── PostBody.tsx
-    │   │   │   ├── PostContent.tsx
-    │   │   │   ├── PostWithReply.tsx
-    │   │   │   └── Repost.tsx
-    │   │   ├── Profile
-    │   │   │   ├── Avatar.tsx
-    │   │   │   ├── CommentsView.tsx
-    │   │   │   ├── EditProfile.tsx
-    │   │   │   ├── LikesView.tsx
-    │   │   │   ├── MentionsView.tsx
-    │   │   │   └── PostsView.tsx
-    │   │   ├── ProfileBlock.tsx
-    │   │   ├── ProfileCard.tsx
-    │   │   ├── ProfilePreview.tsx
-    │   │   ├── Skeletons
-    │   │   │   ├── CardSkeleton.tsx
-    │   │   │   ├── HashtagBlockSkeleton.tsx
-    │   │   │   ├── PostSkeleton.tsx
-    │   │   │   ├── ProfileBlockSkeleton.tsx
-    │   │   │   └── ProfileSkeleton.tsx
-    │   │   ├── Username.tsx
-    │   │   ├── VerificationBadge.tsx
-    │   │   └── ui
-    │   │       ├── Divider.tsx
-    │   │       ├── ToggleGroup.tsx
-    │   │       ├── button.tsx
-    │   │       ├── popover.tsx
-    │   │       ├── toggle.tsx
-    │   │       └── tooltip.tsx
-    │   ├── form
-    │   │   └── TextInput.tsx
-    │   ├── globals.css
-    │   ├── hooks
-    │   │   └── useDebounce.tsx
-    │   ├── lib
-    │   │   ├── apolloClient.ts
-    │   │   ├── dateUtils.ts
-    │   │   ├── types.ts
-    │   │   └── utils.ts
-    │   ├── main.tsx
-    │   ├── pages
-    │   │   ├── CommentPage.tsx
-    │   │   ├── HashtagPage.tsx
-    │   │   ├── HashtagsPage.tsx
-    │   │   ├── NotFound.tsx
-    │   │   ├── PostPage.tsx
-    │   │   ├── Profile.tsx
-    │   │   ├── Search.tsx
-    │   │   └── UsersPage.tsx
-    │   ├── queries
-    │   │   ├── comments.ts
-    │   │   ├── hashtags.ts
-    │   │   ├── notifications.ts
-    │   │   ├── posts.ts
-    │   │   ├── reposts.ts
-    │   │   ├── search.ts
-    │   │   └── user.ts
-    │   ├── test
-    │   │   ├── components
-    │   │   │   ├── Footer.test.tsx
-    │   │   │   ├── LoginForm.test.tsx
-    │   │   │   ├── Navbar
-    │   │   │   │   ├── DropdownMenu.test.tsx
-    │   │   │   │   ├── Navbar.test.tsx
-    │   │   │   │   ├── ThemeToggle.test.tsx
-    │   │   │   ├── Post
-    │   │   │   │   ├── PostBody.test.tsx
-    │   │   │   │   └── PostContent.test.tsx
-    │   │   └── setup.ts
-    │   ├── types
-    │   │   └── apollo-upload-client.d.ts
-    │   └── vite-env.d.ts
+    │   ├── App.tsx
+    │   ├── components
+    │   │   ├── AuthContext.tsx
+    │   │   ├── BackButton.tsx
+    │   │   ├── CreatePostField.tsx
+    │   │   ├── FollowButton.tsx
+    │   │   ├── FollowingUsersModal.tsx
+    │   │   ├── Footer.tsx
+    │   │   ├── FormField.tsx
+    │   │   ├── HashtagBlock.tsx
+    │   │   ├── HashtagCard.tsx
+    │   │   ├── LoginForm.tsx
+    │   │   ├── Navbar
+    │   │   │   ├── DropdownMenu.tsx
+    │   │   │   ├── Navbar.tsx
+    │   │   │   ├── Notifications
+    │   │   │   │   ├── NotificationCard.tsx
+    │   │   │   │   └── Notifications.tsx
+    │   │   │   ├── SearchBar.tsx
+    │   │   │   └── ThemeToggle.tsx
+    │   │   ├── Post
+    │   │   │   ├── Comment.tsx
+    │   │   │   ├── DeletedPost.tsx
+    │   │   │   ├── Post.tsx
+    │   │   │   ├── PostBody.tsx
+    │   │   │   ├── PostContent.tsx
+    │   │   │   ├── PostWithReply.tsx
+    │   │   │   └── Repost.tsx
+    │   │   ├── Profile
+    │   │   │   ├── Avatar.tsx
+    │   │   │   ├── CommentsView.tsx
+    │   │   │   ├── EditProfile.tsx
+    │   │   │   ├── LikesView.tsx
+    │   │   │   ├── MentionsView.tsx
+    │   │   │   └── PostsView.tsx
+    │   │   ├── ProfileBlock.tsx
+    │   │   ├── ProfileCard.tsx
+    │   │   ├── ProfilePreview.tsx
+    │   │   ├── Skeletons
+    │   │   │   ├── CardSkeleton.tsx
+    │   │   │   ├── HashtagBlockSkeleton.tsx
+    │   │   │   ├── PostSkeleton.tsx
+    │   │   │   ├── ProfileBlockSkeleton.tsx
+    │   │   │   └── ProfileSkeleton.tsx
+    │   │   ├── Username.tsx
+    │   │   ├── VerificationBadge.tsx
+    │   │   └── ui
+    │   │       ├── Divider.tsx
+    │   │       ├── ToggleGroup.tsx
+    │   │       ├── button.tsx
+    │   │       ├── popover.tsx
+    │   │       ├── toggle.tsx
+    │   │       └── tooltip.tsx
+    │   ├── form
+    │   │   └── TextInput.tsx
+    │   ├── globals.css
+    │   ├── hooks
+    │   │   └── useDebounce.tsx
+    │   ├── lib
+    │   │   ├── apolloClient.ts
+    │   │   ├── dateUtils.ts
+    │   │   ├── types.ts
+    │   │   └── utils.ts
+    │   ├── main.tsx
+    │   ├── pages
+    │   │   ├── CommentPage.tsx
+    │   │   ├── HashtagPage.tsx
+    │   │   ├── HashtagsPage.tsx
+    │   │   ├── NotFound.tsx
+    │   │   ├── PostPage.tsx
+    │   │   ├── Profile.tsx
+    │   │   ├── Search.tsx
+    │   │   └── UsersPage.tsx
+    │   ├── queries
+    │   │   ├── comments.ts
+    │   │   ├── hashtags.ts
+    │   │   ├── notifications.ts
+    │   │   ├── posts.ts
+    │   │   ├── reposts.ts
+    │   │   ├── search.ts
+    │   │   └── user.ts
+    │   ├── test
+    │   │   ├── components
+    │   │   │   ├── Footer.test.tsx
+    │   │   │   ├── LoginForm.test.tsx
+    │   │   │   ├── Navbar
+    │   │   │   │   ├── DropdownMenu.test.tsx
+    │   │   │   │   ├── Navbar.test.tsx
+    │   │   │   │   ├── ThemeToggle.test.tsx
+    │   │   │   ├── Post
+    │   │   │   │   ├── PostBody.test.tsx
+    │   │   │   │   └── PostContent.test.tsx
+    │   │   └── setup.ts
+    │   ├── types
+    │   │   └── apollo-upload-client.d.ts
+    │   └── vite-env.d.ts
     ├── tailwind.config.js
     ├── tsconfig.app.json
     ├── tsconfig.json
