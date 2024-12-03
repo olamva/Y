@@ -60,10 +60,6 @@ const Avatar = ({
       ? "size-6"
       : "size-8";
 
-  const containerClasses = `relative flex select-none items-center justify-center rounded-full border border-neutral-400 bg-neutral-300 text-center text-gray-900 transition-transform ${
-    disableHover ? "" : "hover:scale-105"
-  } dark:border-neutral-700 dark:bg-neutral-900 dark:text-white ${sizeClasses} overflow-hidden`;
-
   const FirstLetterAvatar = () => (
     <div className="absolute inset-0 flex items-center justify-center">
       <p
@@ -78,10 +74,26 @@ const Avatar = ({
     </div>
   );
 
+  const deterministicBgColor = () => {
+    const colors = [
+      "bg-blue-200 dark:bg-blue-900",
+      "bg-red-200 dark:bg-red-900",
+      "bg-indigo-200 dark:bg-indigo-900",
+      "bg-purple-200 dark:bg-purple-900",
+      "bg-pink-200 dark:bg-pink-900",
+    ];
+    const charCodeSum = user.username
+      .split("")
+      .reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return colors[charCodeSum % colors.length];
+  };
+
   return (
     <Tag
       {...tagProps}
-      className={containerClasses}
+      className={`relative flex select-none items-center justify-center overflow-hidden rounded-full border border-neutral-400 text-center text-gray-900 transition-transform dark:border-neutral-700 dark:text-white ${sizeClasses} ${
+        disableHover ? "" : "hover:scale-105"
+      } ${deterministicBgColor()}`}
       aria-label={`${user.username}'s profile`}
     >
       {hasImage && (
