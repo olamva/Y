@@ -78,22 +78,22 @@ const UsersPage = () => {
               Error loading users: {error.message}
             </p>
           )}
-          {loading
-            ? Array.from({ length: USERS_PER_PAGE }).map((_, index) => (
-                <LargeCardSkeleton key={index} />
-              ))
-            : users.map((user) => (
-                <div
-                  className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
-                  key={user.id}
-                >
-                  <ProfileCard user={user} large />
-                </div>
-              ))}
+          {users.map((user) => (
+            <div
+              className="w-full min-w-24 max-w-40 sm:max-w-48 md:min-w-64 md:max-w-72"
+              key={user.id}
+            >
+              <ProfileCard user={user} large />
+            </div>
+          ))}
         </div>
 
-        {loading && networkStatus === NetworkStatus.fetchMore && (
-          <p className="mt-4 text-center">Loading more users...</p>
+        {loading && (
+          <div className="flex w-full flex-wrap justify-evenly gap-x-2 gap-y-4">
+            {Array.from({ length: USERS_PER_PAGE }).map((_, index) => (
+              <LargeCardSkeleton key={index} />
+            ))}
+          </div>
         )}
         {!hasMore && (
           <p className="mt-4 text-center text-gray-500">
