@@ -134,7 +134,7 @@ const Profile = () => {
   if (!user) return <NotFound page="user" />;
 
   return (
-    <div className="w-full px-5">
+    <div className="w-full px-2 sm:px-5">
       <BackButton />
       {loggedInUser && loggedInUser.username === username && (
         <div className="mb-8 pt-5 text-center">
@@ -183,7 +183,10 @@ const Profile = () => {
                         @{user.username}
                       </p>
                       {loggedInUser?.username !== username && (
-                        <FollowButton targetUsername={username || ""} />
+                        <FollowButton
+                          disableTruncate
+                          targetUsername={username || ""}
+                        />
                       )}
                     </div>
                   </div>
@@ -214,13 +217,16 @@ const Profile = () => {
                 <div className="flex flex-row gap-2">
                   <p className="text-md text-gray-600">@{user.username}</p>
                   {loggedInUser?.username !== username && (
-                    <FollowButton targetUsername={username || ""} />
+                    <FollowButton
+                      disableTruncate
+                      targetUsername={username || ""}
+                    />
                   )}
                 </div>
               </div>
               {/* Followers and Following */}
-              <div className="my-2 mt-4 rounded-lg bg-gray-100 p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
-                <div className="flex flex-col items-center justify-around sm:flex-row">
+              <div className="my-2 mt-4 rounded-lg bg-gray-100 p-1 sm:p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
+                <div className="flex flex-row items-center justify-around">
                   <button
                     onClick={() => openModal("Followers")}
                     className="flex items-center space-x-2 rounded p-2 transition-colors duration-200 hover:bg-gray-400 hover:bg-opacity-20"
@@ -270,44 +276,54 @@ const Profile = () => {
               }}
               type="single"
               variant="outline"
-              className="grid grid-cols-2 gap-2 p-2 md:grid-cols-4"
+              className="flex items-center justify-evenly gap-2"
             >
               <ToggleGroupItem
                 value="posts"
                 aria-label="View Posts"
-                className="text-center"
+                className="p-1 text-center sm:p-2"
               >
-                <p>
-                  {user?.postIds.length + user.repostedPostIds.length} Posts
-                </p>
+                <span className="flex items-center gap-1">
+                  <p className="hidden sm:block">
+                    {user?.postIds.length + user.repostedPostIds.length}
+                  </p>
+                  <p>Posts</p>
+                </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="comments"
                 aria-label="View Comments"
-                className="text-center"
+                className="p-1 text-center sm:p-2"
               >
-                <p>{user?.commentIds.length} Comments</p>
+                <span className="flex gap-1">
+                  <p className="hidden sm:block">{user?.commentIds.length}</p>
+                  <p>Comments</p>
+                </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="mentions"
                 aria-label="View Mentions"
-                className="text-center"
+                className="p-1 text-center sm:p-2"
               >
-                <p>
-                  {user?.mentionedPostIds.length +
-                    user.mentionedCommentIds.length}{" "}
-                  Mentions
-                </p>
+                <span className="flex gap-1">
+                  <p className="hidden sm:block">
+                    {user?.mentionedPostIds.length +
+                      user.mentionedCommentIds.length}
+                  </p>
+                  <p>Mentions</p>
+                </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="likes"
                 aria-label="View Likes"
-                className="text-center"
+                className="p-1 text-center sm:p-2"
               >
-                <p>
-                  {user?.likedPostIds.length + user.likedCommentIds.length}{" "}
-                  Likes
-                </p>
+                <span className="flex gap-1">
+                  <p className="hidden sm:block">
+                    {user?.likedPostIds.length + user.likedCommentIds.length}
+                  </p>
+                  <p>Likes</p>
+                </span>
               </ToggleGroupItem>
             </ToggleGroup>
             <div className="mt-4 flex w-full flex-col items-center">

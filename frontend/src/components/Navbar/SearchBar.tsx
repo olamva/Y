@@ -106,6 +106,7 @@ const SearchBar = () => {
     setSuggestions((prevSuggestions) =>
       prevSuggestions.filter((suggestion) => suggestion !== term),
     );
+    setActiveSuggestionIndex(0);
   };
 
   const handleSearch = () => {

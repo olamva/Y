@@ -60,13 +60,20 @@ const Post = ({
       update: (cache, { data }) => {
         if (!data) return;
         const deletedPostId = data.deletePost.id;
+        const reposts = Object.keys(cache.extract()).filter(
+          (key) =>
+            (cache.extract()[key] as { originalID?: string }).originalID ===
+            deletedPostId,
+        );
         cache.modify({
           fields: {
             getPosts(existingPosts = []) {
-              return existingPosts.filter(
-                (postRef: { __ref: string }) =>
-                  postRef.__ref !== `Post:${deletedPostId}`,
-              );
+              return existingPosts.filter((postRef: { __ref: string }) => {
+                return (
+                  postRef.__ref !== `Post:${deletedPostId}` &&
+                  !reposts.includes(postRef.__ref)
+                );
+              });
             },
           },
         });
