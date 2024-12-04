@@ -112,9 +112,7 @@ const HashtagPage = () => {
     <div className="mx-auto w-full max-w-screen-xl px-5">
       <BackButton />
       <main className="flex w-full flex-col items-center justify-center">
-        <h1 className="my-4 break-words text-3xl font-bold">
-          #{hashtag?.toLowerCase()}
-        </h1>
+        <h1 className="my-4 break-words text-3xl font-bold">#{hashtag}</h1>
         <Divider />
         <div className="flex w-full flex-col items-center gap-4">
           {(error || parentPostsError) && (

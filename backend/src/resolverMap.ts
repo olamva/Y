@@ -546,7 +546,7 @@ export const resolvers: IResolvers = {
           },
           {
             $group: {
-              _id: { $toLower: '$hashTags' },
+              _id: '$hashTags',
               count: { $sum: 1 },
             },
           },
@@ -561,7 +561,7 @@ export const resolvers: IResolvers = {
           },
           {
             $group: {
-              _id: { $toLower: '$hashTags' },
+              _id: '$hashTags',
               count: { $sum: 1 },
             },
           },
@@ -635,11 +635,6 @@ export const resolvers: IResolvers = {
         const postHashtags = await Post.aggregate([
           { $unwind: '$hashTags' },
           {
-            $project: {
-              hashTags: { $toLower: '$hashTags' },
-            },
-          },
-          {
             $group: {
               _id: '$hashTags',
               count: { $sum: 1 },
@@ -649,11 +644,6 @@ export const resolvers: IResolvers = {
 
         const commentHashtags = await Comment.aggregate([
           { $unwind: '$hashTags' },
-          {
-            $project: {
-              hashTags: { $toLower: '$hashTags' },
-            },
-          },
           {
             $group: {
               _id: '$hashTags',
@@ -703,15 +693,14 @@ export const resolvers: IResolvers = {
           throw new UserInputError('Invalid hashtag provided');
         }
 
-        const normalizedHashtag = hashtag.toLowerCase();
         const skip = (page - 1) * PAGE_SIZE;
         const limit = PAGE_SIZE;
 
-        const postsPromise = Post.find({ hashTags: normalizedHashtag })
+        const postsPromise = Post.find({ hashTags: hashtag })
           .sort({ createdAt: -1 })
           .populate('author');
 
-        const commentsPromise = Comment.find({ hashTags: normalizedHashtag })
+        const commentsPromise = Comment.find({ hashTags: hashtag })
           .sort({ createdAt: -1 })
           .populate('author');
 

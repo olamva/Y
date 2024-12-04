@@ -3,7 +3,7 @@ import { HashtagType } from "@/lib/types";
 const HashtagBlock = ({ hashtag }: { hashtag: HashtagType }) => (
   <a
     key={hashtag.tag}
-    href={`/project2/hashtag/${hashtag.tag.toLowerCase()}`}
+    href={`/project2/hashtag/${hashtag.tag}`}
     className="flex w-full flex-col items-start bg-gray-100 p-2 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-900"
   >
     <h1 className="break-all text-base font-semibold xl:text-lg">
