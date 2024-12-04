@@ -1,4 +1,4 @@
-import HomePage from "@/App.tsx";
+import HomePage from "@/pages/HomePage";
 import Navbar from "@/components/Navbar/Navbar.tsx";
 import Footer from "@/components/ui/Footer";
 import LoginForm from "@/form/LoginForm";
