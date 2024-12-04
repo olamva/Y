@@ -19,7 +19,7 @@ const HashtagPage = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, loading, error, fetchMore, networkStatus } = useQuery<{
+  const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getContentByHashtag: Content[];
   }>(GET_CONTENT_BY_HASHTAG, {
     variables: { hashtag, page: 1 },
@@ -28,7 +28,8 @@ const HashtagPage = () => {
 
   useEffect(() => {
     document.title = `Y · #${hashtag}`;
-  }, [hashtag]);
+    refetch({ hashtag, page: 1 });
+  }, [hashtag, refetch]);
 
   const {
     data: parentPostsData,
