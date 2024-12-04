@@ -1,5 +1,5 @@
-import { useAuth } from "@/components/AuthContext";
-import FormField from "@/components/FormField";
+import FormField from "@/form/FormField";
+import { useAuth } from "@/hooks/AuthContext";
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { useMutation } from "@apollo/client";
 import React, { useState } from "react";

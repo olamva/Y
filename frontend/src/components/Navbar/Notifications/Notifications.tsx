@@ -1,10 +1,10 @@
-import { useAuth } from "@/components/AuthContext";
 import NotificationCard from "@/components/Navbar/Notifications/NotificationCard";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAuth } from "@/hooks/AuthContext";
 import { NotificationType } from "@/lib/types";
 import {
   DELETE_ALL_NOTIFICATIONS,

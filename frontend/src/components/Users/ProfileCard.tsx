@@ -1,7 +1,7 @@
-import { useAuth } from "@/components/AuthContext";
-import FollowButton from "@/components/FollowButton";
-import Avatar from "@/components/Profile/Avatar";
-import Username from "@/components/Username";
+import Avatar from "@/components/Users/Avatar";
+import FollowButton from "@/components/Users/FollowButton";
+import Username from "@/components/Users/Username";
+import { useAuth } from "@/hooks/AuthContext";
 import { UserType } from "@/lib/types";
 import CoverPhoto from "/coverphoto.jpg";
 

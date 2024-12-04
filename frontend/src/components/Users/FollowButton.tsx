@@ -1,4 +1,4 @@
-import { useAuth } from "@/components/AuthContext";
+import { useAuth } from "@/hooks/AuthContext";
 import {
   FOLLOW_USER_MUTATION,
   GET_USER_QUERY,

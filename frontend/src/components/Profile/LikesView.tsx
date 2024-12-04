@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CommentType, PostType } from "@/lib/types";
 import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_PARENTS_BY_IDS, GET_POSTS_BY_IDS } from "@/queries/posts";
-import PostSkeleton from "../Skeletons/PostSkeleton";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 
 const PAGE_SIZE = 16;
 

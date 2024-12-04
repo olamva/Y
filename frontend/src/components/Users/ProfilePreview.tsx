@@ -1,5 +1,5 @@
-import Avatar from "@/components/Profile/Avatar";
-import Username from "@/components/Username";
+import Avatar from "@/components/Users/Avatar";
+import Username from "@/components/Users/Username";
 import { UserType } from "@/lib/types";
 import CoverPhoto from "/coverphoto.jpg";
 

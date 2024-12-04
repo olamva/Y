@@ -1,17 +1,17 @@
-import { useAuth } from "@/components/AuthContext";
-import BackButton from "@/components/BackButton";
-import FollowButton from "@/components/FollowButton";
-import FollowingUsersModal from "@/components/FollowingUsersModal";
 import { Linkify } from "@/components/Post/PostBody";
-import Avatar from "@/components/Profile/Avatar";
 import CommentsView from "@/components/Profile/CommentsView";
 import EditProfile from "@/components/Profile/EditProfile";
+import FollowingUsersModal from "@/components/Profile/FollowingUsersModal";
 import LikesView from "@/components/Profile/LikesView";
 import MentionsView from "@/components/Profile/MentionsView";
 import PostsView from "@/components/Profile/PostsView";
 import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
+import BackButton from "@/components/ui/BackButton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
-import VerificationBadge from "@/components/VerificationBadge";
+import Avatar from "@/components/Users/Avatar";
+import FollowButton from "@/components/Users/FollowButton";
+import VerificationBadge from "@/components/Users/VerificationBadge";
+import { useAuth } from "@/hooks/AuthContext";
 import { UserType } from "@/lib/types";
 import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
@@ -225,7 +225,7 @@ const Profile = () => {
                 </div>
               </div>
               {/* Followers and Following */}
-              <div className="my-2 mt-4 rounded-lg bg-gray-100 p-1 sm:p-4 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700">
+              <div className="my-2 mt-4 rounded-lg bg-gray-100 p-1 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700 sm:p-4">
                 <div className="flex flex-row items-center justify-around">
                   <button
                     onClick={() => openModal("Followers")}

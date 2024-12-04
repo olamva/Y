@@ -1,12 +1,12 @@
-import Avatar from "@/components/Profile/Avatar";
-import ProfilePreview from "@/components/ProfilePreview";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import VerificationBadge from "@/components/VerificationBadge";
+import Avatar from "@/components/Users/Avatar";
+import ProfilePreview from "@/components/Users/ProfilePreview";
+import VerificationBadge from "@/components/Users/VerificationBadge";
 import { UserType } from "@/lib/types";
 import { MouseEvent, TouchEvent } from "react";
 

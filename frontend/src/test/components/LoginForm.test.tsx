@@ -1,4 +1,4 @@
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/form/LoginForm";
 import { LOGIN_MUTATION, REGISTER_MUTATION } from "@/queries/user";
 import { MockedProvider } from "@apollo/client/testing";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";

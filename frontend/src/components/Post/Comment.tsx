@@ -1,5 +1,5 @@
-import { useAuth } from "@/components/AuthContext";
 import PostContent from "@/components/Post/PostContent";
+import { useAuth } from "@/hooks/AuthContext";
 import { CommentType } from "@/lib/types";
 import {
   DELETE_COMMENT,

@@ -1,10 +1,10 @@
-import { useAuth } from "@/components/AuthContext";
-import BackButton from "@/components/BackButton";
-import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
+import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
+import CreatePostField from "@/form/CreatePostField";
+import { useAuth } from "@/hooks/AuthContext";
 import { isFileAllowed } from "@/lib/checkFile";
 import { CommentType, PostType } from "@/lib/types";
 import { CREATE_COMMENT, GET_COMMENTS } from "@/queries/comments";

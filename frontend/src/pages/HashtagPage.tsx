@@ -1,7 +1,7 @@
-import BackButton from "@/components/BackButton";
 import Post from "@/components/Post/Post";
 import PostWithReply from "@/components/Post/PostWithReply";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
+import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
 import { CommentType, PostType } from "@/lib/types";
 import { GET_CONTENT_BY_HASHTAG } from "@/queries/hashtags";

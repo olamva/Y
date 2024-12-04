@@ -1,10 +1,15 @@
-import { useAuth } from "@/components/AuthContext";
-import CreatePostField from "@/components/CreatePostField";
+import HashtagBlock from "@/components/Hashtags/HashtagBlock";
 import Post from "@/components/Post/Post";
 import Repost from "@/components/Post/Repost";
+import HashtagBlockSkeleton from "@/components/Skeletons/HashtagBlockSkeleton";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
+import ProfileBlockSkeleton from "@/components/Skeletons/ProfileBlockSkeleton";
 import Divider from "@/components/ui/Divider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import ProfileBlock from "@/components/Users/ProfileBlock";
+import CreatePostField from "@/form/CreatePostField";
+import { useAuth } from "@/hooks/AuthContext";
+import { isFileAllowed } from "@/lib/checkFile";
 import { HashtagType, PostItem, UserType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
@@ -20,11 +25,6 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import HashtagBlock from "./components/HashtagBlock";
-import ProfileBlock from "./components/ProfileBlock";
-import HashtagBlockSkeleton from "./components/Skeletons/HashtagBlockSkeleton";
-import ProfileBlockSkeleton from "./components/Skeletons/ProfileBlockSkeleton";
-import { isFileAllowed } from "./lib/checkFile";
 
 const PAGE_SIZE = 16;
 

@@ -1,5 +1,5 @@
-import FollowButton from "@/components/FollowButton";
-import Username from "@/components/Username";
+import FollowButton from "@/components/Users/FollowButton";
+import Username from "@/components/Users/Username";
 import { UserType } from "@/lib/types";
 
 const ProfileBlock = ({ user }: { user: UserType }) => (
