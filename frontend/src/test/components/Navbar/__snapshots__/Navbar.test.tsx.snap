@@ -136,7 +136,7 @@ exports[`Navbar > matches the snapshot 1`] = `
       >
         <button
           aria-label="Log in"
-          class="rounded-md bg-green-400 px-3 py-2 text-sm font-semibold text-black hover:bg-green-500"
+          class="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white hover:bg-green-800"
         >
           Log in
         </button>

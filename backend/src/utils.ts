@@ -7,7 +7,7 @@ export const extractHashtags = (text: string): string[] => {
   let match;
 
   while ((match = regex.exec(text)) !== null) {
-    const tag = match[1].toLowerCase();
+    const tag = match[1];
     if (tag.length <= 30) {
       hashtags.add(tag);
     }

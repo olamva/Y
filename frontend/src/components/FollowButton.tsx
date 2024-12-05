@@ -12,9 +12,13 @@ import toast from "react-hot-toast";
 interface FollowButtonProps {
   targetUsername: string;
   darker?: boolean;
+  disableTruncate?: boolean;
 }
-
-const FollowButton = ({ targetUsername, darker }: FollowButtonProps) => {
+const FollowButton = ({
+  targetUsername,
+  darker,
+  disableTruncate,
+}: FollowButtonProps) => {
   const { user, refetchUser, following, setFollowing } = useAuth();
   const [isHovering, setIsHovering] = useState(false);
 
@@ -96,14 +100,18 @@ const FollowButton = ({ targetUsername, darker }: FollowButtonProps) => {
         {!isFollowing ? (
           <div className="group flex items-center">
             <UserPlus className="mr-1 h-4 w-4 text-blue-700 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600" />
-            <span className="hidden text-sm font-medium text-blue-700 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600 sm:flex">
+            <span
+              className={`text-sm font-medium text-blue-700 group-hover:text-blue-800 dark:text-blue-400 group-hover:dark:text-blue-600 ${disableTruncate ? "" : "hidden sm:flex"}`}
+            >
               Follow
             </span>
           </div>
         ) : isHovering ? (
           <>
             <X className="mr-1 h-4 w-4 text-red-600 dark:text-red-500" />
-            <span className="hidden text-sm font-medium text-red-600 dark:text-red-500 sm:flex">
+            <span
+              className={`text-sm font-medium text-red-600 dark:text-red-500 ${disableTruncate ? "" : "hidden sm:flex"} `}
+            >
               Unfollow
             </span>
           </>
@@ -113,7 +121,7 @@ const FollowButton = ({ targetUsername, darker }: FollowButtonProps) => {
               className={`mr-1 h-4 w-4 ${darker ? "text-green-800 dark:text-green-500" : "text-green-700 dark:text-green-500"}`}
             />
             <span
-              className={`hidden text-sm font-medium ${darker ? "text-green-800 dark:text-green-500" : "text-green-700 dark:text-green-500"} sm:flex`}
+              className={`text-sm font-medium ${darker ? "text-green-800 dark:text-green-500" : "text-green-700 dark:text-green-500"} ${disableTruncate ? "" : "hidden sm:flex"}`}
             >
               Following
             </span>
