@@ -50,7 +50,7 @@ describe("User Page", () => {
     cy.get("button").contains("Following").click();
   });
 
-  it("Should like/dislike a post", () => {
+  it("Should like/unlike a post", () => {
     cy.visit("/");
 
     cy.get('[aria-label="Like post"]').first().as("likeButton");

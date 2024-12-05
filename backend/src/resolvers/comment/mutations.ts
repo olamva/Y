@@ -255,20 +255,22 @@ export const commentMutations: IResolvers = {
         );
 
         deletedComment.mentionedUsers?.forEach(async (id) => {
-          const user = await User.findById(id);
+          const mentionedUser = await User.findById(id);
 
-          if (!user) return;
+          if (!mentionedUser) return;
 
-          user.mentionedCommentIds = user.mentionedCommentIds.filter(
-            (commentId) => String(commentId) !== String(deletedComment.id)
+          mentionedUser.mentionedCommentIds = mentionedUser.mentionedCommentIds.filter(
+            (commentId) => commentId !== deletedComment.id.toString()
           );
 
-          if (user.id.toString() !== deletedComment.author._id.toString()) {
+          await mentionedUser.save();
+
+          if (mentionedUser.id.toString() !== deletedComment.author._id.toString()) {
             await Notification.findOneAndDelete({
               type: 'MENTION',
               postType: 'reply',
               postID: deletedComment._id,
-              recipient: user,
+              recipient: mentionedUser,
               sender: deletedComment.author,
             });
           }

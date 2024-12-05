@@ -79,7 +79,6 @@ describe("LoginForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      console.log(navigate);
       expect(navigate).toHaveBeenCalled();
     });
   });

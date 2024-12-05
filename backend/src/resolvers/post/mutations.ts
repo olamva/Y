@@ -235,7 +235,6 @@ export const postMutations: IResolvers = {
           if (!mentionedUser) return;
 
           mentionedUser.mentionedPostIds = mentionedUser.mentionedPostIds.filter((postID) => {
-            console.log(postID, deletedPost.id.toString(), postID !== deletedPost.id.toString());
             return postID !== deletedPost.id.toString();
           });
 
