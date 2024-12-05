@@ -33,7 +33,35 @@ Les [README for frontend her](frontend/README.md).
 │   │   │   ├── postItem.ts
 │   │   │   ├── repost.ts
 │   │   │   └── user.ts
-│   │   ├── resolverMap.ts
+│   │   ├── resolvers
+│   │   │   ├── comment
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   ├── hashtags
+│   │   │   │   ├── index.ts
+│   │   │   │   └── queries.ts
+│   │   │   ├── notifications
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   ├── post
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   ├── repost
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   └── user
+│   │   │       ├── index.ts
+│   │   │       ├── mutations.ts
+│   │   │       ├── queries.ts
+│   │   │       └── typeResolvers.ts
 │   │   ├── schema
 │   │   │   └── schema.graphql
 │   │   ├── schema.ts
