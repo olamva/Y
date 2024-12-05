@@ -1,7 +1,7 @@
-import { useAuth } from "@/components/AuthContext";
-import FollowButton from "@/components/FollowButton";
 import PostBody from "@/components/Post/PostBody";
-import Username from "@/components/Username";
+import FollowButton from "@/components/Users/FollowButton";
+import Username from "@/components/Users/Username";
+import { useAuth } from "@/hooks/AuthContext";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
 import { REPOST_MUTATION, UNREPOST_MUTATION } from "@/queries/reposts";

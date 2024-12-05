@@ -38,7 +38,6 @@ Les [README for frontend her](frontend/README.md).
 │   │   │   └── schema.graphql
 │   │   ├── schema.ts
 │   │   ├── uploadFile.ts
-│   │   ├── uploads
 │   │   └── utils.ts
 │   └── tsconfig.json
 └── frontend
@@ -63,18 +62,13 @@ Les [README for frontend her](frontend/README.md).
     │   ├── cute_cat_404.gif
     │   └── y.jpg
     ├── src
-    │   ├── App.tsx
     │   ├── components
-    │   │   ├── AuthContext.tsx
-    │   │   ├── BackButton.tsx
-    │   │   ├── CreatePostField.tsx
-    │   │   ├── FollowButton.tsx
-    │   │   ├── FollowingUsersModal.tsx
-    │   │   ├── Footer.tsx
-    │   │   ├── FormField.tsx
-    │   │   ├── HashtagBlock.tsx
-    │   │   ├── HashtagCard.tsx
-    │   │   ├── LoginForm.tsx
+    │   │   ├── Hashtags
+    │   │   │   ├── HashtagBlock.tsx
+    │   │   │   └── HashtagCard.tsx
+    │   │   ├── Landing
+    │   │   │   ├── FollowSuggestionsSidebar.tsx
+    │   │   │   └── TrendingSidebar.tsx
     │   │   ├── Navbar
     │   │   │   ├── DropdownMenu.tsx
     │   │   │   ├── Navbar.tsx
@@ -92,37 +86,49 @@ Les [README for frontend her](frontend/README.md).
     │   │   │   ├── PostWithReply.tsx
     │   │   │   └── Repost.tsx
     │   │   ├── Profile
-    │   │   │   ├── Avatar.tsx
     │   │   │   ├── CommentsView.tsx
     │   │   │   ├── EditProfile.tsx
+    │   │   │   ├── FollowingUsersModal.tsx
     │   │   │   ├── LikesView.tsx
     │   │   │   ├── MentionsView.tsx
     │   │   │   └── PostsView.tsx
-    │   │   ├── ProfileBlock.tsx
-    │   │   ├── ProfileCard.tsx
-    │   │   ├── ProfilePreview.tsx
     │   │   ├── Skeletons
     │   │   │   ├── CardSkeleton.tsx
     │   │   │   ├── HashtagBlockSkeleton.tsx
+    │   │   │   ├── LargeCardSkeleton.tsx
     │   │   │   ├── PostSkeleton.tsx
+    │   │   │   ├── PostWithReplySkeleton.tsx
     │   │   │   ├── ProfileBlockSkeleton.tsx
     │   │   │   └── ProfileSkeleton.tsx
-    │   │   ├── Username.tsx
-    │   │   ├── VerificationBadge.tsx
+    │   │   ├── Users
+    │   │   │   ├── Avatar.tsx
+    │   │   │   ├── FollowButton.tsx
+    │   │   │   ├── ProfileBlock.tsx
+    │   │   │   ├── ProfileCard.tsx
+    │   │   │   ├── ProfilePreview.tsx
+    │   │   │   ├── Username.tsx
+    │   │   │   └── VerificationBadge.tsx
     │   │   └── ui
+    │   │       ├── BackButton.tsx
     │   │       ├── Divider.tsx
+    │   │       ├── Footer.tsx
     │   │       ├── ToggleGroup.tsx
     │   │       ├── button.tsx
     │   │       ├── popover.tsx
     │   │       ├── toggle.tsx
     │   │       └── tooltip.tsx
     │   ├── form
+    │   │   ├── CreatePostField.tsx
+    │   │   ├── FormField.tsx
+    │   │   ├── LoginForm.tsx
     │   │   └── TextInput.tsx
     │   ├── globals.css
     │   ├── hooks
+    │   │   ├── AuthContext.tsx
     │   │   └── useDebounce.tsx
     │   ├── lib
     │   │   ├── apolloClient.ts
+    │   │   ├── checkFile.ts
     │   │   ├── dateUtils.ts
     │   │   ├── types.ts
     │   │   └── utils.ts
@@ -131,6 +137,7 @@ Les [README for frontend her](frontend/README.md).
     │   │   ├── CommentPage.tsx
     │   │   ├── HashtagPage.tsx
     │   │   ├── HashtagsPage.tsx
+    │   │   ├── HomePage.tsx
     │   │   ├── NotFound.tsx
     │   │   ├── PostPage.tsx
     │   │   ├── Profile.tsx

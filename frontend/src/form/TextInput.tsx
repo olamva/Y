@@ -1,10 +1,10 @@
+import Username from "@/components/Users/Username";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Username from "@/components/Username";
-import useDebounce from "@/hooks/useDebounce"; // Import the debounce hook
+import useDebounce from "@/hooks/useDebounce";
 import { HashtagType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";

@@ -1,30 +1,24 @@
-import { useAuth } from "@/components/AuthContext";
-import CreatePostField from "@/components/CreatePostField";
+import FollowSuggestionsSidebar from "@/components/Landing/FollowSuggestionsSidebar";
+import TrendingSidebar from "@/components/Landing/TrendingSidebar";
 import Post from "@/components/Post/Post";
 import Repost from "@/components/Post/Repost";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import Divider from "@/components/ui/Divider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
-import { HashtagType, PostItem, UserType } from "@/lib/types";
-import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";
+import CreatePostField from "@/form/CreatePostField";
+import { useAuth } from "@/hooks/AuthContext";
+import { isFileAllowed } from "@/lib/checkFile";
+import { PostItem } from "@/lib/types";
 import { CREATE_POST, GET_POSTS } from "@/queries/posts";
-import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useMutation, useQuery } from "@apollo/client";
-import { HashtagIcon } from "@heroicons/react/24/outline";
 import {
   ClockIcon,
   ContactIcon,
   FlameIcon,
   MessageSquareMoreIcon,
-  Users,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import HashtagBlock from "./components/HashtagBlock";
-import ProfileBlock from "./components/ProfileBlock";
-import HashtagBlockSkeleton from "./components/Skeletons/HashtagBlockSkeleton";
-import ProfileBlockSkeleton from "./components/Skeletons/ProfileBlockSkeleton";
-import { isFileAllowed } from "./lib/checkFile";
 
 const PAGE_SIZE = 16;
 
@@ -63,18 +57,6 @@ const HomePage = () => {
   });
 
   const posts = data?.getPosts || [];
-
-  const { data: usersData, error: usersError } = useQuery<{
-    getUsers: UserType[];
-  }>(GET_USERS, {
-    variables: { page: 1, excludeFollowing: true },
-  });
-
-  const { data: hashtagsData, error: hashtagsError } = useQuery<{
-    getTrendingHashtags: HashtagType[];
-  }>(GET_TRENDING_HASHTAGS, {
-    variables: { page: 1 },
-  });
 
   const [createPost, { loading: createLoading }] = useMutation<
     { createPost: PostItem },
@@ -172,33 +154,7 @@ const HomePage = () => {
 
   return (
     <div className="max-w-screen-3xl mx-auto flex w-full justify-center px-2 py-5 lg:justify-evenly lg:gap-4">
-      <aside className="hidden w-full max-w-64 py-4 lg:flex">
-        {hashtagsError && (
-          <p className="mt-4 text-center text-red-500">
-            Error loading hashtags: {hashtagsError.message}
-          </p>
-        )}
-
-        <div className="flex w-full flex-col items-start gap-1">
-          <h1 className="mx-1 text-3xl font-extralight">Trending</h1>
-          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
-            {!hashtagsData
-              ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
-                  <HashtagBlockSkeleton key={index} />
-                ))
-              : hashtagsData?.getTrendingHashtags.map((hashtag) => (
-                  <HashtagBlock hashtag={hashtag} key={hashtag.tag} />
-                ))}
-          </div>
-          <a
-            href={`/project2/hashtag`}
-            className="mt-4 inline-flex items-center justify-center self-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            <HashtagIcon className="mr-2 size-5" aria-hidden="true" />
-            <span>View All Hashtags</span>
-          </a>
-        </div>
-      </aside>
+      <TrendingSidebar pageSize={PAGE_SIZE} />
       <main className="w-full max-w-xl">
         <form
           className="flex w-full items-center gap-2"
@@ -279,7 +235,7 @@ const HomePage = () => {
             </ToggleGroupItem>
           </ToggleGroup>
         </section>
-        {showLoginPrompt && (
+        {showLoginPrompt ? (
           <div className="my-4 flex flex-col justify-center gap-5">
             <p>You need to log in to view following posts</p>
             <button
@@ -291,17 +247,11 @@ const HomePage = () => {
               <span>Log In</span>
             </button>
           </div>
-        )}
-        {!showLoginPrompt && (
+        ) : (
           <div className="flex flex-col gap-4">
             {error && (
               <p className="mt-4 text-center text-red-500">
                 Error loading posts: {error?.message}
-              </p>
-            )}
-            {usersError && (
-              <p className="mt-4 text-center text-red-500">
-                Error loading users: {usersError.message}
               </p>
             )}
 
@@ -334,31 +284,7 @@ const HomePage = () => {
           </p>
         )}
       </main>
-
-      <aside className="hidden w-full max-w-80 py-4 lg:flex">
-        <div className="flex w-full flex-col items-start gap-1">
-          <h1 className="mx-2 text-3xl font-extralight">People to follow</h1>
-          <div className="flex w-full flex-col items-center gap-[0.0625rem] bg-gray-300 dark:bg-gray-700">
-            {!usersData?.getUsers
-              ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
-                  <ProfileBlockSkeleton key={index} />
-                ))
-              : usersData?.getUsers.map((recommendedUser) => (
-                  <ProfileBlock
-                    user={recommendedUser}
-                    key={recommendedUser.id}
-                  />
-                ))}
-          </div>
-          <a
-            href={`/project2/users`}
-            className="mt-4 inline-flex justify-center self-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            <Users className="mr-2 h-5 w-5" aria-hidden="true" />
-            <span>View All Users</span>
-          </a>
-        </div>
-      </aside>
+      <FollowSuggestionsSidebar pageSize={PAGE_SIZE} />
     </div>
   );
 };

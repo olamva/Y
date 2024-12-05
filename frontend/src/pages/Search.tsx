@@ -1,10 +1,10 @@
-import BackButton from "@/components/BackButton";
-import HashtagCard from "@/components/HashtagCard";
+import HashtagCard from "@/components/Hashtags/HashtagCard";
 import Post from "@/components/Post/Post";
-import ProfileCard from "@/components/ProfileCard";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
+import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import ProfileCard from "@/components/Users/ProfileCard";
 import { HashtagType, PostType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_POSTS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
@@ -310,7 +310,9 @@ const SearchPage = () => {
               No posts found.
             </p>
           ) : (
-            postsData?.searchPosts.map((post) => <Post key={post.id} post={post} />)
+            postsData?.searchPosts.map((post) => (
+              <Post key={post.id} post={post} />
+            ))
           )}
         </div>
 

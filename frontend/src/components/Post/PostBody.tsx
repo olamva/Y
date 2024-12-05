@@ -1,4 +1,4 @@
-import ProfilePreview from "@/components/ProfilePreview";
+import ProfilePreview from "@/components/Users/ProfilePreview";
 import {
   Tooltip,
   TooltipContent,

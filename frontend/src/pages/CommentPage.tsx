@@ -1,11 +1,11 @@
-import { useAuth } from "@/components/AuthContext";
-import BackButton from "@/components/BackButton";
-import CreatePostField from "@/components/CreatePostField";
 import Comment from "@/components/Post/Comment";
 import PostWithReply from "@/components/Post/PostWithReply";
 import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import PostWithReplySkeleton from "@/components/Skeletons/PostWithReplySkeleton";
+import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
+import CreatePostField from "@/form/CreatePostField";
+import { useAuth } from "@/hooks/AuthContext";
 import { isFileAllowed } from "@/lib/checkFile";
 import { CommentType, PostType } from "@/lib/types";
 import {

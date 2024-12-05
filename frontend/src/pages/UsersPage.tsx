@@ -1,7 +1,7 @@
-import BackButton from "@/components/BackButton";
-import ProfileCard from "@/components/ProfileCard";
 import LargeCardSkeleton from "@/components/Skeletons/LargeCardSkeleton";
+import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
+import ProfileCard from "@/components/Users/ProfileCard";
 import { UserType } from "@/lib/types";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useQuery } from "@apollo/client";

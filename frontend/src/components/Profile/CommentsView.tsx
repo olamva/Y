@@ -4,7 +4,7 @@ import { GET_COMMENTS_BY_IDS } from "@/queries/comments";
 import { GET_PARENTS_BY_IDS } from "@/queries/posts";
 import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import PostWithReplySkeleton from "../Skeletons/PostWithReplySkeleton";
+import PostWithReplySkeleton from "@/components/Skeletons/PostWithReplySkeleton";
 
 const PAGE_SIZE = 16;
 

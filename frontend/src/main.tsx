@@ -1,9 +1,9 @@
-import HomePage from "@/App.tsx";
-import { AuthProvider } from "@/components/AuthContext";
-import Footer from "@/components/Footer";
-import LoginForm from "@/components/LoginForm";
+import HomePage from "@/pages/HomePage";
 import Navbar from "@/components/Navbar/Navbar.tsx";
+import Footer from "@/components/ui/Footer";
+import LoginForm from "@/form/LoginForm";
 import "@/globals.css";
+import { AuthProvider } from "@/hooks/AuthContext";
 import client from "@/lib/apolloClient";
 import CommentPage from "@/pages/CommentPage";
 import HashtagPage from "@/pages/HashtagPage";

@@ -1,4 +1,4 @@
-import BackButton from "../BackButton";
+import BackButton from "@/components/ui/BackButton";
 
 const ProfileSkeleton = () => (
   <div className="w-full px-5">

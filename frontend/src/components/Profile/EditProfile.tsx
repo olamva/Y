@@ -1,4 +1,4 @@
-import { useAuth } from "@/components/AuthContext";
+import { useAuth } from "@/hooks/AuthContext";
 import { isFileAllowed } from "@/lib/checkFile";
 import { UserType } from "@/lib/types";
 import {

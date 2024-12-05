@@ -1,5 +1,5 @@
-import { useAuth } from "@/components/AuthContext";
 import Navbar from "@/components/Navbar/Navbar";
+import { useAuth } from "@/hooks/AuthContext";
 import { MockedProvider } from "@apollo/client/testing";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

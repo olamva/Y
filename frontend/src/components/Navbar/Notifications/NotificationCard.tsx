@@ -1,4 +1,4 @@
-import Username from "@/components/Username";
+import Username from "@/components/Users/Username";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { NotificationType } from "@/lib/types";
 import { DELETE_NOTIFICATION } from "@/queries/notifications";
@@ -91,7 +91,13 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
       href={href}
     >
       <div className="flex items-center justify-start gap-1 break-words">
-        <Username noPreview smallAvatar smallBadge user={notification.sender} noHref />
+        <Username
+          noPreview
+          smallAvatar
+          smallBadge
+          user={notification.sender}
+          noHref
+        />
         <p>{text}</p>
         <p>·</p>
         <p>{formatTimestamp(notification.createdAt)}</p>

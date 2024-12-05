@@ -1,8 +1,8 @@
-import { useAuth } from "@/components/AuthContext";
-import FollowButton from "@/components/FollowButton";
 import Comment from "@/components/Post/Comment";
 import Post from "@/components/Post/Post";
-import Username from "@/components/Username";
+import FollowButton from "@/components/Users/FollowButton";
+import Username from "@/components/Users/Username";
+import { useAuth } from "@/hooks/AuthContext";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
 import { RecycleIcon } from "lucide-react";

@@ -1,5 +1,5 @@
-import { useAuth } from "@/components/AuthContext";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
+import { useAuth } from "@/hooks/AuthContext";
 import {
   Bars3Icon,
   HashtagIcon,

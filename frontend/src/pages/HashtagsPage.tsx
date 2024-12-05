@@ -1,6 +1,6 @@
-import BackButton from "@/components/BackButton";
-import HashTagCard from "@/components/HashtagCard";
+import HashTagCard from "@/components/Hashtags/HashtagCard";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton";
+import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
 import { HashtagType } from "@/lib/types";
 import { GET_TRENDING_HASHTAGS } from "@/queries/hashtags";

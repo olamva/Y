@@ -5,11 +5,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import TextInput from "@/form/TextInput";
+import { useAuth } from "@/hooks/AuthContext";
+import { isFileAllowed } from "@/lib/checkFile";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { ImageIcon, XIcon } from "lucide-react";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "./AuthContext";
-import { isFileAllowed } from "@/lib/checkFile";
 
 interface CreatePostFieldProps {
   placeholder: string;

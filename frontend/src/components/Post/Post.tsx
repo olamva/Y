@@ -1,5 +1,5 @@
-import { useAuth } from "@/components/AuthContext";
 import PostContent from "@/components/Post/PostContent";
+import { useAuth } from "@/hooks/AuthContext";
 import { PostType } from "@/lib/types";
 import { DELETE_POST, LIKE_POST, UNLIKE_POST } from "@/queries/posts";
 import { useMutation } from "@apollo/client";

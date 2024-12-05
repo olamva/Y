@@ -1,10 +1,10 @@
-import { useAuth } from "@/components/AuthContext";
 import { DropdownMenu } from "@/components/Navbar/DropdownMenu";
 import Notifications from "@/components/Navbar/Notifications/Notifications";
 import SearchBar from "@/components/Navbar/SearchBar";
 import ThemeToggle from "@/components/Navbar/ThemeToggle";
-import Avatar from "@/components/Profile/Avatar";
-import Username from "@/components/Username";
+import Avatar from "@/components/Users/Avatar";
+import Username from "@/components/Users/Username";
+import { useAuth } from "@/hooks/AuthContext";
 
 const Navbar = () => {
   const { logout, user } = useAuth();
