@@ -8,6 +8,12 @@ import PostsView from "@/components/Profile/PostsView";
 import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 import BackButton from "@/components/ui/BackButton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Avatar from "@/components/Users/Avatar";
 import FollowButton from "@/components/Users/FollowButton";
 import VerificationBadge from "@/components/Users/VerificationBadge";
@@ -193,12 +199,21 @@ const Profile = () => {
                   <div className="flex items-center gap-2 md:mt-0">
                     {(user.username === "Mads" ||
                       user.username === "saraSlag") && (
-                      <a
-                        href="http://it2810-33.idi.ntnu.no/project2"
-                        className="hidden cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:block"
-                      >
-                        <EarthIcon className="size-8" />
-                      </a>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <a
+                              href="http://it2810-33.idi.ntnu.no/project2"
+                              className="hidden cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:block"
+                            >
+                              <EarthIcon className="size-8" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Where to next?</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                     {loggedInUser &&
                       username !== "admin" &&
@@ -239,12 +254,21 @@ const Profile = () => {
                   </div>
                 </div>
                 {(user.username === "Mads" || user.username === "saraSlag") && (
-                  <a
-                    href="http://it2810-33.idi.ntnu.no/project2"
-                    className="cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:hidden"
-                  >
-                    <EarthIcon className="size-8" />
-                  </a>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <a
+                          href="http://it2810-33.idi.ntnu.no/project2"
+                          className="cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:hidden"
+                        >
+                          <EarthIcon className="size-8" />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Where to next?</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
               {/* Followers and Following */}
