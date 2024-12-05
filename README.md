@@ -267,5 +267,5 @@ Løsningen skal være en prototyp på en søkbar katalog med frontend hvor bruke
   - End-2-end tester kan kjøres med (sørg for at backend og frontend kjøres):
   ```
   cd frontend
-  cypress:run
+  npm run cypress:run
   ```
