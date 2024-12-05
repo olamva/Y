@@ -44,7 +44,7 @@ describe("User Page", () => {
   });
 
   it("Should follow and unfollow a user", () => {
-    cy.visit("/user/olamva");
+    cy.visit("/user/ola");
     cy.get("button").contains("Follow").click();
     cy.wait(1000);
     cy.get("button").contains("Following").click();
