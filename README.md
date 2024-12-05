@@ -33,12 +33,39 @@ Les [README for frontend her](frontend/README.md).
 │   │   │   ├── postItem.ts
 │   │   │   ├── repost.ts
 │   │   │   └── user.ts
-│   │   ├── resolverMap.ts
+│   │   ├── resolvers
+│   │   │   ├── comment
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   ├── hashtags
+│   │   │   │   ├── index.ts
+│   │   │   │   └── queries.ts
+│   │   │   ├── notifications
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   ├── post
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   ├── repost
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── mutations.ts
+│   │   │   │   ├── queries.ts
+│   │   │   │   └── typeResolvers.ts
+│   │   │   └── user
+│   │   │       ├── index.ts
+│   │   │       ├── mutations.ts
+│   │   │       ├── queries.ts
+│   │   │       └── typeResolvers.ts
 │   │   ├── schema
 │   │   │   └── schema.graphql
 │   │   ├── schema.ts
 │   │   ├── uploadFile.ts
-│   │   ├── uploads
 │   │   └── utils.ts
 │   └── tsconfig.json
 └── frontend
@@ -104,7 +131,9 @@ Les [README for frontend her](frontend/README.md).
     │   │   ├── Skeletons
     │   │   │   ├── CardSkeleton.tsx
     │   │   │   ├── HashtagBlockSkeleton.tsx
+    │   │   │   ├── LargeCardSkeleton.tsx
     │   │   │   ├── PostSkeleton.tsx
+    │   │   │   ├── PostWithReplySkeleton.tsx
     │   │   │   ├── ProfileBlockSkeleton.tsx
     │   │   │   └── ProfileSkeleton.tsx
     │   │   ├── Username.tsx
@@ -123,6 +152,7 @@ Les [README for frontend her](frontend/README.md).
     │   │   └── useDebounce.tsx
     │   ├── lib
     │   │   ├── apolloClient.ts
+    │   │   ├── checkFile.ts
     │   │   ├── dateUtils.ts
     │   │   ├── types.ts
     │   │   └── utils.ts
