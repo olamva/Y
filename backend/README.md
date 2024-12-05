@@ -1,18 +1,46 @@
-# Backend for Y
+# Backend for Y <!-- omit from toc -->
 
 An Appollo Express backend, with MongoDB as database
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Running the Server](#running-the-server)
-- [GraphQL API](#graphql-api)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configure Environment Variables](#configure-environment-variables)
+  - [Running the server](#running-the-server)
+- [graphql-api](#graphql-api)
   - [Queries](#queries)
+    - [`getPosts(page: Int!, filter: PostFilter!, limit: Int!): [PostItem!]!`](#getpostspage-int-filter-postfilter-limit-int-postitem)
+    - [`getPost(id: ID!): Post`](#getpostid-id-post)
+    - [`getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!`](#getrepostsbyuserusername-string-page-int-limit-int-repost)
+    - [`getComments(postID: ID!, page: Int!): [Comment!]!`](#getcommentspostid-id-page-int-comment)
+    - [`getUser(username: String!): User`](#getuserusername-string-user)
+    - [`getUsers(page: Int!, excludeFollowing: Boolean): [User!]!`](#getuserspage-int-excludefollowing-boolean-user)
+    - [`searchPosts(query: String!, page: Int!): [Post!]!`](#searchpostsquery-string-page-int-post)
+    - [`searchUsers(query: String!, page: Int!, limit: Int!): [User!]!`](#searchusersquery-string-page-int-limit-int-user)
+    - [`searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!`](#searchhashtagsquery-string-page-int-limit-int-trendinghashtag)
+    - [`getPostsByIds(ids: [ID!]!, page: Int!, limit: Int!): [Post!]!`](#getpostsbyidsids-id-page-int-limit-int-post)
+    - [`getComment(id: ID!): Comment`](#getcommentid-id-comment)
+    - [`getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!`](#getcommentsbyidsids-id-page-int-comment)
+    - [`getParent(parentID: ID!, parentType: String!): Parent`](#getparentparentid-id-parenttype-string-parent)
+    - [`getParentsByIds(parents: [ParentInput!]!): [Parent!]!`](#getparentsbyidsparents-parentinput-parent)
+    - [`getTrendingHashtags(page: Int!, limit: Int): [TrendingHashtag!]!`](#gettrendinghashtagspage-int-limit-int-trendinghashtag)
+    - [`getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!`](#getcontentbyhashtaghashtag-string-page-int-parent)
+    - [`getNotifications(page: Int!, limit: Int!): [Notification!]!`](#getnotificationspage-int-limit-int-notification)
   - [Mutations](#mutations)
+    - [`createPost(body: String, file: Upload): Post!`](#createpostbody-string-file-upload-post)
+    - [`repost(id: ID!, type: String!): Repost!`](#repostid-id-type-string-repost)
+    - [`unrepost(id: ID!): Repost!`](#unrepostid-id-repost)
+    - [`editPost(id: ID!, body: String, file: Upload): Post!`](#editpostid-id-body-string-file-upload-post)
+    - [`editComment(id: ID!, body: String, file: Upload): Comment!`](#editcommentid-id-body-string-file-upload-comment)
+    - [`createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!`](#createcommentbody-string-parentid-id-parenttype-string-file-upload-comment)
+    - [`likePost(id: ID!, type: String!): Post!`](#likepostid-id-type-string-post)
+    - [`unlikePost(id: ID!, type: String!): Post!`](#unlikepostid-id-type-string-post)
+    - [`followUser(username: String!): User!`](#followuserusername-string-user)
+    - [`unfollowUser(username: String!): User!`](#unfollowuserusername-string-user)
 - [Authentication](#authentication)
-- [Contributing](#contributing)
 
 ## Getting Started
 
@@ -24,7 +52,7 @@ Ensure you have the following installed on your machine:
 - npm (comes with Node.js)
 - Access to NTNU's network
 
-## Installation
+### Installation
 
 1. Clone the repository:
    ```bash
@@ -53,11 +81,11 @@ Start the development server with:
 npm run start:dev
 ```
 
-# graphql-api
+## graphql-api
 
-## Queries
+### Queries
 
-### `getPosts(page: Int!, filter: PostFilter!, limit: Int!): [PostItem!]!`
+#### `getPosts(page: Int!, filter: PostFilter!, limit: Int!): [PostItem!]!`
 
 Fetches a paginated list of posts or reposts based on the specified filter.
 
@@ -69,7 +97,7 @@ Fetches a paginated list of posts or reposts based on the specified filter.
 
 ---
 
-### `getPost(id: ID!): Post`
+#### `getPost(id: ID!): Post`
 
 Retrieves a single post by its ID.
 
@@ -79,7 +107,7 @@ Retrieves a single post by its ID.
 
 ---
 
-### `getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!`
+#### `getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!`
 
 Fetches a paginated list of reposts made by a specific user.
 
@@ -91,7 +119,7 @@ Fetches a paginated list of reposts made by a specific user.
 
 ---
 
-### `getComments(postID: ID!, page: Int!): [Comment!]!`
+#### `getComments(postID: ID!, page: Int!): [Comment!]!`
 
 Fetches a paginated list of comments for a specific post.
 
@@ -102,7 +130,7 @@ Fetches a paginated list of comments for a specific post.
 
 ---
 
-### `getUser(username: String!): User`
+#### `getUser(username: String!): User`
 
 Retrieves a user by their username.
 
@@ -112,7 +140,7 @@ Retrieves a user by their username.
 
 ---
 
-### `getUsers(page: Int!, excludeFollowing: Boolean): [User!]!`
+#### `getUsers(page: Int!, excludeFollowing: Boolean): [User!]!`
 
 Fetches a paginated list of users, with an option to exclude users the current user is following.
 
@@ -123,7 +151,7 @@ Fetches a paginated list of users, with an option to exclude users the current u
 
 ---
 
-### `searchPosts(query: String!, page: Int!): [Post!]!`
+#### `searchPosts(query: String!, page: Int!): [Post!]!`
 
 Searches for posts matching the query.
 
@@ -134,7 +162,7 @@ Searches for posts matching the query.
 
 ---
 
-### `searchUsers(query: String!, page: Int!, limit: Int!): [User!]!`
+#### `searchUsers(query: String!, page: Int!, limit: Int!): [User!]!`
 
 Searches for users matching the query.
 
@@ -146,7 +174,7 @@ Searches for users matching the query.
 
 ---
 
-### `searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!`
+#### `searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!`
 
 Searches for trending hashtags matching the query.
 
@@ -158,7 +186,7 @@ Searches for trending hashtags matching the query.
 
 ---
 
-### `getPostsByIds(ids: [ID!]!, page: Int!, limit: Int!): [Post!]!`
+#### `getPostsByIds(ids: [ID!]!, page: Int!, limit: Int!): [Post!]!`
 
 Fetches multiple posts by their IDs with pagination.
 
@@ -170,7 +198,7 @@ Fetches multiple posts by their IDs with pagination.
 
 ---
 
-### `getComment(id: ID!): Comment`
+#### `getComment(id: ID!): Comment`
 
 Retrieves a comment by its ID.
 
@@ -180,7 +208,7 @@ Retrieves a comment by its ID.
 
 ---
 
-### `getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!`
+#### `getCommentsByIds(ids: [ID!]!, page: Int!): [Comment!]!`
 
 Fetches multiple comments by their IDs with pagination.
 
@@ -191,7 +219,7 @@ Fetches multiple comments by their IDs with pagination.
 
 ---
 
-### `getParent(parentID: ID!, parentType: String!): Parent`
+#### `getParent(parentID: ID!, parentType: String!): Parent`
 
 Retrieves the parent post or comment of a comment.
 
@@ -202,7 +230,7 @@ Retrieves the parent post or comment of a comment.
 
 ---
 
-### `getParentsByIds(parents: [ParentInput!]!): [Parent!]!`
+#### `getParentsByIds(parents: [ParentInput!]!): [Parent!]!`
 
 Fetches multiple parent posts or comments by their IDs.
 
@@ -212,7 +240,7 @@ Fetches multiple parent posts or comments by their IDs.
 
 ---
 
-### `getTrendingHashtags(page: Int!, limit: Int): [TrendingHashtag!]!`
+#### `getTrendingHashtags(page: Int!, limit: Int): [TrendingHashtag!]!`
 
 Fetches a list of trending hashtags.
 
@@ -223,7 +251,7 @@ Fetches a list of trending hashtags.
 
 ---
 
-### `getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!`
+#### `getContentByHashtag(hashtag: String!, page: Int!): [Parent!]!`
 
 Fetches posts and comments associated with a specific hashtag.
 
@@ -234,7 +262,7 @@ Fetches posts and comments associated with a specific hashtag.
 
 ---
 
-### `getNotifications(page: Int!, limit: Int!): [Notification!]!`
+#### `getNotifications(page: Int!, limit: Int!): [Notification!]!`
 
 Fetches a paginated list of notifications for the authenticated user.
 
@@ -245,9 +273,9 @@ Fetches a paginated list of notifications for the authenticated user.
 
 ---
 
-## Mutations
+### Mutations
 
-### `createPost(body: String, file: Upload): Post!`
+#### `createPost(body: String, file: Upload): Post!`
 
 Creates a new post with optional image upload.
 
@@ -259,7 +287,7 @@ Creates a new post with optional image upload.
 
 ---
 
-### `repost(id: ID!, type: String!): Repost!`
+#### `repost(id: ID!, type: String!): Repost!`
 
 Reposts a post.
 
@@ -271,7 +299,7 @@ Reposts a post.
 
 ---
 
-### `unrepost(id: ID!): Repost!`
+#### `unrepost(id: ID!): Repost!`
 
 Removes a repost from the user's feed.
 
@@ -282,7 +310,7 @@ Removes a repost from the user's feed.
 
 ---
 
-### `editPost(id: ID!, body: String, file: Upload): Post!`
+#### `editPost(id: ID!, body: String, file: Upload): Post!`
 
 Edits an existing post.
 
@@ -295,7 +323,7 @@ Edits an existing post.
 
 ---
 
-### `editComment(id: ID!, body: String, file: Upload): Comment!`
+#### `editComment(id: ID!, body: String, file: Upload): Comment!`
 
 Edits an existing comment.
 
@@ -308,7 +336,7 @@ Edits an existing comment.
 
 ---
 
-### `createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!`
+#### `createComment(body: String, parentID: ID!, parentType: String!, file: Upload): Comment!`
 
 Creates a new comment on a post or comment with optional image upload.
 
@@ -322,7 +350,7 @@ Creates a new comment on a post or comment with optional image upload.
 
 ---
 
-### `likePost(id: ID!, type: String!): Post!`
+#### `likePost(id: ID!, type: String!): Post!`
 
 Likes a post.
 
@@ -334,7 +362,7 @@ Likes a post.
 
 ---
 
-### `unlikePost(id: ID!, type: String!): Post!`
+#### `unlikePost(id: ID!, type: String!): Post!`
 
 Unlikes a post.
 
@@ -346,7 +374,7 @@ Unlikes a post.
 
 ---
 
-### `followUser(username: String!): User!`
+#### `followUser(username: String!): User!`
 
 Follows a user.
 
@@ -357,7 +385,7 @@ Follows a user.
 
 ---
 
-### `unfollowUser(username: String!): User!`
+#### `unfollowUser(username: String!): User!`
 
 Unfollows a user.
 

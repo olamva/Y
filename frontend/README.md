@@ -1,8 +1,16 @@
-# Frontend for Y
+# Frontend for Y <!-- omit from toc -->
 
 A React TS + Vite frontend for Y.
 
 ## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the server](#running-the-server)
+- [Testing](#testing)
+  - [Test Structure](#test-structure)
 
 ## Getting Started
 
@@ -14,7 +22,7 @@ Ensure you have the following installed on your machine:
 - npm (comes with Node.js)
 - Access to NTNU's network
 
-## Installation
+### Installation
 
 1. Clone the repository:
    ```bash
@@ -52,7 +60,7 @@ The project includes unit and integration tests. To run tests, execute the follo
 npm run test
 ```
 
-## Test Structure
+### Test Structure
 
 Tests are organized by components, with each component having its own test file. For example:
 
