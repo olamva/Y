@@ -7,7 +7,7 @@ export const isFileAllowed = (file: File) => {
     return false;
   }
 
-  if (file.size > 1024 * 1024 * 5) {
+  if (file.size > 1024 * 1024 * 10) {
     toast.error("File size must be less than 10MB");
     return false;
   }
