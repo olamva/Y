@@ -16,7 +16,7 @@ import { UserType } from "@/lib/types";
 import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { UserIcon, UsersIcon } from "lucide-react";
+import { EarthIcon, UserIcon, UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -164,7 +164,7 @@ const Profile = () => {
             </div>
             {/* User Info */}
             <div className="mx-auto max-w-5xl">
-              <div className="-mt-16 flex items-end space-x-5">
+              <div className="-mt-16 flex items-end space-x-5 px-1">
                 <Avatar user={user} large />
                 <div className="flex min-w-0 flex-1 items-center justify-end pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
@@ -190,7 +190,16 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2 md:mt-0">
+                  <div className="flex items-center gap-2 md:mt-0">
+                    {(user.username === "Mads" ||
+                      user.username === "saraSlag") && (
+                      <a
+                        href="http://it2810-33.idi.ntnu.no/project2"
+                        className="hidden cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:block"
+                      >
+                        <EarthIcon className="size-8" />
+                      </a>
+                    )}
                     {loggedInUser &&
                       username !== "admin" &&
                       (loggedInUser.username === username ||
@@ -210,19 +219,33 @@ const Profile = () => {
                 </div>
               </div>
               {/* Mobile User Info */}
-              <div className="mt-6 block min-w-0 flex-1 md:hidden">
-                <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
-                  {user?.firstName} {user?.lastName}
-                </h1>
-                <div className="flex flex-row gap-2">
-                  <p className="text-md text-gray-600">@{user.username}</p>
-                  {loggedInUser?.username !== username && (
-                    <FollowButton
-                      disableTruncate
-                      targetUsername={username || ""}
-                    />
-                  )}
+              <div className="mt-6 flex min-w-0 flex-1 justify-between px-1 md:hidden">
+                <div>
+                  <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
+                    {user?.firstName
+                      ? user.lastName
+                        ? `${user.firstName} ${user.lastName}`
+                        : user.firstName
+                      : user.username}
+                  </h1>
+                  <div className="flex flex-row gap-2">
+                    <p className="text-md text-gray-600">@{user.username}</p>
+                    {loggedInUser?.username !== username && (
+                      <FollowButton
+                        disableTruncate
+                        targetUsername={username || ""}
+                      />
+                    )}
+                  </div>
                 </div>
+                {(user.username === "Mads" || user.username === "saraSlag") && (
+                  <a
+                    href="http://it2810-33.idi.ntnu.no/project2"
+                    className="cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:hidden"
+                  >
+                    <EarthIcon className="size-8" />
+                  </a>
+                )}
               </div>
               {/* Followers and Following */}
               <div className="my-2 mt-4 rounded-lg bg-gray-100 p-1 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700 sm:p-4">
