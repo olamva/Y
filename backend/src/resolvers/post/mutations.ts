@@ -2,10 +2,10 @@ import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { Notification } from '../../models/notification';
 import { Post } from '../../models/post';
+import { Repost } from '../../models/repost';
 import { User } from '../../models/user';
 import { deleteFile, uploadFile } from '../../uploadFile';
 import { extractHashtags, extractMentions } from '../../utils';
-import { Repost } from '../../models/repost';
 
 export const postMutations: IResolvers = {
   Mutation: {

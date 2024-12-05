@@ -1,10 +1,5 @@
 import { IResolvers } from '@graphql-tools/utils';
-import { UserInputError } from 'apollo-server-errors';
-import { SortOrder, Types } from 'mongoose';
-import { Comment, CommentType } from '../../models/comment';
-import { Post, PostType } from '../../models/post';
-import { Repost, RepostType } from '../../models/repost';
-import { UserType } from '../../models/user';
+import { Comment } from '../../models/comment';
 
 export const commentQueries: IResolvers = {
   Query: {

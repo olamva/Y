@@ -1,13 +1,9 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { AuthenticationError, UserInputError } from 'apollo-server-errors';
-import { GraphQLUpload } from 'graphql-upload-minimal';
-import { SortOrder, Types } from 'mongoose';
-import { signToken } from '../../auth';
 import { Comment, CommentType } from '../../models/comment';
 import { Notification } from '../../models/notification';
 import { Post, PostType } from '../../models/post';
-import { Repost, RepostType } from '../../models/repost';
-import { User, UserType } from '../../models/user';
+import { User } from '../../models/user';
 import { deleteFile, uploadFile } from '../../uploadFile';
 import { extractHashtags, extractMentions } from '../../utils';
 

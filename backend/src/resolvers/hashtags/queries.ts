@@ -1,10 +1,7 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { UserInputError } from 'apollo-server-errors';
-import { SortOrder, Types } from 'mongoose';
-import { Comment, CommentType } from '../../models/comment';
-import { Post, PostType } from '../../models/post';
-import { Repost, RepostType } from '../../models/repost';
-import { UserType } from '../../models/user';
+import { Comment } from '../../models/comment';
+import { Post } from '../../models/post';
 
 export const hashtagQueries: IResolvers = {
   Query: {
@@ -32,7 +29,7 @@ export const hashtagQueries: IResolvers = {
           },
           {
             $group: {
-              _id: { $toLower: '$hashTags' },
+              _id: '$hashTags',
               count: { $sum: 1 },
             },
           },
@@ -47,7 +44,7 @@ export const hashtagQueries: IResolvers = {
           },
           {
             $group: {
-              _id: { $toLower: '$hashTags' },
+              _id: '$hashTags',
               count: { $sum: 1 },
             },
           },
@@ -93,11 +90,6 @@ export const hashtagQueries: IResolvers = {
       const postHashtags = await Post.aggregate([
         { $unwind: '$hashTags' },
         {
-          $project: {
-            hashTags: { $toLower: '$hashTags' },
-          },
-        },
-        {
           $group: {
             _id: '$hashTags',
             count: { $sum: 1 },
@@ -107,11 +99,6 @@ export const hashtagQueries: IResolvers = {
 
       const commentHashtags = await Comment.aggregate([
         { $unwind: '$hashTags' },
-        {
-          $project: {
-            hashTags: { $toLower: '$hashTags' },
-          },
-        },
         {
           $group: {
             _id: '$hashTags',
@@ -161,17 +148,12 @@ export const hashtagQueries: IResolvers = {
         throw new UserInputError('Invalid hashtag provided');
       }
 
-      const normalizedHashtag = hashtag.toLowerCase();
       const skip = (page - 1) * PAGE_SIZE;
       const limit = PAGE_SIZE;
 
-      const postsPromise = Post.find({ hashTags: normalizedHashtag })
-        .sort({ createdAt: -1 })
-        .populate('author');
+      const postsPromise = Post.find({ hashTags: hashtag }).sort({ createdAt: -1 }).populate('author');
 
-      const commentsPromise = Comment.find({ hashTags: normalizedHashtag })
-        .sort({ createdAt: -1 })
-        .populate('author');
+      const commentsPromise = Comment.find({ hashTags: hashtag });
 
       const [posts, comments] = await Promise.all([postsPromise, commentsPromise]);
 
