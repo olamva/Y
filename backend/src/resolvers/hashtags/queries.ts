@@ -76,95 +76,97 @@ export const hashtagQueries: IResolvers = {
         throw new Error('Error performing hashtag search.');
       }
     },
-  },
-  getTrendingHashtags: async (_, { page, limit = 16 }, context) => {
-    const pageNumber = parseInt(page, 16);
+    getTrendingHashtags: async (_, { page, limit = 16 }, context) => {
+      const pageNumber = parseInt(page, 16);
 
-    if (isNaN(pageNumber) || pageNumber < 1) {
-      throw new UserInputError('Page must be a positive integer');
-    }
-
-    const skip = (pageNumber - 1) * limit;
-
-    try {
-      const postHashtags = await Post.aggregate([
-        { $unwind: '$hashTags' },
-        {
-          $group: {
-            _id: '$hashTags',
-            count: { $sum: 1 },
-          },
-        },
-      ]);
-
-      const commentHashtags = await Comment.aggregate([
-        { $unwind: '$hashTags' },
-        {
-          $group: {
-            _id: '$hashTags',
-            count: { $sum: 1 },
-          },
-        },
-      ]);
-
-      const combined = [...postHashtags, ...commentHashtags];
-
-      const hashtagMap = new Map();
-
-      combined.forEach((item) => {
-        const tag = item._id;
-        const count = item.count;
-        if (hashtagMap.has(tag)) {
-          hashtagMap.set(tag, hashtagMap.get(tag) + count);
-        } else {
-          hashtagMap.set(tag, count);
-        }
-      });
-
-      const sortedHashtags = Array.from(hashtagMap, ([tag, count]) => ({
-        tag,
-        count,
-      })).sort((a, b) => {
-        if (b.count === a.count) {
-          return a.tag.localeCompare(b.tag);
-        }
-        return b.count - a.count;
-      });
-
-      const paginatedHashtags = sortedHashtags.slice(skip, skip + limit);
-
-      return paginatedHashtags;
-    } catch (error) {
-      console.error('Error fetching trending hashtags:', error);
-      throw new Error('Failed to fetch trending hashtags');
-    }
-  },
-
-  getContentByHashtag: async (_, { hashtag, page }, context) => {
-    const PAGE_SIZE = 10;
-
-    try {
-      if (!hashtag || typeof hashtag !== 'string') {
-        throw new UserInputError('Invalid hashtag provided');
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer');
       }
 
-      const skip = (page - 1) * PAGE_SIZE;
-      const limit = PAGE_SIZE;
+      const skip = (pageNumber - 1) * limit;
 
-      const postsPromise = Post.find({ hashTags: hashtag }).sort({ createdAt: -1 }).populate('author');
+      try {
+        const postHashtags = await Post.aggregate([
+          { $unwind: '$hashTags' },
+          {
+            $group: {
+              _id: '$hashTags',
+              count: { $sum: 1 },
+            },
+          },
+        ]);
 
-      const commentsPromise = Comment.find({ hashTags: hashtag });
+        const commentHashtags = await Comment.aggregate([
+          { $unwind: '$hashTags' },
+          {
+            $group: {
+              _id: '$hashTags',
+              count: { $sum: 1 },
+            },
+          },
+        ]);
 
-      const [posts, comments] = await Promise.all([postsPromise, commentsPromise]);
+        const combined = [...postHashtags, ...commentHashtags];
 
-      const combined = [...posts, ...comments].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        const hashtagMap = new Map();
 
-      const paginatedResults = combined.slice(skip, skip + limit).filter((item) => item.author);
+        combined.forEach((item) => {
+          const tag = item._id;
+          const count = item.count;
+          if (hashtagMap.has(tag)) {
+            hashtagMap.set(tag, hashtagMap.get(tag) + count);
+          } else {
+            hashtagMap.set(tag, count);
+          }
+        });
 
-      return paginatedResults;
-    } catch (error) {
-      console.error(`Error fetching posts and comments for hashtag "${hashtag}":`, error);
-      throw new Error('Failed to fetch posts and comments by hashtag');
-    }
+        const sortedHashtags = Array.from(hashtagMap, ([tag, count]) => ({
+          tag,
+          count,
+        })).sort((a, b) => {
+          if (b.count === a.count) {
+            return a.tag.localeCompare(b.tag);
+          }
+          return b.count - a.count;
+        });
+
+        const paginatedHashtags = sortedHashtags.slice(skip, skip + limit);
+
+        return paginatedHashtags;
+      } catch (error) {
+        console.error('Error fetching trending hashtags:', error);
+        throw new Error('Failed to fetch trending hashtags');
+      }
+    },
+
+    getContentByHashtag: async (_, { hashtag, page }, context) => {
+      const PAGE_SIZE = 10;
+
+      try {
+        if (!hashtag || typeof hashtag !== 'string') {
+          throw new UserInputError('Invalid hashtag provided');
+        }
+
+        const skip = (page - 1) * PAGE_SIZE;
+        const limit = PAGE_SIZE;
+
+        const postsPromise = Post.find({ hashTags: hashtag }).sort({ createdAt: -1 }).populate('author');
+
+        const commentsPromise = Comment.find({ hashTags: hashtag });
+
+        const [posts, comments] = await Promise.all([postsPromise, commentsPromise]);
+
+        const combined = [...posts, ...comments].sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        );
+
+        const paginatedResults = combined.slice(skip, skip + limit).filter((item) => item.author);
+
+        return paginatedResults;
+      } catch (error) {
+        console.error(`Error fetching posts and comments for hashtag "${hashtag}":`, error);
+        throw new Error('Failed to fetch posts and comments by hashtag');
+      }
+    },
   },
 };

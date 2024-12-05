@@ -1,7 +1,9 @@
 import { IResolvers } from '@graphql-tools/utils';
+import { GraphQLUpload } from 'graphql-upload-minimal';
 import { User } from '../../models/user';
 
 export const postTypeResolvers: IResolvers = {
+  Upload: GraphQLUpload,
   Post: {
     id: (parent) => {
       const id = parent._id || parent.id;
@@ -17,6 +19,28 @@ export const postTypeResolvers: IResolvers = {
     mentionedUsers: (parent) => parent.mentionedUsers,
     author: async (parent) => {
       return await User.findById(parent.author);
+    },
+  },
+  PostItem: {
+    __resolveType(obj: any, context: any, info: any) {
+      if (obj.originalType) {
+        return 'Repost';
+      }
+      if (obj.body !== undefined) {
+        return 'Post';
+      }
+      return null;
+    },
+  },
+  Parent: {
+    __resolveType(obj: any, context: any, info: any) {
+      if (obj.parentType) {
+        return 'Comment';
+      }
+      if (obj.body !== undefined) {
+        return 'Post';
+      }
+      return null;
     },
   },
 };

@@ -340,5 +340,32 @@ export const postQueries: IResolvers = {
         throw new Error('Error performing search');
       }
     },
+    getParent: async (_, { parentID, parentType }) => {
+      try {
+        if (parentType === 'post') return await Post.findById(parentID).populate('author');
+        else return await Comment.findById(parentID).populate('author');
+      } catch (err) {
+        throw new Error('Error fetching parent');
+      }
+    },
+    getParentsByIds: async (_, { parents }) => {
+      const fetchedParents: (PostType | CommentType)[] = [];
+      try {
+        await Promise.all(
+          parents.map(async (parent: { id: string; type: string }) => {
+            if (parent.type === 'post') {
+              const post = await Post.findById(parent.id).populate('author');
+              if (post && post.author) fetchedParents.push(post);
+            } else {
+              const comment = await Comment.findById(parent.id).populate('author');
+              if (comment && comment.author) fetchedParents.push(comment);
+            }
+          })
+        );
+        return fetchedParents;
+      } catch (err) {
+        throw new Error('Error fetching parents');
+      }
+    },
   },
 };

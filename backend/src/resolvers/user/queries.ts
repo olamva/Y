@@ -23,41 +23,41 @@ export const userQueries: IResolvers = {
         throw new Error('Error fetching users');
       }
     },
-  },
-  getUser: async (_, { username }) => {
-    try {
-      return await User.findOne({ username: username });
-    } catch (err) {
-      throw new Error('Error fetching user');
-    }
-  },
-  searchUsers: async (_, { query, page, limit }) => {
-    if (query.length > 40) {
-      throw new UserInputError('Query can max be 40 characters');
-    }
+    getUser: async (_, { username }) => {
+      try {
+        return await User.findOne({ username: username });
+      } catch (err) {
+        throw new Error('Error fetching user');
+      }
+    },
+    searchUsers: async (_, { query, page, limit }) => {
+      if (query.length > 40) {
+        throw new UserInputError('Query can max be 40 characters');
+      }
 
-    const PAGE_SIZE = limit || 10;
-    const pageNumber = parseInt(page, 10);
-    if (isNaN(pageNumber) || pageNumber < 1) {
-      throw new UserInputError('Page must be a positive integer');
-    }
-    const skip = (pageNumber - 1) * PAGE_SIZE;
+      const PAGE_SIZE = limit || 10;
+      const pageNumber = parseInt(page, 10);
+      if (isNaN(pageNumber) || pageNumber < 1) {
+        throw new UserInputError('Page must be a positive integer');
+      }
+      const skip = (pageNumber - 1) * PAGE_SIZE;
 
-    try {
-      const searchQuery = query.startsWith('@') ? query.slice(1) : query;
-      return await User.find({
-        $or: [
-          { username: { $regex: searchQuery, $options: 'i' } },
-          { firstName: { $regex: query, $options: 'i' } },
-          { lastName: { $regex: query, $options: 'i' } },
-        ],
-      })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(PAGE_SIZE);
-    } catch (err) {
-      console.error('Search Users Error:', err);
-      throw new Error('Error performing user search');
-    }
+      try {
+        const searchQuery = query.startsWith('@') ? query.slice(1) : query;
+        return await User.find({
+          $or: [
+            { username: { $regex: searchQuery, $options: 'i' } },
+            { firstName: { $regex: query, $options: 'i' } },
+            { lastName: { $regex: query, $options: 'i' } },
+          ],
+        })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(PAGE_SIZE);
+      } catch (err) {
+        console.error('Search Users Error:', err);
+        throw new Error('Error performing user search');
+      }
+    },
   },
 };

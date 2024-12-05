@@ -265,76 +265,76 @@ export const postMutations: IResolvers = {
         throw new Error(`Error deleting post: ${(err as Error).message}`);
       }
     },
-  },
-  likePost: async (_, { postID }, context) => {
-    if (!context.user) {
-      throw new AuthenticationError('You must be logged in to like a post');
-    }
+    likePost: async (_, { postID }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to like a post');
+      }
 
-    const post = await Post.findById(postID);
-    if (!post) {
-      throw new UserInputError('Post not found');
-    }
+      const post = await Post.findById(postID);
+      if (!post) {
+        throw new UserInputError('Post not found');
+      }
 
-    const user = await User.findById(context.user.id);
-    if (!user) {
-      throw new UserInputError('User not found');
-    }
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
 
-    if (!user.likedPostIds.includes(postID)) {
-      post.amtLikes += 1;
-      user.likedPostIds.push(postID);
-      await post.save();
-      await user.save();
-    }
+      if (!user.likedPostIds.includes(postID)) {
+        post.amtLikes += 1;
+        user.likedPostIds.push(postID);
+        await post.save();
+        await user.save();
+      }
 
-    if (post.author._id.toString() !== user.id.toString()) {
-      const notification = new Notification({
-        type: 'LIKE',
-        postType: 'post',
-        postID,
-        recipient: post.author,
-        sender: user,
-      });
+      if (post.author._id.toString() !== user.id.toString()) {
+        const notification = new Notification({
+          type: 'LIKE',
+          postType: 'post',
+          postID,
+          recipient: post.author,
+          sender: user,
+        });
 
-      await notification.save();
-    }
+        await notification.save();
+      }
 
-    return await post.populate('author');
-  },
+      return await post.populate('author');
+    },
 
-  unlikePost: async (_, { postID }, context) => {
-    if (!context.user) {
-      throw new AuthenticationError('You must be logged in to unlike a post');
-    }
+    unlikePost: async (_, { postID }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You must be logged in to unlike a post');
+      }
 
-    const post = await Post.findById(postID);
-    if (!post) {
-      throw new UserInputError('Post not found');
-    }
+      const post = await Post.findById(postID);
+      if (!post) {
+        throw new UserInputError('Post not found');
+      }
 
-    const user = await User.findById(context.user.id);
-    if (!user) {
-      throw new UserInputError('User not found');
-    }
+      const user = await User.findById(context.user.id);
+      if (!user) {
+        throw new UserInputError('User not found');
+      }
 
-    const likedIndex = user.likedPostIds.indexOf(postID);
-    if (likedIndex > -1) {
-      post.amtLikes = Math.max(post.amtLikes - 1, 0);
-      user.likedPostIds.splice(likedIndex, 1);
-      await post.save();
-      await user.save();
-    }
+      const likedIndex = user.likedPostIds.indexOf(postID);
+      if (likedIndex > -1) {
+        post.amtLikes = Math.max(post.amtLikes - 1, 0);
+        user.likedPostIds.splice(likedIndex, 1);
+        await post.save();
+        await user.save();
+      }
 
-    if (post.author._id.toString() !== user.id.toString()) {
-      await Notification.findOneAndDelete({
-        type: 'LIKE',
-        postType: 'post',
-        postID,
-        sender: user,
-      });
-    }
+      if (post.author._id.toString() !== user.id.toString()) {
+        await Notification.findOneAndDelete({
+          type: 'LIKE',
+          postType: 'post',
+          postID,
+          sender: user,
+        });
+      }
 
-    return await post.populate('author');
+      return await post.populate('author');
+    },
   },
 };
