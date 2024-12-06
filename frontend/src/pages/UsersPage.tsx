@@ -1,29 +1,49 @@
 import LargeCardSkeleton from "@/components/Skeletons/LargeCardSkeleton";
 import BackButton from "@/components/ui/BackButton";
 import Divider from "@/components/ui/Divider";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
 import ProfileCard from "@/components/Users/ProfileCard";
 import { UserType } from "@/lib/types";
 import { GET_USERS } from "@/queries/user";
 import { NetworkStatus, useQuery } from "@apollo/client";
+import { BugIcon, UserIcon, VerifiedIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const USERS_PER_PAGE = 16;
 
+type FilterType = "ALL" | "VERIFIED" | "DEVELOPERS";
+
 const UsersPage = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [filter, setFilter] = useState<FilterType>("ALL");
 
   useEffect(() => {
-    document.title = `Y · All Users`;
-  }, []);
+    switch (filter) {
+      case "ALL":
+        document.title = "Y · All Users";
+        break;
+      case "VERIFIED":
+        document.title = "Y · All Verified Users";
+        break;
+      case "DEVELOPERS":
+        document.title = "Y · All Developers";
+        break;
+    }
+  }, [filter]);
 
-  const { data, loading, error, fetchMore, networkStatus } = useQuery<{
+  const { data, loading, error, fetchMore, networkStatus, refetch } = useQuery<{
     getUsers: UserType[];
   }>(GET_USERS, {
-    variables: { page: 1 },
+    variables: { page: 1, filter },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
+    onCompleted: (data) => {
+      if (data.getUsers.length < USERS_PER_PAGE) {
+        setHasMore(false);
+      }
+    },
   });
 
   const users = data?.getUsers || [];
@@ -66,11 +86,59 @@ const UsersPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loadMoreUsers, hasMore, networkStatus]);
 
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    refetch({ page: 1, filter });
+  }, [filter, refetch]);
+
   return (
     <div className="mx-auto min-h-screen w-full max-w-screen-xl px-5">
       <BackButton />
       <main className="flex w-full flex-col items-center justify-center">
-        <h1 className="my-4 text-3xl font-bold">All users</h1>
+        <ToggleGroup
+          value={filter}
+          onValueChange={(newFilter: FilterType) => {
+            if (newFilter) setFilter(newFilter);
+          }}
+          type="single"
+          variant="outline"
+          role="radiogroup"
+          className="mb-4 flex items-center justify-evenly gap-2"
+        >
+          <ToggleGroupItem
+            value="ALL"
+            aria-label="Filter by all users"
+            aria-checked={filter === "ALL"}
+            role="radio"
+            className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+          >
+            <UserIcon className="hidden size-4 sm:block md:size-6" />
+            <p>All Users</p>
+          </ToggleGroupItem>
+
+          <ToggleGroupItem
+            value="VERIFIED"
+            aria-label="Filter by verified users"
+            aria-checked={filter === "VERIFIED"}
+            role="radio"
+            className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+          >
+            <VerifiedIcon className="hidden size-4 sm:block md:size-6" />
+            <p>Verified Users</p>
+          </ToggleGroupItem>
+
+          <ToggleGroupItem
+            value="DEVELOPERS"
+            aria-label="Filter by developers"
+            aria-checked={filter === "DEVELOPERS"}
+            role="radio"
+            className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+          >
+            <BugIcon className="hidden size-4 sm:block md:size-6" />
+            <p>Developers</p>
+          </ToggleGroupItem>
+        </ToggleGroup>
         <Divider />
         <div className="flex w-full flex-wrap justify-evenly gap-x-2 gap-y-4">
           {error && (

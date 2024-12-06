@@ -17,7 +17,7 @@ An Appollo Express backend, with MongoDB as database
     - [`getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!`](#getrepostsbyuserusername-string-page-int-limit-int-repost)
     - [`getComments(postID: ID!, page: Int!): [Comment!]!`](#getcommentspostid-id-page-int-comment)
     - [`getUser(username: String!): User`](#getuserusername-string-user)
-    - [`getUsers(page: Int!, excludeFollowing: Boolean): [User!]!`](#getuserspage-int-excludefollowing-boolean-user)
+    - [`getUsers(page: Int!, excludeFollowing: Boolean, filter: String): [User!]!`](#getuserspage-int-excludefollowing-boolean-filter-string-user)
     - [`searchPosts(query: String!, page: Int!): [Post!]!`](#searchpostsquery-string-page-int-post)
     - [`searchUsers(query: String!, page: Int!, limit: Int!): [User!]!`](#searchusersquery-string-page-int-limit-int-user)
     - [`searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!`](#searchhashtagsquery-string-page-int-limit-int-trendinghashtag)
@@ -140,13 +140,14 @@ Retrieves a user by their username.
 
 ---
 
-#### `getUsers(page: Int!, excludeFollowing: Boolean): [User!]!`
+#### `getUsers(page: Int!, excludeFollowing: Boolean, filter: String): [User!]!`
 
 Fetches a paginated list of users, with an option to exclude users the current user is following.
 
 - **Parameters:**
   - `page` (Int!): The page number to retrieve.
   - `excludeFollowing` (Boolean): Whether to exclude followed users.
+  - `filter` (String): Filter which users to fetch, either `ALL`, `VERIFIED`, or `DEVELOPERS`.
 - **Returns:** An array of `User` objects.
 
 ---
