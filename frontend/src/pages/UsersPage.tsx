@@ -25,10 +25,10 @@ const UsersPage = () => {
         document.title = "Y · All Users";
         break;
       case "VERIFIED":
-        document.title = "Y · All Verified Users";
+        document.title = "Y · Verified Users";
         break;
       case "DEVELOPERS":
-        document.title = "Y · All Developers";
+        document.title = "Y · Developers";
         break;
     }
   }, [filter]);
