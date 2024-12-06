@@ -9,6 +9,7 @@ export const REPOST_MUTATION = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       originalID
@@ -23,6 +24,7 @@ export const REPOST_MUTATION = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -51,6 +53,7 @@ export const GET_REPOSTS_BY_USER = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       originalID
@@ -65,6 +68,7 @@ export const GET_REPOSTS_BY_USER = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes

@@ -14,6 +14,7 @@ export const GET_COMMENTS = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -39,6 +40,7 @@ export const GET_COMMENT = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -64,6 +66,7 @@ export const GET_COMMENTS_BY_IDS = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -99,6 +102,7 @@ export const CREATE_COMMENT = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       createdAt
