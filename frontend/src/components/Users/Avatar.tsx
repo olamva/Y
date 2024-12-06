@@ -89,7 +89,7 @@ const Avatar = ({
   return (
     <Tag
       {...tagProps}
-      className={`relative flex select-none items-center justify-center overflow-hidden rounded-full border border-neutral-400 text-center text-gray-900 transition-transform dark:border-neutral-700 dark:text-white ${sizeClasses} ${deterministicBgColor()}`}
+      className={`relative flex select-none items-center justify-center overflow-hidden rounded-full border border-neutral-400 text-center text-gray-900 transition-transform dark:border-neutral-700 dark:text-white ${sizeClasses} ${hasImage ? "" : deterministicBgColor()}`}
       aria-label={`${user.username}'s profile`}
     >
       {hasImage && (
