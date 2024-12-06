@@ -8,6 +8,12 @@ import PostsView from "@/components/Profile/PostsView";
 import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 import BackButton from "@/components/ui/BackButton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/ToggleGroup";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Avatar from "@/components/Users/Avatar";
 import FollowButton from "@/components/Users/FollowButton";
 import VerificationBadge from "@/components/Users/VerificationBadge";
@@ -16,7 +22,15 @@ import { UserType } from "@/lib/types";
 import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { UserIcon, UsersIcon } from "lucide-react";
+import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import {
+  EarthIcon,
+  HeartIcon,
+  NewspaperIcon,
+  UserIcon,
+  Users2Icon,
+  UsersIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -164,7 +178,7 @@ const Profile = () => {
             </div>
             {/* User Info */}
             <div className="mx-auto max-w-5xl">
-              <div className="-mt-16 flex items-end space-x-5">
+              <div className="-mt-16 flex items-end space-x-5 px-1">
                 <Avatar user={user} large />
                 <div className="flex min-w-0 flex-1 items-center justify-end pb-1">
                   <div className="mt-6 hidden min-w-0 flex-1 flex-col md:flex">
@@ -190,7 +204,25 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2 md:mt-0">
+                  <div className="flex items-center gap-2 md:mt-0">
+                    {(user.username === "Mads" ||
+                      user.username === "saraSlag") && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <a
+                              href="http://it2810-33.idi.ntnu.no/project2"
+                              className="hidden cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:block"
+                            >
+                              <EarthIcon className="size-8" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Where to next?</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                     {loggedInUser &&
                       username !== "admin" &&
                       (loggedInUser.username === username ||
@@ -210,19 +242,42 @@ const Profile = () => {
                 </div>
               </div>
               {/* Mobile User Info */}
-              <div className="mt-6 block min-w-0 flex-1 md:hidden">
-                <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
-                  {user?.firstName} {user?.lastName}
-                </h1>
-                <div className="flex flex-row gap-2">
-                  <p className="text-md text-gray-600">@{user.username}</p>
-                  {loggedInUser?.username !== username && (
-                    <FollowButton
-                      disableTruncate
-                      targetUsername={username || ""}
-                    />
-                  )}
+              <div className="mt-6 flex min-w-0 flex-1 justify-between px-1 md:hidden">
+                <div>
+                  <h1 className="truncate text-2xl font-bold text-gray-900 dark:text-white">
+                    {user?.firstName
+                      ? user.lastName
+                        ? `${user.firstName} ${user.lastName}`
+                        : user.firstName
+                      : user.username}
+                  </h1>
+                  <div className="flex flex-row gap-2">
+                    <p className="text-md text-gray-600">@{user.username}</p>
+                    {loggedInUser?.username !== username && (
+                      <FollowButton
+                        disableTruncate
+                        targetUsername={username || ""}
+                      />
+                    )}
+                  </div>
                 </div>
+                {(user.username === "Mads" || user.username === "saraSlag") && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <a
+                          href="http://it2810-33.idi.ntnu.no/project2"
+                          className="cursor-help hover:text-gray-600 dark:hover:text-gray-400 md:hidden"
+                        >
+                          <EarthIcon className="size-8" />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Where to next?</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
               {/* Followers and Following */}
               <div className="my-2 mt-4 rounded-lg bg-gray-100 p-1 shadow-lg transition-shadow duration-300 ease-in-out hover:shadow-xl dark:bg-gray-700 sm:p-4">
@@ -276,53 +331,74 @@ const Profile = () => {
               }}
               type="single"
               variant="outline"
-              className="flex items-center justify-evenly gap-2"
+              className="flex w-full items-center justify-evenly gap-2"
             >
               <ToggleGroupItem
                 value="posts"
                 aria-label="View Posts"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <NewspaperIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex items-center gap-1">
                   <p className="hidden sm:block">
                     {user?.postIds.length + user.repostedPostIds.length}
                   </p>
-                  <p>Posts</p>
+                  <p>
+                    {user?.postIds.length + user.repostedPostIds.length === 1
+                      ? "Post"
+                      : "Posts"}
+                  </p>
                 </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="comments"
                 aria-label="View Comments"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <ChatBubbleLeftIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
                   <p className="hidden sm:block">{user?.commentIds.length}</p>
-                  <p>Comments</p>
+                  <p>
+                    {user?.commentIds.length === 1 ? "Comment" : "Comments"}
+                  </p>
                 </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="mentions"
                 aria-label="View Mentions"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <Users2Icon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
                   <p className="hidden sm:block">
                     {user?.mentionedPostIds.length +
                       user.mentionedCommentIds.length}
                   </p>
-                  <p>Mentions</p>
+                  <p>
+                    {user?.mentionedPostIds.length +
+                      user.mentionedCommentIds.length ===
+                    1
+                      ? "Mention"
+                      : "Mentions"}
+                  </p>
                 </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="likes"
                 aria-label="View Likes"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <HeartIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
                   <p className="hidden sm:block">
                     {user?.likedPostIds.length + user.likedCommentIds.length}
                   </p>
-                  <p>Likes</p>
+                  <p>
+                    {user?.likedPostIds.length + user.likedCommentIds.length ===
+                    1
+                      ? "Like"
+                      : "Likes"}
+                  </p>
                 </span>
               </ToggleGroupItem>
             </ToggleGroup>

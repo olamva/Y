@@ -30,7 +30,7 @@ export const repostQueries: IResolvers = {
               originalPost = await Comment.findById(repost.originalID);
             }
             if (!originalPost) {
-              throw new Error('Original post not found');
+              return null;
             }
             const originalAuthor = await User.findById(originalPost.author);
 
@@ -55,9 +55,9 @@ export const repostQueries: IResolvers = {
             };
           })
         );
-        return repostedPosts;
+        return repostedPosts.filter((post) => post !== null);
       } catch (err) {
-        throw new Error('Error fetching reposts by IDs');
+        throw new Error(`Error fetching reposts by IDs ${err}`);
       }
     },
   },

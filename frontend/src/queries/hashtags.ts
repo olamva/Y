@@ -22,6 +22,7 @@ export const GET_CONTENT_BY_HASHTAG = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes
@@ -41,6 +42,7 @@ export const GET_CONTENT_BY_HASHTAG = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes

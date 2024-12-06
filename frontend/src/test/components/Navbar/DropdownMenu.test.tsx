@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/AuthContext", () => ({
+vi.mock("@/hooks/AuthContext", () => ({
   useAuth: vi.fn().mockReturnValue({
     user: { username: "testuser" },
     logout: vi.fn(),

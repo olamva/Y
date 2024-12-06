@@ -3,6 +3,7 @@ import { AuthenticationError, UserInputError } from 'apollo-server-errors';
 import { Comment, CommentType } from '../../models/comment';
 import { Notification } from '../../models/notification';
 import { Post, PostType } from '../../models/post';
+import { Repost } from '../../models/repost';
 import { User } from '../../models/user';
 import { deleteFile, uploadFile } from '../../uploadFile';
 import { extractHashtags, extractMentions } from '../../utils';
@@ -241,6 +242,20 @@ export const commentMutations: IResolvers = {
           if (!deleteResult.success) {
             console.warn(`Failed to delete file: ${deleteResult.message}`);
           }
+        }
+
+        if (deletedComment.amtReposts > 0) {
+          await User.updateMany({ $pull: { repostedPostIds: deletedComment.id } });
+          await Repost.deleteMany({ originalID: deletedComment.id });
+        }
+
+        if (deletedComment.amtLikes > 0) {
+          await User.updateMany({ $pull: { likedCommentIds: deletedComment.id } });
+          await Notification.deleteMany({
+            type: 'LIKE',
+            postType: 'post',
+            postID: deletedComment.id,
+          });
         }
 
         let parent: PostType | CommentType | null = null;

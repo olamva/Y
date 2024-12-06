@@ -11,7 +11,7 @@ import { HeartFilledIcon } from "@radix-ui/react-icons";
 import {
   HeartIcon,
   PencilIcon,
-  RecycleIcon,
+  Repeat2Icon,
   Share2Icon,
   TrashIcon,
 } from "lucide-react";
@@ -247,6 +247,7 @@ const PostContent = ({
         <button
           className="group flex items-center gap-1 p-2"
           aria-label="Like post"
+          aria-pressed={isLiked}
           onClick={toggleLike}
         >
           {isLiked ? (
@@ -269,7 +270,7 @@ const PostContent = ({
             else repost();
           }}
         >
-          <RecycleIcon
+          <Repeat2Icon
             className={`size-6 transition-all sm:group-hover:scale-110 ${hasReposted ? "text-green-600 sm:group-hover:text-red-600" : "sm:group-hover:text-green-600"}`}
           />
           <span className="flex select-none gap-1">

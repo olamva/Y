@@ -14,6 +14,7 @@ export const GET_POSTS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes
@@ -30,6 +31,7 @@ export const GET_POSTS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         originalID
@@ -40,6 +42,7 @@ export const GET_POSTS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         repostedAt
@@ -57,6 +60,7 @@ export const GET_POSTS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         parentID
@@ -78,6 +82,7 @@ export const GET_POST = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -101,6 +106,7 @@ export const GET_POSTS_BY_IDS = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -123,6 +129,7 @@ export const CREATE_POST = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
       amtLikes
@@ -184,6 +191,7 @@ export const GET_PARENT = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes
@@ -203,6 +211,7 @@ export const GET_PARENT = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes
@@ -228,6 +237,7 @@ export const GET_PARENTS_BY_IDS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes
@@ -247,6 +257,7 @@ export const GET_PARENTS_BY_IDS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes

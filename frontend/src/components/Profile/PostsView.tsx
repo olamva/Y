@@ -1,12 +1,12 @@
 import Post from "@/components/Post/Post";
 import Repost from "@/components/Post/Repost";
+import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 import { PostType, RepostType } from "@/lib/types";
 import { GET_POSTS_BY_IDS } from "@/queries/posts";
 import { GET_REPOSTS_BY_USER } from "@/queries/reposts";
 import { NetworkStatus, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import PostSkeleton from "@/components/Skeletons/PostSkeleton";
 
 const PAGE_SIZE = 16;
 

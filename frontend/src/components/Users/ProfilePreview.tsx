@@ -14,10 +14,10 @@ const ProfilePreview = ({ user }: { user: UserType }) => (
     <div
       style={{
         backgroundImage: `url('${user.backgroundPicture || CoverPhoto}')`,
-        backgroundSize: "100% 60%",
+        backgroundSize: "100% 80%",
         backgroundPosition: "center top",
       }}
-      className="flex h-12 w-full items-center justify-center bg-cover bg-no-repeat"
+      className="flex h-16 w-full items-end justify-center bg-contain bg-no-repeat"
     >
       <Avatar noHref user={user} />
     </div>

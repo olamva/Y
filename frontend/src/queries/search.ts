@@ -12,6 +12,7 @@ export const SEARCH_POSTS = gql`
           firstName
           lastName
           profilePicture
+          backgroundPicture
           verified
         }
         amtLikes
@@ -33,6 +34,7 @@ export const SEARCH_USERS = gql`
         firstName
         lastName
         profilePicture
+        backgroundPicture
         verified
       }
     }
