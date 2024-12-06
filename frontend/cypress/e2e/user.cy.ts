@@ -37,7 +37,7 @@ describe("User Page", () => {
     cy.get("button").contains("Post").click();
     cy.contains("This is a test comment").should("be.visible");
     cy.visit("/user/cytest");
-    cy.get("button").contains("Comments").click();
+    cy.get("button").contains(/Comments?/).click();
     cy.contains("This is a test comment").should("be.visible");
 
     cy.get('[aria-label="Delete post"]').first().click();
