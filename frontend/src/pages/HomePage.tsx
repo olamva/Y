@@ -192,7 +192,7 @@ const HomePage = () => {
               aria-label="Filter by latest posts"
               aria-checked={filter === "LATEST"}
               role="radio"
-              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
               <ClockIcon className="hidden size-4 sm:block md:size-6" />
               <p>Latest</p>
@@ -203,7 +203,7 @@ const HomePage = () => {
               aria-label="Filter by posts from people you follow"
               aria-checked={filter === "FOLLOWING"}
               role="radio"
-              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               onClick={() => {
                 if (!user) setShowLoginPrompt(true);
               }}
@@ -217,7 +217,7 @@ const HomePage = () => {
               aria-label="Filter by popular posts"
               aria-checked={filter === "POPULAR"}
               role="radio"
-              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
               <FlameIcon className="hidden size-4 sm:block md:size-6" />
               <p>Popular</p>
@@ -228,7 +228,7 @@ const HomePage = () => {
               aria-label="Filter by controversial posts"
               aria-checked={filter === "CONTROVERSIAL"}
               role="radio"
-              className="gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
               <MessageSquareMoreIcon className="hidden size-4 sm:block md:size-6" />
               <p>Controversial</p>

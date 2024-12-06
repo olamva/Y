@@ -4,7 +4,7 @@ import { User } from '../../models/user';
 
 export const userQueries: IResolvers = {
   Query: {
-    getUsers: async (_, { page, excludeFollowing }, context) => {
+    getUsers: async (_, { page, excludeFollowing, filter = 'ALL' }, context) => {
       const USERS_PER_PAGE = 16;
       const skip = (page - 1) * USERS_PER_PAGE;
 
@@ -15,6 +15,12 @@ export const userQueries: IResolvers = {
           username: { $nin: ['admin', 'fredrik', 'cytest', context.user.username] },
           _id: { $nin: context.user.following },
         };
+      }
+
+      if (filter === 'VERIFIED') {
+        query.verified = { $ne: 'UNVERIFIED' };
+      } else if (filter === 'DEVELOPERS') {
+        query.verified = 'DEVELOPER';
       }
 
       try {

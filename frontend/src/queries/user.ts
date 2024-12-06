@@ -47,8 +47,12 @@ export const GET_USER_QUERY = gql`
 `;
 
 export const GET_USERS = gql`
-  query GetUsers($page: Int!, $excludeFollowing: Boolean) {
-    getUsers(page: $page, excludeFollowing: $excludeFollowing) {
+  query GetUsers($page: Int!, $excludeFollowing: Boolean, $filter: String) {
+    getUsers(
+      page: $page
+      excludeFollowing: $excludeFollowing
+      filter: $filter
+    ) {
       id
       username
       firstName

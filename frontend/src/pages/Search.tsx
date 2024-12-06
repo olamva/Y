@@ -8,6 +8,7 @@ import ProfileCard from "@/components/Users/ProfileCard";
 import { HashtagType, PostType, UserType } from "@/lib/types";
 import { SEARCH_HASHTAGS, SEARCH_POSTS, SEARCH_USERS } from "@/queries/search";
 import { useQuery } from "@apollo/client";
+import { NewspaperIcon, UserIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
@@ -186,7 +187,7 @@ const SearchPage = () => {
     <div className="w-full">
       <BackButton />
       <main className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center px-4">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-4 flex w-full max-w-lg items-center gap-2">
           <ToggleGroup
             value={filterType}
             onValueChange={(value: ViewState) => {
@@ -202,27 +203,30 @@ const SearchPage = () => {
             }}
             type="single"
             variant="outline"
-            className="flex items-center justify-center gap-1"
+            className="flex w-full items-center justify-center gap-1"
           >
             <ToggleGroupItem
               value="posts"
               aria-label="View Posts"
-              className="p-5 text-center text-xl"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
+              <NewspaperIcon className="size-4 md:size-6" />
               <p>Posts</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="users"
               aria-label="View Comments"
-              className="p-5 text-center text-xl"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
+              <UserIcon className="size-4 md:size-6" />
               <p>Users</p>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="hashtags"
               aria-label="View Mentions"
-              className="p-5 text-center text-xl"
+              className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
             >
+              <p className="text-base md:text-xl">#</p>
               <p>Hashtags</p>
             </ToggleGroupItem>
           </ToggleGroup>

@@ -13,7 +13,7 @@ beforeEach(() => {
   vi.clearAllMocks(); // Clears all mocks before each test
 });
 
-vi.mock("@/components/AuthContext", () => ({
+vi.mock("@/hooks/AuthContext", () => ({
   useAuth: vi.fn().mockReturnValue({
     user: { username: "testuser" },
     logout: vi.fn(),

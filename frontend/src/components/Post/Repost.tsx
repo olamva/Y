@@ -5,7 +5,7 @@ import Username from "@/components/Users/Username";
 import { useAuth } from "@/hooks/AuthContext";
 import { formatTimestamp } from "@/lib/dateUtils";
 import { CommentType, PostType, RepostType } from "@/lib/types";
-import { RecycleIcon } from "lucide-react";
+import { Repeat2Icon } from "lucide-react";
 
 const Repost = ({ repost }: { repost: RepostType }) => {
   const { user } = useAuth();
@@ -41,7 +41,7 @@ const Repost = ({ repost }: { repost: RepostType }) => {
           )}
           <div>
             <p className="hidden sm:flex">reposted</p>
-            <RecycleIcon className="relative h-4 w-4 text-black dark:text-white sm:hidden" />
+            <Repeat2Icon className="relative h-4 w-4 text-black dark:text-white sm:hidden" />
           </div>
           <p>·</p>
           <p>{formatTimestamp(repost.repostedAt)}</p>

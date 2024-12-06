@@ -4,7 +4,7 @@ type Query {
   getRepostsByUser(username: String!, page: Int!, limit: Int!): [Repost!]!
   getComments(postID: ID!, page: Int!): [Comment!]!
   getUser(username: String!): User
-  getUsers(page: Int!, excludeFollowing: Boolean): [User!]!
+  getUsers(page: Int!, excludeFollowing: Boolean, filter: String): [User!]!
   searchPosts(query: String!, page: Int!): [Post!]!
   searchUsers(query: String!, page: Int!, limit: Int!): [User!]!
   searchHashtags(query: String!, page: Int!, limit: Int!): [TrendingHashtag!]!
