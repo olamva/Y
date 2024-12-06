@@ -22,7 +22,15 @@ import { UserType } from "@/lib/types";
 import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { EarthIcon, UserIcon, UsersIcon } from "lucide-react";
+import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import {
+  EarthIcon,
+  HeartIcon,
+  NewspaperIcon,
+  UserIcon,
+  Users2Icon,
+  UsersIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -323,53 +331,74 @@ const Profile = () => {
               }}
               type="single"
               variant="outline"
-              className="flex items-center justify-evenly gap-2"
+              className="flex w-full items-center justify-evenly gap-2"
             >
               <ToggleGroupItem
                 value="posts"
                 aria-label="View Posts"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <NewspaperIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex items-center gap-1">
                   <p className="hidden sm:block">
                     {user?.postIds.length + user.repostedPostIds.length}
                   </p>
-                  <p>Posts</p>
+                  <p>
+                    {user?.postIds.length + user.repostedPostIds.length === 1
+                      ? "Post"
+                      : "Posts"}
+                  </p>
                 </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="comments"
                 aria-label="View Comments"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <ChatBubbleLeftIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
                   <p className="hidden sm:block">{user?.commentIds.length}</p>
-                  <p>Comments</p>
+                  <p>
+                    {user?.commentIds.length === 1 ? "Comment" : "Comments"}
+                  </p>
                 </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="mentions"
                 aria-label="View Mentions"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <Users2Icon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
                   <p className="hidden sm:block">
                     {user?.mentionedPostIds.length +
                       user.mentionedCommentIds.length}
                   </p>
-                  <p>Mentions</p>
+                  <p>
+                    {user?.mentionedPostIds.length +
+                      user.mentionedCommentIds.length ===
+                    1
+                      ? "Mention"
+                      : "Mentions"}
+                  </p>
                 </span>
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="likes"
                 aria-label="View Likes"
-                className="p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
+                <HeartIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
                   <p className="hidden sm:block">
                     {user?.likedPostIds.length + user.likedCommentIds.length}
                   </p>
-                  <p>Likes</p>
+                  <p>
+                    {user?.likedPostIds.length + user.likedCommentIds.length ===
+                    1
+                      ? "Like"
+                      : "Likes"}
+                  </p>
                 </span>
               </ToggleGroupItem>
             </ToggleGroup>
