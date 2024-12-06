@@ -19,11 +19,24 @@ describe("User Page", () => {
     cy.contains("This is a test bio").should("be.visible");
   });
 
-  it("Should create a post and delete it", () => {
+  it("Should create a post, like it, and then delete it", () => {
     cy.visit("/");
     cy.get("textarea").type("This is a test post");
     cy.get("button").contains("Post").click();
     cy.contains("This is a test post").should("be.visible");
+    cy.get('[aria-label="Like post"]').first().as("likeButton");
+    cy.get("@likeButton")
+      .find("span.select-none")
+      .invoke("text")
+      .then(() => {
+        cy.get("@likeButton").click();
+        cy.get("@likeButton")
+          .find("span.select-none")
+          .should(($span) => {
+            const newCount = parseInt($span.text(), 10);
+            expect(newCount).to.eq(1);
+          });
+      });
     cy.visit("/user/cytest");
     cy.contains("This is a test post").should("be.visible");
     cy.get('[aria-label="Delete post"]').click();
@@ -37,7 +50,9 @@ describe("User Page", () => {
     cy.get("button").contains("Post").click();
     cy.contains("This is a test comment").should("be.visible");
     cy.visit("/user/cytest");
-    cy.get("button").contains("Comments").click();
+    cy.get("button")
+      .contains(/Comments?/)
+      .click();
     cy.contains("This is a test comment").should("be.visible");
 
     cy.get('[aria-label="Delete post"]').first().click();
@@ -48,25 +63,5 @@ describe("User Page", () => {
     cy.get("button").contains("Follow").click();
     cy.wait(1000);
     cy.get("button").contains("Following").click();
-  });
-
-  it("Should like/unlike a post", () => {
-    cy.visit("/");
-
-    cy.get('[aria-label="Like post"]').first().as("likeButton");
-
-    cy.get("@likeButton")
-      .find("span.select-none")
-      .invoke("text")
-      .then((initialCountText) => {
-        const initialCount = parseInt(initialCountText, 10);
-        cy.get("@likeButton").click();
-        cy.get("@likeButton")
-          .find("span.select-none")
-          .should(($span) => {
-            const newCount = parseInt($span.text(), 10);
-            expect(newCount).to.eq(initialCount + 1 || initialCount - 1);
-          });
-      });
   });
 });

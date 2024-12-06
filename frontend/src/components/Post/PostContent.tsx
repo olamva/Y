@@ -247,6 +247,7 @@ const PostContent = ({
         <button
           className="group flex items-center gap-1 p-2"
           aria-label="Like post"
+          aria-pressed={isLiked}
           onClick={toggleLike}
         >
           {isLiked ? (
