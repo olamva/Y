@@ -49,7 +49,7 @@ const ProfileCard = ({ user, large }: Props) => {
     <a
       key={user.id}
       href={`/project2/user/${user.username}`}
-      className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900 text-center"
+      className="bg-white-100 flex w-full flex-col items-center gap-2 rounded-lg border px-2 py-6 text-center shadow-lg hover:scale-105 dark:border-gray-700 dark:bg-gray-900"
     >
       <h1 className="text-xl">
         {user.firstName
