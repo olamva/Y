@@ -24,9 +24,9 @@ import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import {
-  BookCheckIcon,
   EarthIcon,
   HeartIcon,
+  NewspaperIcon,
   UserIcon,
   Users2Icon,
   UsersIcon,
@@ -338,7 +338,7 @@ const Profile = () => {
                 aria-label="View Posts"
                 className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
-                <BookCheckIcon className="hidden size-4 sm:block md:size-6" />
+                <NewspaperIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex items-center gap-1">
                   <p className="hidden sm:block">
                     {user?.postIds.length + user.repostedPostIds.length}
