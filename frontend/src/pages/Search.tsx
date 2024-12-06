@@ -297,7 +297,7 @@ const SearchPage = () => {
                 key={user.id}
                 className="flex w-[30%] min-w-36 justify-center"
               >
-                <ProfileCard user={user} />
+                <ProfileCard user={user} large />
               </div>
             ))
           )}
