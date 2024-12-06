@@ -75,6 +75,22 @@ const Post = ({
                 );
               });
             },
+            getRepostsByUser(existingPosts = []) {
+              return existingPosts.filter((postRef: { __ref: string }) => {
+                return (
+                  postRef.__ref !== `Post:${deletedPostId}` &&
+                  !reposts.includes(postRef.__ref)
+                );
+              });
+            },
+            getPostsByIds(existingPosts = []) {
+              return existingPosts.filter((postRef: { __ref: string }) => {
+                return (
+                  postRef.__ref !== `Post:${deletedPostId}` &&
+                  !reposts.includes(postRef.__ref)
+                );
+              });
+            },
           },
         });
       },

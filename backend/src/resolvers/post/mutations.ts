@@ -227,6 +227,15 @@ export const postMutations: IResolvers = {
           await Repost.deleteMany({ originalID: deletedPost.id });
         }
 
+        if (deletedPost.amtLikes > 0) {
+          await User.updateMany({ $pull: { likedPostIds: deletedPost.id } });
+          await Notification.deleteMany({
+            type: 'LIKE',
+            postType: 'post',
+            postID: deletedPost.id,
+          });
+        }
+
         user.postIds = user.postIds.filter((postId) => String(postId) !== String(deletedPost.id));
 
         deletedPost.mentionedUsers?.forEach(async (id) => {

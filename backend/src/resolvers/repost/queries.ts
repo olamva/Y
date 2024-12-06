@@ -20,6 +20,8 @@ export const repostQueries: IResolvers = {
         .limit(REPOSTS_PER_PAGE)
         .populate('author');
 
+      // console.log(reposts);
+
       try {
         const repostedPosts = await Promise.all(
           reposts.map(async (repost) => {
@@ -29,8 +31,9 @@ export const repostQueries: IResolvers = {
             } else if (repost.originalType === 'Comment') {
               originalPost = await Comment.findById(repost.originalID);
             }
+            console.log(originalPost, '---------------------', !originalPost, repost.originalID);
             if (!originalPost) {
-              throw new Error('Original post not found');
+              return null;
             }
             const originalAuthor = await User.findById(originalPost.author);
 
@@ -55,9 +58,10 @@ export const repostQueries: IResolvers = {
             };
           })
         );
-        return repostedPosts;
+        console.log(reposts.length, repostedPosts.length, repostedPosts);
+        return repostedPosts.filter((post) => post !== null);
       } catch (err) {
-        throw new Error('Error fetching reposts by IDs');
+        throw new Error(`Error fetching reposts by IDs ${err}`);
       }
     },
   },

@@ -45,6 +45,12 @@ const Comment = ({
       update: (cache, { data }) => {
         if (!data) return;
         const deletedComment = data.deleteComment;
+        const deletedCommentId = data.deleteComment.id;
+        const reposts = Object.keys(cache.extract()).filter(
+          (key) =>
+            (cache.extract()[key] as { originalID?: string }).originalID ===
+            deletedCommentId,
+        );
         cache.modify({
           fields: {
             getComments(existingComments = [], { readField }) {
@@ -58,6 +64,22 @@ const Comment = ({
                 (c: { __ref: string }) =>
                   deletedComment.id !== readField("id", c),
               );
+            },
+            getRepostsByUser(existingPosts = []) {
+              return existingPosts.filter((postRef: { __ref: string }) => {
+                return (
+                  postRef.__ref !== `Comment:${deletedCommentId}` &&
+                  !reposts.includes(postRef.__ref)
+                );
+              });
+            },
+            getPosts(existingPosts = []) {
+              return existingPosts.filter((postRef: { __ref: string }) => {
+                return (
+                  postRef.__ref !== `Comment:${deletedCommentId}` &&
+                  !reposts.includes(postRef.__ref)
+                );
+              });
             },
           },
         });
