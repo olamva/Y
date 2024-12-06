@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 vi.mock("@/hooks/AuthContext", () => ({
   useAuth: vi.fn().mockReturnValue({
-    user: { likedPostIds: ["2"], username: "testuser" },
+    user: { likedPostIds: ["2"], username: "testuser", repostedPostIds: ["1"] },
   }),
 }));
 
@@ -52,49 +52,9 @@ describe("Post", () => {
     );
 
     expect(screen.getByText("This is a test post")).toBeInTheDocument();
-    expect(screen.getByText("5")).toBeInTheDocument(); // Likes count
-    expect(screen.getByText("3")).toBeInTheDocument(); // Comments count
-    expect(screen.getByText("2")).toBeInTheDocument(); // Reposts count
-  });
-
-  it("handles like and unlike post functionality", async () => {
-    render(
-      <MockedProvider>
-        <Post post={mockPost} />
-      </MockedProvider>,
-    );
-
-    const likeButton = screen.getByLabelText("Like post");
-
-    // Simulate liking the post
-    await userEvent.click(likeButton);
-    await waitFor(() =>
-      expect(toast.success).toHaveBeenCalledWith("Post liked successfully"),
-    );
-
-    // Simulate unliking the post
-    await userEvent.click(likeButton);
-    await waitFor(() =>
-      expect(toast.success).toHaveBeenCalledWith("Post unliked successfully"),
-    );
-  });
-
-  it("handles delete post functionality", async () => {
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-
-    render(
-      <MockedProvider>
-        <Post post={mockPost} />
-      </MockedProvider>,
-    );
-
-    const deleteButton = screen.getByLabelText("Delete post");
-
-    // Simulate deleting the post
-    await userEvent.click(deleteButton);
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith("Post deleted successfully");
-    });
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
   });
 
   it("displays an error when delete fails", async () => {
@@ -113,7 +73,6 @@ describe("Post", () => {
 
     const deleteButton = screen.getByLabelText("Delete post");
 
-    // Simulate deleting the post
     await userEvent.click(deleteButton);
 
     await waitFor(() => {

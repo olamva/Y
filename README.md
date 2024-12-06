@@ -216,6 +216,8 @@ Les [README for frontend her](frontend/README.md).
     │   │   └── user.ts
     │   ├── test
     │   │   ├── components
+    │   │   │   ├── BackButton.test.tsx
+    │   │   │   ├── button.test.tsx 
     │   │   │   ├── Footer.test.tsx
     │   │   │   ├── LoginForm.test.tsx
     │   │   │   ├── Navbar
@@ -225,6 +227,7 @@ Les [README for frontend her](frontend/README.md).
     │   │   │   ├── Post
     │   │   │   │   ├── PostBody.test.tsx
     │   │   │   │   └── PostContent.test.tsx
+    │   │   │   │   └── Post.test.tsx
     │   │   └── setup.ts
     │   ├── types
     │   │   └── apollo-upload-client.d.ts
