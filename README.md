@@ -21,7 +21,7 @@ npm run start:dev
 ```
 
 > [!NOTE]
-> To run the project locally, both the backend and the frontend must be running on seperate terminals. When running locally, all uploaded images will be saved on your local machine.
+> To run the project locally, both the backend and the frontend must be running on seperate terminals. When running the project locally, images are uploaded to your own computer. These locally stored images will not be accessible on the production website. This setup is optimal for testing and simulating how image uploads will behave on the virtual machine (VM).
 
 End-2-end tester kan kjøres med (sørg for at backend og frontend kjøres):
 
