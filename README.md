@@ -323,6 +323,7 @@ Løsningen skal være en prototyp på en søkbar katalog med frontend hvor bruke
   - For- og etternavn
   - Følgere og følger
   - Alle innlegg, alle kommentarer, alle mentions og alle likes
+  - Profil preview på hover av brukere
 - Profilbilder er kroppet til 300x300px ved opplasting
 - Admin bruker
   - Kan slette alle innlegg og kommentarer
