@@ -54,7 +54,7 @@ describe("User Page", () => {
   it("Should like/unlike a post", () => {
     cy.visit("/");
 
-    cy.get('[aria-label="Like post"]').eq(2).as("likeButton");
+    cy.get('[aria-label="Like post"]').eq(5).as("likeButton");
     cy.wait(1000);
 
     cy.get("@likeButton")
