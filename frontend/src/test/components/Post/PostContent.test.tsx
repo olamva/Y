@@ -1,12 +1,12 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import userEvent from "@testing-library/user-event";
 import PostContent from "@/components/Post/PostContent";
 import { PostType, VerifiedTiers } from "@/lib/types";
-import { MockedProvider } from "@apollo/client/testing";
 import { ApolloError } from "@apollo/client";
+import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/components/AuthContext", () => ({
+vi.mock("@/hooks/AuthContext", () => ({
   useAuth: vi.fn().mockReturnValue({
     user: { username: "testuser", repostedPostIds: [] },
   }),
