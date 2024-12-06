@@ -37,7 +37,6 @@ describe("User Page", () => {
     cy.get("button").contains("Post").click();
     cy.contains("This is a test comment").should("be.visible");
     cy.visit("/user/cytest");
-    cy.wait(1000);
     cy.get("button").contains("Comments").click();
     cy.contains("This is a test comment").should("be.visible");
 
@@ -54,8 +53,7 @@ describe("User Page", () => {
   it("Should like/unlike a post", () => {
     cy.visit("/");
 
-    cy.get('[aria-label="Like post"]').eq(5).as("likeButton");
-    cy.wait(1000);
+    cy.get('[aria-label="Like post"]').first().as("likeButton");
 
     cy.get("@likeButton")
       .find("span.select-none")
