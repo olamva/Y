@@ -70,7 +70,6 @@ const PostsView: React.FC<PostsViewProps> = ({
         if (fetchMoreData.getPostsByIds.length < PAGE_SIZE) {
           setHasMore(false);
         }
-        console.log(fetchMoreData.getPostsByIds);
         setPage((prev) => prev + 1);
       } else {
         setHasMore(false);
