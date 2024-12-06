@@ -25,7 +25,7 @@ describe("View All Users", () => {
 
     cy.url().should("include", "/project2/users");
 
-    cy.contains("All users");
+    cy.contains("All Users");
   });
 });
 
