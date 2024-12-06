@@ -50,13 +50,7 @@ const Username = ({
             {...tagProps}
           >
             {!noAvatar && (
-              <Avatar
-                small={smallAvatar}
-                disableHover
-                user={user}
-                noHref
-                large={false}
-              />
+              <Avatar small={smallAvatar} user={user} noHref large={false} />
             )}
             <div className="flex items-center gap-1">
               {!hideFullName && user.firstName ? (
