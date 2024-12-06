@@ -22,6 +22,7 @@ import { UserType } from "@/lib/types";
 import NotFound from "@/pages/NotFound";
 import { DELETE_USER, GET_USER_QUERY } from "@/queries/user";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import {
   BookCheckIcon,
   EarthIcon,
@@ -34,7 +35,6 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import CoverPhoto from "/coverphoto.jpg";
-import { ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 
 type ViewState = "posts" | "comments" | "mentions" | "likes";
 
@@ -336,7 +336,7 @@ const Profile = () => {
               <ToggleGroupItem
                 value="posts"
                 aria-label="View Posts"
-                className="w-full p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
                 <BookCheckIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex items-center gap-1">
@@ -353,7 +353,7 @@ const Profile = () => {
               <ToggleGroupItem
                 value="comments"
                 aria-label="View Comments"
-                className="w-full p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
                 <ChatBubbleLeftIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
@@ -366,7 +366,7 @@ const Profile = () => {
               <ToggleGroupItem
                 value="mentions"
                 aria-label="View Mentions"
-                className="w-full p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
                 <Users2Icon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
@@ -386,7 +386,7 @@ const Profile = () => {
               <ToggleGroupItem
                 value="likes"
                 aria-label="View Likes"
-                className="w-full p-1 text-center sm:p-2"
+                className="w-full gap-1 p-1 text-center text-xs sm:p-2 sm:text-sm md:p-5 md:text-base"
               >
                 <HeartIcon className="hidden size-4 sm:block md:size-6" />
                 <span className="flex gap-1">
