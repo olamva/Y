@@ -262,13 +262,15 @@ const HomePage = () => {
               ))}
 
             {posts &&
-              posts.map((post) =>
-                post.__typename === "Post" ? (
-                  <Post key={post.id} post={post} />
-                ) : (
-                  <Repost key={post.id} repost={post} />
-                ),
-              )}
+              posts
+                .filter((post) => post.author.username !== "retardpolitiet")
+                .map((post) =>
+                  post.__typename === "Post" ? (
+                    <Post key={post.id} post={post} />
+                  ) : (
+                    <Repost key={post.id} repost={post} />
+                  ),
+                )}
             {loading && posts.length > 0 && hasMore && (
               <p className="mt-4 text-center">Loading more posts...</p>
             )}
